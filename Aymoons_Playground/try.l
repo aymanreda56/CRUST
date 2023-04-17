@@ -8,10 +8,13 @@ void* yyerror(char*);
 [0-9]+                  {yylval = atoi(yytext);
                         return INTEGER_IMM_VAL;}                        /*integer immediate values*/
 
-(true|false)            {yylval = (yytext == "true")?true:false;
-                        return BOOL_IMM_VAL;}                           /*boolean immediate values*/
+true                    {yylval = true;
+                        return BOOL_TRUE_IMM_VAL;}                           /*boolean immediate values*/
 
-\B[A-Z]+\B              {yylval = *yytext;
+false                   {yylval = false;
+                        return BOOL_FALSE_IMM_VAL;}
+
+\s[A-Z]+\s              {yylval = *yytext;
                         return CONSTANT_VAR;}                           /*constants are defined totally in uppercase*/
 
 
@@ -26,8 +29,8 @@ bool                    {return BOOL_DEC;}
 char                    {return CHAR_DEC;}
 string                  {return STRING_DEC;}
 
-                        
-[a-zA-Z]+[a-zA-Z_0-9]   {yylval = *yytext;
+;                       {return SEMICOLON;}                        
+[a-zA-Z]+[a-zA-Z_0-9]*  {yylval = *yytext;
                         return VAR_NAME;}                               /*variable name*/
 
 [ \t]                                                                   /*whitespaces and tabs are muda muda*/
@@ -38,5 +41,3 @@ string                  {return STRING_DEC;}
 int yywrap(void) {
     return 1;
 }
-
-

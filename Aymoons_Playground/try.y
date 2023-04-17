@@ -7,29 +7,29 @@
 %}
 
 
-%token INTEGER_IMM_VAL VAR_NAME BOOL_IMM_VAL CONSTANT_VAR STRING_DEC CHAR_DEC FLOAT_DEC BOOL_DEC INTEGER_DEC ASSIGN_OP MUL
-%token SUB ADD
+%token INTEGER_IMM_VAL VAR_NAME BOOL_TRUE_IMM_VAL BOOL_FALSE_IMM_VAL CONSTANT_VAR STRING_DEC CHAR_DEC FLOAT_DEC BOOL_DEC INTEGER_DEC ASSIGN_OP MUL
+%token SUB ADD SEMICOLON
 %left '+' '-'
 %left '*' '/'
 
 
 %%
 program:
-        program statement '\n'
+        program statement SEMICOLON '\n'
         | /* NULL */
         ;
 
 statement:
         expression                      { printf("%d\n", $1); }
-        | VAR_NAME '=' expression       { sym[$1] = $3; }
+        | VAR_NAME ASSIGN_OP expression       { sym[$1] = $3; }
         ;
 
 expression:
         INTEGER_IMM_VAL
         | VAR_NAME                      { $$ = sym[$1]; }
-        | expression '+' expression     { $$ = $1 + $3; }
-        | expression '-' expression     { $$ = $1 - $3; }
-        | expression '*' expression     { $$ = $1 * $3; }
+        | expression ADD expression     { $$ = $1 + $3; }
+        | expression SUB expression     { $$ = $1 - $3; }
+        | expression MUL expression     { $$ = $1 * $3; }
         ;
 
 %%

@@ -56,17 +56,19 @@ extern int yydebug;
     YYUNDEF = 257,                 /* "invalid token"  */
     INTEGER_IMM_VAL = 258,         /* INTEGER_IMM_VAL  */
     VAR_NAME = 259,                /* VAR_NAME  */
-    BOOL_IMM_VAL = 260,            /* BOOL_IMM_VAL  */
-    CONSTANT_VAR = 261,            /* CONSTANT_VAR  */
-    STRING_DEC = 262,              /* STRING_DEC  */
-    CHAR_DEC = 263,                /* CHAR_DEC  */
-    FLOAT_DEC = 264,               /* FLOAT_DEC  */
-    BOOL_DEC = 265,                /* BOOL_DEC  */
-    INTEGER_DEC = 266,             /* INTEGER_DEC  */
-    ASSIGN_OP = 267,               /* ASSIGN_OP  */
-    MUL = 268,                     /* MUL  */
-    SUB = 269,                     /* SUB  */
-    ADD = 270                      /* ADD  */
+    BOOL_TRUE_IMM_VAL = 260,       /* BOOL_TRUE_IMM_VAL  */
+    BOOL_FALSE_IMM_VAL = 261,      /* BOOL_FALSE_IMM_VAL  */
+    CONSTANT_VAR = 262,            /* CONSTANT_VAR  */
+    STRING_DEC = 263,              /* STRING_DEC  */
+    CHAR_DEC = 264,                /* CHAR_DEC  */
+    FLOAT_DEC = 265,               /* FLOAT_DEC  */
+    BOOL_DEC = 266,                /* BOOL_DEC  */
+    INTEGER_DEC = 267,             /* INTEGER_DEC  */
+    ASSIGN_OP = 268,               /* ASSIGN_OP  */
+    MUL = 269,                     /* MUL  */
+    SUB = 270,                     /* SUB  */
+    ADD = 271,                     /* ADD  */
+    SEMICOLON = 272                /* SEMICOLON  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
