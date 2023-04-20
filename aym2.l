@@ -23,6 +23,9 @@
 "or"                            {printf("LOGIC_OR:%s | ", yytext);      return LOGIC_OR;}
 "!"                             {printf("LOGIC_NOT:%s | ", yytext);     return LOGIC_NOT;}
 
+"=="                            {printf("EQUALITY:%s | ", yytext);      return EQUALITY;}
+"!="                            {printf("NEG_EQUALITY:%s | ", yytext);  return NEG_EQUALITY;}
+
 ">"                             {printf("GT:%s | ", yytext);            return GT;}
 "<"                             {printf("LT:%s | ", yytext);            return LT;}
 "="                             {printf("EQ:%s | ", yytext);            return EQ;}         
