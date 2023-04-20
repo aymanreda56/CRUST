@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_TRY_TAB_H_INCLUDED
-# define YY_YY_TRY_TAB_H_INCLUDED
+#ifndef YY_YY_AYM_TAB_H_INCLUDED
+# define YY_YY_AYM_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -54,21 +54,23 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    INTEGER_IMM_VAL = 258,         /* INTEGER_IMM_VAL  */
-    VAR_NAME = 259,                /* VAR_NAME  */
-    BOOL_TRUE_IMM_VAL = 260,       /* BOOL_TRUE_IMM_VAL  */
-    BOOL_FALSE_IMM_VAL = 261,      /* BOOL_FALSE_IMM_VAL  */
-    CONSTANT_VAR = 262,            /* CONSTANT_VAR  */
-    STRING_DEC = 263,              /* STRING_DEC  */
-    CHAR_DEC = 264,                /* CHAR_DEC  */
-    FLOAT_DEC = 265,               /* FLOAT_DEC  */
-    BOOL_DEC = 266,                /* BOOL_DEC  */
-    INTEGER_DEC = 267,             /* INTEGER_DEC  */
-    ASSIGN_OP = 268,               /* ASSIGN_OP  */
-    MUL = 269,                     /* MUL  */
-    SUB = 270,                     /* SUB  */
-    ADD = 271,                     /* ADD  */
-    SEMICOLON = 272                /* SEMICOLON  */
+    INT = 258,                     /* INT  */
+    IF = 259,                      /* IF  */
+    FOR = 260,                     /* FOR  */
+    WHILE = 261,                   /* WHILE  */
+    BOOL_LITERAL = 262,            /* BOOL_LITERAL  */
+    DIV = 263,                     /* DIV  */
+    SPC = 264,                     /* SPC  */
+    GT = 265,                      /* GT  */
+    LT = 266,                      /* LT  */
+    EQ = 267,                      /* EQ  */
+    COLON = 268,                   /* COLON  */
+    SEMICOLON = 269,               /* SEMICOLON  */
+    PLUS = 270,                    /* PLUS  */
+    SUB = 271,                     /* SUB  */
+    MUL = 272,                     /* MUL  */
+    DIGIT = 273,                   /* DIGIT  */
+    IDENTIFIER = 274               /* IDENTIFIER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -87,4 +89,4 @@ extern YYSTYPE yylval;
 int yyparse (void);
 
 
-#endif /* !YY_YY_TRY_TAB_H_INCLUDED  */
+#endif /* !YY_YY_AYM_TAB_H_INCLUDED  */

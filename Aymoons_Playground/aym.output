@@ -1,0 +1,1080 @@
+Terminals unused in grammar
+
+    LT
+
+
+State 1 conflicts: 1 shift/reduce
+State 64 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: PROGRAM $end
+
+    1 PROGRAM: PROGRAM STATEMENT
+    2        | ε
+
+    3 STATEMENT: PRIMARY_STATEMENT
+    4          | SECONDARY_STATEMENT
+
+    5 PRIMARY_STATEMENT: DECLARATION_STT
+    6                  | assignmentSTT
+
+    7 SECONDARY_STATEMENT: IF_STT
+    8                    | FUNC_DECLARATION_STT
+    9                    | WHILE_STT
+   10                    | FOR_STT
+
+   11 FUNC_DECLARATION_STT: INT IDENTIFIER '(' ARGS ')' COLON BLOCK
+
+   12 ARGS: DECLARATION_STT
+   13     | ARGS ',' DECLARATION_STT
+
+   14 $@1: ε
+
+   15 DECLARATION_STT: $@1 INT IDENTIFIER DECLARATION_TAIL SEMICOLON
+
+   16 DECLARATION_TAIL: EQ EXPRESSION
+   17                 | ε
+
+   18 assignmentSTT: IDENTIFIER EQ EXPRESSION SEMICOLON
+
+   19 IF_STT: IF SPC EXPRESSION COLON BLOCK
+
+   20 WHILE_STT: WHILE SPC EXPRESSION COLON BLOCK
+
+   21 FOR_STT: FOR '(' PRIMARY_STATEMENT PRIMARY_STATEMENT PRIMARY_STATEMENT ')' BLOCK
+
+   22 BLOCK: '{' PROGRAM '}'
+
+   23 EXPRESSION: IDENTIFIER
+   24           | DIGIT
+   25           | BOOL_LITERAL
+   26           | EXPRESSION PLUS EXPRESSION
+   27           | EXPRESSION SUB EXPRESSION
+   28           | EXPRESSION MUL EXPRESSION
+   29           | EXPRESSION DIV EXPRESSION
+   30           | EXPRESSION GT EXPRESSION
+   31           | '(' EXPRESSION ')'
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    '(' (40) 11 21 31
+    ')' (41) 11 21 31
+    ',' (44) 13
+    '{' (123) 22
+    '}' (125) 22
+    error (256)
+    INT (258) 11 15
+    IF (259) 19
+    FOR (260) 21
+    WHILE (261) 20
+    BOOL_LITERAL (262) 25
+    DIV (263) 29
+    SPC (264) 19 20
+    GT (265) 30
+    LT (266)
+    EQ (267) 16 18
+    COLON (268) 11 19 20
+    SEMICOLON (269) 15 18
+    PLUS (270) 26
+    SUB (271) 27
+    MUL (272) 28
+    DIGIT (273) 24
+    IDENTIFIER (274) 11 15 18 23
+
+
+Nonterminals, with rules where they appear
+
+    $accept (25)
+        on left: 0
+    PROGRAM (26)
+        on left: 1 2
+        on right: 0 1 22
+    STATEMENT (27)
+        on left: 3 4
+        on right: 1
+    PRIMARY_STATEMENT (28)
+        on left: 5 6
+        on right: 3 21
+    SECONDARY_STATEMENT (29)
+        on left: 7 8 9 10
+        on right: 4
+    FUNC_DECLARATION_STT (30)
+        on left: 11
+        on right: 8
+    ARGS (31)
+        on left: 12 13
+        on right: 11 13
+    DECLARATION_STT (32)
+        on left: 15
+        on right: 5 12 13
+    $@1 (33)
+        on left: 14
+        on right: 15
+    DECLARATION_TAIL (34)
+        on left: 16 17
+        on right: 15
+    assignmentSTT (35)
+        on left: 18
+        on right: 6
+    IF_STT (36)
+        on left: 19
+        on right: 7
+    WHILE_STT (37)
+        on left: 20
+        on right: 9
+    FOR_STT (38)
+        on left: 21
+        on right: 10
+    BLOCK (39)
+        on left: 22
+        on right: 11 19 20 21
+    EXPRESSION (40)
+        on left: 23 24 25 26 27 28 29 30 31
+        on right: 16 18 19 20 26 27 28 29 30 31
+
+
+State 0
+
+    0 $accept: • PROGRAM $end
+    1 PROGRAM: • PROGRAM STATEMENT
+    2        | ε •
+
+    $default  reduce using rule 2 (PROGRAM)
+
+    PROGRAM  go to state 1
+
+
+State 1
+
+    0 $accept: PROGRAM • $end
+    1 PROGRAM: PROGRAM • STATEMENT
+    3 STATEMENT: • PRIMARY_STATEMENT
+    4          | • SECONDARY_STATEMENT
+    5 PRIMARY_STATEMENT: • DECLARATION_STT
+    6                  | • assignmentSTT
+    7 SECONDARY_STATEMENT: • IF_STT
+    8                    | • FUNC_DECLARATION_STT
+    9                    | • WHILE_STT
+   10                    | • FOR_STT
+   11 FUNC_DECLARATION_STT: • INT IDENTIFIER '(' ARGS ')' COLON BLOCK
+   14 $@1: ε •  [INT]
+   15 DECLARATION_STT: • $@1 INT IDENTIFIER DECLARATION_TAIL SEMICOLON
+   18 assignmentSTT: • IDENTIFIER EQ EXPRESSION SEMICOLON
+   19 IF_STT: • IF SPC EXPRESSION COLON BLOCK
+   20 WHILE_STT: • WHILE SPC EXPRESSION COLON BLOCK
+   21 FOR_STT: • FOR '(' PRIMARY_STATEMENT PRIMARY_STATEMENT PRIMARY_STATEMENT ')' BLOCK
+
+    $end        shift, and go to state 2
+    INT         shift, and go to state 3
+    IF          shift, and go to state 4
+    FOR         shift, and go to state 5
+    WHILE       shift, and go to state 6
+    IDENTIFIER  shift, and go to state 7
+
+    INT  [reduce using rule 14 ($@1)]
+
+    STATEMENT             go to state 8
+    PRIMARY_STATEMENT     go to state 9
+    SECONDARY_STATEMENT   go to state 10
+    FUNC_DECLARATION_STT  go to state 11
+    DECLARATION_STT       go to state 12
+    $@1                   go to state 13
+    assignmentSTT         go to state 14
+    IF_STT                go to state 15
+    WHILE_STT             go to state 16
+    FOR_STT               go to state 17
+
+    shift/reduce conflict on token INT:
+       14 $@1: ε •
+       11 FUNC_DECLARATION_STT: • INT IDENTIFIER '(' ARGS ')' COLON BLOCK
+      First example: PROGRAM • INT IDENTIFIER '(' ARGS ')' COLON BLOCK
+      Shift derivation
+        PROGRAM
+        ↳ 1: PROGRAM STATEMENT
+                     ↳ 4: SECONDARY_STATEMENT
+                          ↳ 8: FUNC_DECLARATION_STT
+                               ↳ 11: • INT IDENTIFIER '(' ARGS ')' COLON BLOCK
+      Second example: PROGRAM • INT IDENTIFIER DECLARATION_TAIL SEMICOLON $end
+      Reduce derivation
+        $accept
+        ↳ 0: PROGRAM                                                                          $end
+             ↳ 1: PROGRAM STATEMENT
+                          ↳ 3: PRIMARY_STATEMENT
+                               ↳ 5: DECLARATION_STT
+                                    ↳ 15: $@1       INT IDENTIFIER DECLARATION_TAIL SEMICOLON
+                                          ↳ 14: ε •
+
+
+
+State 2
+
+    0 $accept: PROGRAM $end •
+
+    $default  accept
+
+
+State 3
+
+   11 FUNC_DECLARATION_STT: INT • IDENTIFIER '(' ARGS ')' COLON BLOCK
+
+    IDENTIFIER  shift, and go to state 18
+
+
+State 4
+
+   19 IF_STT: IF • SPC EXPRESSION COLON BLOCK
+
+    SPC  shift, and go to state 19
+
+
+State 5
+
+   21 FOR_STT: FOR • '(' PRIMARY_STATEMENT PRIMARY_STATEMENT PRIMARY_STATEMENT ')' BLOCK
+
+    '('  shift, and go to state 20
+
+
+State 6
+
+   20 WHILE_STT: WHILE • SPC EXPRESSION COLON BLOCK
+
+    SPC  shift, and go to state 21
+
+
+State 7
+
+   18 assignmentSTT: IDENTIFIER • EQ EXPRESSION SEMICOLON
+
+    EQ  shift, and go to state 22
+
+
+State 8
+
+    1 PROGRAM: PROGRAM STATEMENT •
+
+    $default  reduce using rule 1 (PROGRAM)
+
+
+State 9
+
+    3 STATEMENT: PRIMARY_STATEMENT •
+
+    $default  reduce using rule 3 (STATEMENT)
+
+
+State 10
+
+    4 STATEMENT: SECONDARY_STATEMENT •
+
+    $default  reduce using rule 4 (STATEMENT)
+
+
+State 11
+
+    8 SECONDARY_STATEMENT: FUNC_DECLARATION_STT •
+
+    $default  reduce using rule 8 (SECONDARY_STATEMENT)
+
+
+State 12
+
+    5 PRIMARY_STATEMENT: DECLARATION_STT •
+
+    $default  reduce using rule 5 (PRIMARY_STATEMENT)
+
+
+State 13
+
+   15 DECLARATION_STT: $@1 • INT IDENTIFIER DECLARATION_TAIL SEMICOLON
+
+    INT  shift, and go to state 23
+
+
+State 14
+
+    6 PRIMARY_STATEMENT: assignmentSTT •
+
+    $default  reduce using rule 6 (PRIMARY_STATEMENT)
+
+
+State 15
+
+    7 SECONDARY_STATEMENT: IF_STT •
+
+    $default  reduce using rule 7 (SECONDARY_STATEMENT)
+
+
+State 16
+
+    9 SECONDARY_STATEMENT: WHILE_STT •
+
+    $default  reduce using rule 9 (SECONDARY_STATEMENT)
+
+
+State 17
+
+   10 SECONDARY_STATEMENT: FOR_STT •
+
+    $default  reduce using rule 10 (SECONDARY_STATEMENT)
+
+
+State 18
+
+   11 FUNC_DECLARATION_STT: INT IDENTIFIER • '(' ARGS ')' COLON BLOCK
+
+    '('  shift, and go to state 24
+
+
+State 19
+
+   19 IF_STT: IF SPC • EXPRESSION COLON BLOCK
+   23 EXPRESSION: • IDENTIFIER
+   24           | • DIGIT
+   25           | • BOOL_LITERAL
+   26           | • EXPRESSION PLUS EXPRESSION
+   27           | • EXPRESSION SUB EXPRESSION
+   28           | • EXPRESSION MUL EXPRESSION
+   29           | • EXPRESSION DIV EXPRESSION
+   30           | • EXPRESSION GT EXPRESSION
+   31           | • '(' EXPRESSION ')'
+
+    BOOL_LITERAL  shift, and go to state 25
+    DIGIT         shift, and go to state 26
+    IDENTIFIER    shift, and go to state 27
+    '('           shift, and go to state 28
+
+    EXPRESSION  go to state 29
+
+
+State 20
+
+    5 PRIMARY_STATEMENT: • DECLARATION_STT
+    6                  | • assignmentSTT
+   14 $@1: ε •  [INT]
+   15 DECLARATION_STT: • $@1 INT IDENTIFIER DECLARATION_TAIL SEMICOLON
+   18 assignmentSTT: • IDENTIFIER EQ EXPRESSION SEMICOLON
+   21 FOR_STT: FOR '(' • PRIMARY_STATEMENT PRIMARY_STATEMENT PRIMARY_STATEMENT ')' BLOCK
+
+    IDENTIFIER  shift, and go to state 7
+
+    $default  reduce using rule 14 ($@1)
+
+    PRIMARY_STATEMENT  go to state 30
+    DECLARATION_STT    go to state 12
+    $@1                go to state 13
+    assignmentSTT      go to state 14
+
+
+State 21
+
+   20 WHILE_STT: WHILE SPC • EXPRESSION COLON BLOCK
+   23 EXPRESSION: • IDENTIFIER
+   24           | • DIGIT
+   25           | • BOOL_LITERAL
+   26           | • EXPRESSION PLUS EXPRESSION
+   27           | • EXPRESSION SUB EXPRESSION
+   28           | • EXPRESSION MUL EXPRESSION
+   29           | • EXPRESSION DIV EXPRESSION
+   30           | • EXPRESSION GT EXPRESSION
+   31           | • '(' EXPRESSION ')'
+
+    BOOL_LITERAL  shift, and go to state 25
+    DIGIT         shift, and go to state 26
+    IDENTIFIER    shift, and go to state 27
+    '('           shift, and go to state 28
+
+    EXPRESSION  go to state 31
+
+
+State 22
+
+   18 assignmentSTT: IDENTIFIER EQ • EXPRESSION SEMICOLON
+   23 EXPRESSION: • IDENTIFIER
+   24           | • DIGIT
+   25           | • BOOL_LITERAL
+   26           | • EXPRESSION PLUS EXPRESSION
+   27           | • EXPRESSION SUB EXPRESSION
+   28           | • EXPRESSION MUL EXPRESSION
+   29           | • EXPRESSION DIV EXPRESSION
+   30           | • EXPRESSION GT EXPRESSION
+   31           | • '(' EXPRESSION ')'
+
+    BOOL_LITERAL  shift, and go to state 25
+    DIGIT         shift, and go to state 26
+    IDENTIFIER    shift, and go to state 27
+    '('           shift, and go to state 28
+
+    EXPRESSION  go to state 32
+
+
+State 23
+
+   15 DECLARATION_STT: $@1 INT • IDENTIFIER DECLARATION_TAIL SEMICOLON
+
+    IDENTIFIER  shift, and go to state 33
+
+
+State 24
+
+   11 FUNC_DECLARATION_STT: INT IDENTIFIER '(' • ARGS ')' COLON BLOCK
+   12 ARGS: • DECLARATION_STT
+   13     | • ARGS ',' DECLARATION_STT
+   14 $@1: ε •
+   15 DECLARATION_STT: • $@1 INT IDENTIFIER DECLARATION_TAIL SEMICOLON
+
+    $default  reduce using rule 14 ($@1)
+
+    ARGS             go to state 34
+    DECLARATION_STT  go to state 35
+    $@1              go to state 13
+
+
+State 25
+
+   25 EXPRESSION: BOOL_LITERAL •
+
+    $default  reduce using rule 25 (EXPRESSION)
+
+
+State 26
+
+   24 EXPRESSION: DIGIT •
+
+    $default  reduce using rule 24 (EXPRESSION)
+
+
+State 27
+
+   23 EXPRESSION: IDENTIFIER •
+
+    $default  reduce using rule 23 (EXPRESSION)
+
+
+State 28
+
+   23 EXPRESSION: • IDENTIFIER
+   24           | • DIGIT
+   25           | • BOOL_LITERAL
+   26           | • EXPRESSION PLUS EXPRESSION
+   27           | • EXPRESSION SUB EXPRESSION
+   28           | • EXPRESSION MUL EXPRESSION
+   29           | • EXPRESSION DIV EXPRESSION
+   30           | • EXPRESSION GT EXPRESSION
+   31           | • '(' EXPRESSION ')'
+   31           | '(' • EXPRESSION ')'
+
+    BOOL_LITERAL  shift, and go to state 25
+    DIGIT         shift, and go to state 26
+    IDENTIFIER    shift, and go to state 27
+    '('           shift, and go to state 28
+
+    EXPRESSION  go to state 36
+
+
+State 29
+
+   19 IF_STT: IF SPC EXPRESSION • COLON BLOCK
+   26 EXPRESSION: EXPRESSION • PLUS EXPRESSION
+   27           | EXPRESSION • SUB EXPRESSION
+   28           | EXPRESSION • MUL EXPRESSION
+   29           | EXPRESSION • DIV EXPRESSION
+   30           | EXPRESSION • GT EXPRESSION
+
+    DIV    shift, and go to state 37
+    GT     shift, and go to state 38
+    COLON  shift, and go to state 39
+    PLUS   shift, and go to state 40
+    SUB    shift, and go to state 41
+    MUL    shift, and go to state 42
+
+
+State 30
+
+    5 PRIMARY_STATEMENT: • DECLARATION_STT
+    6                  | • assignmentSTT
+   14 $@1: ε •  [INT]
+   15 DECLARATION_STT: • $@1 INT IDENTIFIER DECLARATION_TAIL SEMICOLON
+   18 assignmentSTT: • IDENTIFIER EQ EXPRESSION SEMICOLON
+   21 FOR_STT: FOR '(' PRIMARY_STATEMENT • PRIMARY_STATEMENT PRIMARY_STATEMENT ')' BLOCK
+
+    IDENTIFIER  shift, and go to state 7
+
+    $default  reduce using rule 14 ($@1)
+
+    PRIMARY_STATEMENT  go to state 43
+    DECLARATION_STT    go to state 12
+    $@1                go to state 13
+    assignmentSTT      go to state 14
+
+
+State 31
+
+   20 WHILE_STT: WHILE SPC EXPRESSION • COLON BLOCK
+   26 EXPRESSION: EXPRESSION • PLUS EXPRESSION
+   27           | EXPRESSION • SUB EXPRESSION
+   28           | EXPRESSION • MUL EXPRESSION
+   29           | EXPRESSION • DIV EXPRESSION
+   30           | EXPRESSION • GT EXPRESSION
+
+    DIV    shift, and go to state 37
+    GT     shift, and go to state 38
+    COLON  shift, and go to state 44
+    PLUS   shift, and go to state 40
+    SUB    shift, and go to state 41
+    MUL    shift, and go to state 42
+
+
+State 32
+
+   18 assignmentSTT: IDENTIFIER EQ EXPRESSION • SEMICOLON
+   26 EXPRESSION: EXPRESSION • PLUS EXPRESSION
+   27           | EXPRESSION • SUB EXPRESSION
+   28           | EXPRESSION • MUL EXPRESSION
+   29           | EXPRESSION • DIV EXPRESSION
+   30           | EXPRESSION • GT EXPRESSION
+
+    DIV        shift, and go to state 37
+    GT         shift, and go to state 38
+    SEMICOLON  shift, and go to state 45
+    PLUS       shift, and go to state 40
+    SUB        shift, and go to state 41
+    MUL        shift, and go to state 42
+
+
+State 33
+
+   15 DECLARATION_STT: $@1 INT IDENTIFIER • DECLARATION_TAIL SEMICOLON
+   16 DECLARATION_TAIL: • EQ EXPRESSION
+   17                 | ε •  [SEMICOLON]
+
+    EQ  shift, and go to state 46
+
+    $default  reduce using rule 17 (DECLARATION_TAIL)
+
+    DECLARATION_TAIL  go to state 47
+
+
+State 34
+
+   11 FUNC_DECLARATION_STT: INT IDENTIFIER '(' ARGS • ')' COLON BLOCK
+   13 ARGS: ARGS • ',' DECLARATION_STT
+
+    ')'  shift, and go to state 48
+    ','  shift, and go to state 49
+
+
+State 35
+
+   12 ARGS: DECLARATION_STT •
+
+    $default  reduce using rule 12 (ARGS)
+
+
+State 36
+
+   26 EXPRESSION: EXPRESSION • PLUS EXPRESSION
+   27           | EXPRESSION • SUB EXPRESSION
+   28           | EXPRESSION • MUL EXPRESSION
+   29           | EXPRESSION • DIV EXPRESSION
+   30           | EXPRESSION • GT EXPRESSION
+   31           | '(' EXPRESSION • ')'
+
+    DIV   shift, and go to state 37
+    GT    shift, and go to state 38
+    PLUS  shift, and go to state 40
+    SUB   shift, and go to state 41
+    MUL   shift, and go to state 42
+    ')'   shift, and go to state 50
+
+
+State 37
+
+   23 EXPRESSION: • IDENTIFIER
+   24           | • DIGIT
+   25           | • BOOL_LITERAL
+   26           | • EXPRESSION PLUS EXPRESSION
+   27           | • EXPRESSION SUB EXPRESSION
+   28           | • EXPRESSION MUL EXPRESSION
+   29           | • EXPRESSION DIV EXPRESSION
+   29           | EXPRESSION DIV • EXPRESSION
+   30           | • EXPRESSION GT EXPRESSION
+   31           | • '(' EXPRESSION ')'
+
+    BOOL_LITERAL  shift, and go to state 25
+    DIGIT         shift, and go to state 26
+    IDENTIFIER    shift, and go to state 27
+    '('           shift, and go to state 28
+
+    EXPRESSION  go to state 51
+
+
+State 38
+
+   23 EXPRESSION: • IDENTIFIER
+   24           | • DIGIT
+   25           | • BOOL_LITERAL
+   26           | • EXPRESSION PLUS EXPRESSION
+   27           | • EXPRESSION SUB EXPRESSION
+   28           | • EXPRESSION MUL EXPRESSION
+   29           | • EXPRESSION DIV EXPRESSION
+   30           | • EXPRESSION GT EXPRESSION
+   30           | EXPRESSION GT • EXPRESSION
+   31           | • '(' EXPRESSION ')'
+
+    BOOL_LITERAL  shift, and go to state 25
+    DIGIT         shift, and go to state 26
+    IDENTIFIER    shift, and go to state 27
+    '('           shift, and go to state 28
+
+    EXPRESSION  go to state 52
+
+
+State 39
+
+   19 IF_STT: IF SPC EXPRESSION COLON • BLOCK
+   22 BLOCK: • '{' PROGRAM '}'
+
+    '{'  shift, and go to state 53
+
+    BLOCK  go to state 54
+
+
+State 40
+
+   23 EXPRESSION: • IDENTIFIER
+   24           | • DIGIT
+   25           | • BOOL_LITERAL
+   26           | • EXPRESSION PLUS EXPRESSION
+   26           | EXPRESSION PLUS • EXPRESSION
+   27           | • EXPRESSION SUB EXPRESSION
+   28           | • EXPRESSION MUL EXPRESSION
+   29           | • EXPRESSION DIV EXPRESSION
+   30           | • EXPRESSION GT EXPRESSION
+   31           | • '(' EXPRESSION ')'
+
+    BOOL_LITERAL  shift, and go to state 25
+    DIGIT         shift, and go to state 26
+    IDENTIFIER    shift, and go to state 27
+    '('           shift, and go to state 28
+
+    EXPRESSION  go to state 55
+
+
+State 41
+
+   23 EXPRESSION: • IDENTIFIER
+   24           | • DIGIT
+   25           | • BOOL_LITERAL
+   26           | • EXPRESSION PLUS EXPRESSION
+   27           | • EXPRESSION SUB EXPRESSION
+   27           | EXPRESSION SUB • EXPRESSION
+   28           | • EXPRESSION MUL EXPRESSION
+   29           | • EXPRESSION DIV EXPRESSION
+   30           | • EXPRESSION GT EXPRESSION
+   31           | • '(' EXPRESSION ')'
+
+    BOOL_LITERAL  shift, and go to state 25
+    DIGIT         shift, and go to state 26
+    IDENTIFIER    shift, and go to state 27
+    '('           shift, and go to state 28
+
+    EXPRESSION  go to state 56
+
+
+State 42
+
+   23 EXPRESSION: • IDENTIFIER
+   24           | • DIGIT
+   25           | • BOOL_LITERAL
+   26           | • EXPRESSION PLUS EXPRESSION
+   27           | • EXPRESSION SUB EXPRESSION
+   28           | • EXPRESSION MUL EXPRESSION
+   28           | EXPRESSION MUL • EXPRESSION
+   29           | • EXPRESSION DIV EXPRESSION
+   30           | • EXPRESSION GT EXPRESSION
+   31           | • '(' EXPRESSION ')'
+
+    BOOL_LITERAL  shift, and go to state 25
+    DIGIT         shift, and go to state 26
+    IDENTIFIER    shift, and go to state 27
+    '('           shift, and go to state 28
+
+    EXPRESSION  go to state 57
+
+
+State 43
+
+    5 PRIMARY_STATEMENT: • DECLARATION_STT
+    6                  | • assignmentSTT
+   14 $@1: ε •  [INT]
+   15 DECLARATION_STT: • $@1 INT IDENTIFIER DECLARATION_TAIL SEMICOLON
+   18 assignmentSTT: • IDENTIFIER EQ EXPRESSION SEMICOLON
+   21 FOR_STT: FOR '(' PRIMARY_STATEMENT PRIMARY_STATEMENT • PRIMARY_STATEMENT ')' BLOCK
+
+    IDENTIFIER  shift, and go to state 7
+
+    $default  reduce using rule 14 ($@1)
+
+    PRIMARY_STATEMENT  go to state 58
+    DECLARATION_STT    go to state 12
+    $@1                go to state 13
+    assignmentSTT      go to state 14
+
+
+State 44
+
+   20 WHILE_STT: WHILE SPC EXPRESSION COLON • BLOCK
+   22 BLOCK: • '{' PROGRAM '}'
+
+    '{'  shift, and go to state 53
+
+    BLOCK  go to state 59
+
+
+State 45
+
+   18 assignmentSTT: IDENTIFIER EQ EXPRESSION SEMICOLON •
+
+    $default  reduce using rule 18 (assignmentSTT)
+
+
+State 46
+
+   16 DECLARATION_TAIL: EQ • EXPRESSION
+   23 EXPRESSION: • IDENTIFIER
+   24           | • DIGIT
+   25           | • BOOL_LITERAL
+   26           | • EXPRESSION PLUS EXPRESSION
+   27           | • EXPRESSION SUB EXPRESSION
+   28           | • EXPRESSION MUL EXPRESSION
+   29           | • EXPRESSION DIV EXPRESSION
+   30           | • EXPRESSION GT EXPRESSION
+   31           | • '(' EXPRESSION ')'
+
+    BOOL_LITERAL  shift, and go to state 25
+    DIGIT         shift, and go to state 26
+    IDENTIFIER    shift, and go to state 27
+    '('           shift, and go to state 28
+
+    EXPRESSION  go to state 60
+
+
+State 47
+
+   15 DECLARATION_STT: $@1 INT IDENTIFIER DECLARATION_TAIL • SEMICOLON
+
+    SEMICOLON  shift, and go to state 61
+
+
+State 48
+
+   11 FUNC_DECLARATION_STT: INT IDENTIFIER '(' ARGS ')' • COLON BLOCK
+
+    COLON  shift, and go to state 62
+
+
+State 49
+
+   13 ARGS: ARGS ',' • DECLARATION_STT
+   14 $@1: ε •
+   15 DECLARATION_STT: • $@1 INT IDENTIFIER DECLARATION_TAIL SEMICOLON
+
+    $default  reduce using rule 14 ($@1)
+
+    DECLARATION_STT  go to state 63
+    $@1              go to state 13
+
+
+State 50
+
+   31 EXPRESSION: '(' EXPRESSION ')' •
+
+    $default  reduce using rule 31 (EXPRESSION)
+
+
+State 51
+
+   26 EXPRESSION: EXPRESSION • PLUS EXPRESSION
+   27           | EXPRESSION • SUB EXPRESSION
+   28           | EXPRESSION • MUL EXPRESSION
+   29           | EXPRESSION • DIV EXPRESSION
+   29           | EXPRESSION DIV EXPRESSION •  [DIV, COLON, SEMICOLON, MUL, ')']
+   30           | EXPRESSION • GT EXPRESSION
+
+    GT    shift, and go to state 38
+    PLUS  shift, and go to state 40
+    SUB   shift, and go to state 41
+
+    $default  reduce using rule 29 (EXPRESSION)
+
+    Conflict between rule 29 and token DIV resolved as reduce (%left DIV).
+    Conflict between rule 29 and token GT resolved as shift (DIV < GT).
+    Conflict between rule 29 and token PLUS resolved as shift (DIV < PLUS).
+    Conflict between rule 29 and token SUB resolved as shift (DIV < SUB).
+    Conflict between rule 29 and token MUL resolved as reduce (MUL < DIV).
+
+
+State 52
+
+   26 EXPRESSION: EXPRESSION • PLUS EXPRESSION
+   27           | EXPRESSION • SUB EXPRESSION
+   28           | EXPRESSION • MUL EXPRESSION
+   29           | EXPRESSION • DIV EXPRESSION
+   30           | EXPRESSION • GT EXPRESSION
+   30           | EXPRESSION GT EXPRESSION •  [DIV, COLON, SEMICOLON, PLUS, SUB, MUL, ')']
+
+    GT  shift, and go to state 38
+
+    $default  reduce using rule 30 (EXPRESSION)
+
+    Conflict between rule 30 and token DIV resolved as reduce (DIV < GT).
+    Conflict between rule 30 and token GT resolved as shift (%right GT).
+    Conflict between rule 30 and token PLUS resolved as reduce (PLUS < GT).
+    Conflict between rule 30 and token SUB resolved as reduce (SUB < GT).
+    Conflict between rule 30 and token MUL resolved as reduce (MUL < GT).
+
+
+State 53
+
+    1 PROGRAM: • PROGRAM STATEMENT
+    2        | ε •
+   22 BLOCK: '{' • PROGRAM '}'
+
+    $default  reduce using rule 2 (PROGRAM)
+
+    PROGRAM  go to state 64
+
+
+State 54
+
+   19 IF_STT: IF SPC EXPRESSION COLON BLOCK •
+
+    $default  reduce using rule 19 (IF_STT)
+
+
+State 55
+
+   26 EXPRESSION: EXPRESSION • PLUS EXPRESSION
+   26           | EXPRESSION PLUS EXPRESSION •  [DIV, COLON, SEMICOLON, PLUS, MUL, ')']
+   27           | EXPRESSION • SUB EXPRESSION
+   28           | EXPRESSION • MUL EXPRESSION
+   29           | EXPRESSION • DIV EXPRESSION
+   30           | EXPRESSION • GT EXPRESSION
+
+    GT   shift, and go to state 38
+    SUB  shift, and go to state 41
+
+    $default  reduce using rule 26 (EXPRESSION)
+
+    Conflict between rule 26 and token DIV resolved as reduce (DIV < PLUS).
+    Conflict between rule 26 and token GT resolved as shift (PLUS < GT).
+    Conflict between rule 26 and token PLUS resolved as reduce (%left PLUS).
+    Conflict between rule 26 and token SUB resolved as shift (PLUS < SUB).
+    Conflict between rule 26 and token MUL resolved as reduce (MUL < PLUS).
+
+
+State 56
+
+   26 EXPRESSION: EXPRESSION • PLUS EXPRESSION
+   27           | EXPRESSION • SUB EXPRESSION
+   27           | EXPRESSION SUB EXPRESSION •  [DIV, COLON, SEMICOLON, PLUS, SUB, MUL, ')']
+   28           | EXPRESSION • MUL EXPRESSION
+   29           | EXPRESSION • DIV EXPRESSION
+   30           | EXPRESSION • GT EXPRESSION
+
+    GT  shift, and go to state 38
+
+    $default  reduce using rule 27 (EXPRESSION)
+
+    Conflict between rule 27 and token DIV resolved as reduce (DIV < SUB).
+    Conflict between rule 27 and token GT resolved as shift (SUB < GT).
+    Conflict between rule 27 and token PLUS resolved as reduce (PLUS < SUB).
+    Conflict between rule 27 and token SUB resolved as reduce (%left SUB).
+    Conflict between rule 27 and token MUL resolved as reduce (MUL < SUB).
+
+
+State 57
+
+   26 EXPRESSION: EXPRESSION • PLUS EXPRESSION
+   27           | EXPRESSION • SUB EXPRESSION
+   28           | EXPRESSION • MUL EXPRESSION
+   28           | EXPRESSION MUL EXPRESSION •  [COLON, SEMICOLON, MUL, ')']
+   29           | EXPRESSION • DIV EXPRESSION
+   30           | EXPRESSION • GT EXPRESSION
+
+    DIV   shift, and go to state 37
+    GT    shift, and go to state 38
+    PLUS  shift, and go to state 40
+    SUB   shift, and go to state 41
+
+    $default  reduce using rule 28 (EXPRESSION)
+
+    Conflict between rule 28 and token DIV resolved as shift (MUL < DIV).
+    Conflict between rule 28 and token GT resolved as shift (MUL < GT).
+    Conflict between rule 28 and token PLUS resolved as shift (MUL < PLUS).
+    Conflict between rule 28 and token SUB resolved as shift (MUL < SUB).
+    Conflict between rule 28 and token MUL resolved as reduce (%left MUL).
+
+
+State 58
+
+   21 FOR_STT: FOR '(' PRIMARY_STATEMENT PRIMARY_STATEMENT PRIMARY_STATEMENT • ')' BLOCK
+
+    ')'  shift, and go to state 65
+
+
+State 59
+
+   20 WHILE_STT: WHILE SPC EXPRESSION COLON BLOCK •
+
+    $default  reduce using rule 20 (WHILE_STT)
+
+
+State 60
+
+   16 DECLARATION_TAIL: EQ EXPRESSION •  [SEMICOLON]
+   26 EXPRESSION: EXPRESSION • PLUS EXPRESSION
+   27           | EXPRESSION • SUB EXPRESSION
+   28           | EXPRESSION • MUL EXPRESSION
+   29           | EXPRESSION • DIV EXPRESSION
+   30           | EXPRESSION • GT EXPRESSION
+
+    DIV   shift, and go to state 37
+    GT    shift, and go to state 38
+    PLUS  shift, and go to state 40
+    SUB   shift, and go to state 41
+    MUL   shift, and go to state 42
+
+    $default  reduce using rule 16 (DECLARATION_TAIL)
+
+
+State 61
+
+   15 DECLARATION_STT: $@1 INT IDENTIFIER DECLARATION_TAIL SEMICOLON •
+
+    $default  reduce using rule 15 (DECLARATION_STT)
+
+
+State 62
+
+   11 FUNC_DECLARATION_STT: INT IDENTIFIER '(' ARGS ')' COLON • BLOCK
+   22 BLOCK: • '{' PROGRAM '}'
+
+    '{'  shift, and go to state 53
+
+    BLOCK  go to state 66
+
+
+State 63
+
+   13 ARGS: ARGS ',' DECLARATION_STT •
+
+    $default  reduce using rule 13 (ARGS)
+
+
+State 64
+
+    1 PROGRAM: PROGRAM • STATEMENT
+    3 STATEMENT: • PRIMARY_STATEMENT
+    4          | • SECONDARY_STATEMENT
+    5 PRIMARY_STATEMENT: • DECLARATION_STT
+    6                  | • assignmentSTT
+    7 SECONDARY_STATEMENT: • IF_STT
+    8                    | • FUNC_DECLARATION_STT
+    9                    | • WHILE_STT
+   10                    | • FOR_STT
+   11 FUNC_DECLARATION_STT: • INT IDENTIFIER '(' ARGS ')' COLON BLOCK
+   14 $@1: ε •  [INT]
+   15 DECLARATION_STT: • $@1 INT IDENTIFIER DECLARATION_TAIL SEMICOLON
+   18 assignmentSTT: • IDENTIFIER EQ EXPRESSION SEMICOLON
+   19 IF_STT: • IF SPC EXPRESSION COLON BLOCK
+   20 WHILE_STT: • WHILE SPC EXPRESSION COLON BLOCK
+   21 FOR_STT: • FOR '(' PRIMARY_STATEMENT PRIMARY_STATEMENT PRIMARY_STATEMENT ')' BLOCK
+   22 BLOCK: '{' PROGRAM • '}'
+
+    INT         shift, and go to state 3
+    IF          shift, and go to state 4
+    FOR         shift, and go to state 5
+    WHILE       shift, and go to state 6
+    IDENTIFIER  shift, and go to state 7
+    '}'         shift, and go to state 67
+
+    INT  [reduce using rule 14 ($@1)]
+
+    STATEMENT             go to state 8
+    PRIMARY_STATEMENT     go to state 9
+    SECONDARY_STATEMENT   go to state 10
+    FUNC_DECLARATION_STT  go to state 11
+    DECLARATION_STT       go to state 12
+    $@1                   go to state 13
+    assignmentSTT         go to state 14
+    IF_STT                go to state 15
+    WHILE_STT             go to state 16
+    FOR_STT               go to state 17
+
+    shift/reduce conflict on token INT:
+       14 $@1: ε •
+       11 FUNC_DECLARATION_STT: • INT IDENTIFIER '(' ARGS ')' COLON BLOCK
+      First example: PROGRAM IF SPC EXPRESSION COLON PROGRAM • INT IDENTIFIER '(' ARGS ')' COLON BLOCK PROGRAM '}' $end
+      Shift derivation
+        $accept
+        ↳ 0: PROGRAM                                                                                                                                       $end
+             ↳ 1: PROGRAM STATEMENT
+                          ↳ 4: SECONDARY_STATEMENT
+                               ↳ 7: IF_STT
+                                    ↳ 19: IF SPC EXPRESSION COLON BLOCK
+                                                                  ↳ 22: PROGRAM                                                                PROGRAM '}'
+                                                                        ↳ 1: PROGRAM STATEMENT
+                                                                                     ↳ 4: SECONDARY_STATEMENT
+                                                                                          ↳ 8: FUNC_DECLARATION_STT
+                                                                                               ↳ 11: • INT IDENTIFIER '(' ARGS ')' COLON BLOCK
+      Second example: PROGRAM IF SPC EXPRESSION COLON '{' PROGRAM • INT IDENTIFIER DECLARATION_TAIL SEMICOLON '}' $end
+      Reduce derivation
+        $accept
+        ↳ 0: PROGRAM                                                                                                                                             $end
+             ↳ 1: PROGRAM STATEMENT
+                          ↳ 4: SECONDARY_STATEMENT
+                               ↳ 7: IF_STT
+                                    ↳ 19: IF SPC EXPRESSION COLON BLOCK
+                                                                  ↳ 22: '{' PROGRAM                                                                          '}'
+                                                                            ↳ 1: PROGRAM STATEMENT
+                                                                                         ↳ 3: PRIMARY_STATEMENT
+                                                                                              ↳ 5: DECLARATION_STT
+                                                                                                   ↳ 15: $@1       INT IDENTIFIER DECLARATION_TAIL SEMICOLON
+                                                                                                         ↳ 14: ε •
+
+
+
+State 65
+
+   21 FOR_STT: FOR '(' PRIMARY_STATEMENT PRIMARY_STATEMENT PRIMARY_STATEMENT ')' • BLOCK
+   22 BLOCK: • '{' PROGRAM '}'
+
+    '{'  shift, and go to state 53
+
+    BLOCK  go to state 68
+
+
+State 66
+
+   11 FUNC_DECLARATION_STT: INT IDENTIFIER '(' ARGS ')' COLON BLOCK •
+
+    $default  reduce using rule 11 (FUNC_DECLARATION_STT)
+
+
+State 67
+
+   22 BLOCK: '{' PROGRAM '}' •
+
+    $default  reduce using rule 22 (BLOCK)
+
+
+State 68
+
+   21 FOR_STT: FOR '(' PRIMARY_STATEMENT PRIMARY_STATEMENT PRIMARY_STATEMENT ')' BLOCK •
+
+    $default  reduce using rule 21 (FOR_STT)

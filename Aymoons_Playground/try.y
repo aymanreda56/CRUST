@@ -11,7 +11,7 @@
     };
     struct Symbol symbolTableIntegers[300]; //maximum of 300 different variables
 
-    void updateVar()
+    void updateVar();
 %}
 
 
