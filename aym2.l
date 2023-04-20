@@ -31,7 +31,7 @@
 
 \"[a-zA-Z0-9_]+\"               {printf("STRING_LITERAL:%s | ", yytext) ;return STRING_LITERAL;}
 
-[0-9]+                          {printf("DIGIT:%d | ", yytext); return DIGIT;}
+[0-9]+                          {printf("DIGIT:%s | ", yytext); return DIGIT;}
 [ \t]                           //ignore
  
 .                               {printf("UNK: %s | ", yytext); return *yytext;}
