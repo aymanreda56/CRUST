@@ -3,6 +3,9 @@
     #include <stdio.h>
     void yyerror(char* );
     int yylex();
+    void yyerror();
+    extern FILE *yyin;
+    extern FILE *yyout;
 %}
 
 
@@ -167,3 +170,17 @@ void yyerror(char* s)
 {
     fprintf(stderr, "%s\n", s);
 };
+int yywrap()
+{
+    return 1;
+}
+int main(int argc, char *argv[])
+{ 
+    yyin = fopen(argv[1], "r");
+    yyparse();
+    if(yywrap())
+    {
+        printf("AYMMOOOOOON");
+    }
+    return 0;
+}

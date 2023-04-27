@@ -1,6 +1,5 @@
 %{
     #include "parser.tab.h"
-    void yyerror();
 %}
 
 %%
@@ -46,13 +45,3 @@
 .                               {printf("UNK: %s | ", yytext);          return *yytext;}
 %%
 
-int yywrap()
-{
-    return 1;
-}
-
-int main()
-{   
-    yyparse();
-    return 0;
-}
