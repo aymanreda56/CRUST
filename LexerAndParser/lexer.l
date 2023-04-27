@@ -1,5 +1,5 @@
 %{
-    #include "aym2.tab.h"
+    #include "parser.tab.h"
     void yyerror();
 %}
 
