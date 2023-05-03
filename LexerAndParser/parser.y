@@ -29,7 +29,6 @@
     //-- symbol table functions:  st_functionName()
     void st_insert(char* data_type, char* name, int is_const);
     void st_print();
-
     // BOOL st_isExist();
 
 
@@ -213,8 +212,9 @@ int yywrap()
 void st_insert(char* data_type, char* name, int is_const){
     //create new entry
     struct Entry newEntry ;
-    newEntry.name = "test";
+    newEntry.name = name;
     newEntry.dataType = data_type;
+
     symbolTable[st_index] = newEntry;
     st_index++;
     // print with new line
@@ -225,19 +225,20 @@ void st_insert(char* data_type, char* name, int is_const){
 }
 void st_print() {
     // write symbol table to file
-    FILE *fp = fopen("/symbol_table.txt", "w");
+    FILE *fp = fopen("symbol_table.txt", "w");
     if(fp == NULL) {
         printf("can't open symbol_table.txt file!\n");
         exit(1);
     }
     // fprintf(fp, "\nName\tData Type\tScope\tType\tLine\n");
-    fprintf(fp, "\nData Type\n");
+    fprintf(fp, "\nName\tData Type\n");
 
     for(int i=0; i<st_index; i++) {
         struct Entry *entry = &symbolTable[i];
-        fprintf(fp, "%s\n", entry->dataType);
+        fprintf(fp, "%s\t%s\n", entry->name, entry->dataType);
         // fprintf(fp, "%4s\t%9s\t%5d\t%4c\t%4d\t%3d\t%10d\n", entry->name, entry->dataType, entry->token_scope, entry->type, entry->declareLine); 
     }
+    fclose(fp);
 }
 
 int main(int argc, char *argv[])
