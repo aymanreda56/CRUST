@@ -220,13 +220,13 @@ void st_print() {
         printf("can't open symbol_table.txt file!\n");
         exit(1);
     }
-    // fprintf(fp, "\nName\tData Type\tScope\tType\tLine\tConst\tInitialized \n");
+    // fprintf(fp, "\nName\tData Type\tScope\tType\tLine\n");
     fprintf(fp, "\nData Type\n");
 
     for(int i=0; i<st_index; i++) {
         struct Entry *entry = &symbolTable[i];
         fprintf(fp, "%s\n", entry->dataType);
-        // fprintf(fp, "%4s\t%9s\t%5d\t%4c\t%4d\t%3d\t%10d\n", entry->name, entry->dataType, entry->token_scope, entry->type, entry->line_no,entry->is_const, entry->is_initizalized); 
+        // fprintf(fp, "%4s\t%9s\t%5d\t%4c\t%4d\t%3d\t%10d\n", entry->name, entry->dataType, entry->token_scope, entry->type, entry->declareLine); 
     }
 }
 
