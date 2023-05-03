@@ -210,7 +210,7 @@ void st_insert(char* data_type, char* name, int is_const){
     // print with new line
 
     printf(data_type);
-    print(name)
+    print(name);
    
 }
 void st_print() {
