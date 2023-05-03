@@ -32,7 +32,6 @@
 
     // BOOL st_isExist();
 
-};
 
 %}
 
@@ -63,7 +62,7 @@
 
 %%
 PROGRAM:                                                    
-                PROGRAM STATEMENT                      
+                PROGRAM STATEMENT                           {printf("\n ----> Parsing Succesful :D <---- \n");}        
                 |
                 ;
 
@@ -78,6 +77,7 @@ STATEMENT:
                 | DO_WHILE_STT                              {printf("#[Parsed_DO_WHILE_LOOP]# ");}
                 | SWITCH_STT                                {printf("#[Parsed_SWITCH_STT]# ");}
                 | ENUM_DECLARATION_STT                      {printf("#[Parsed_Enum_Declaration]# ");}
+                | BLOCK
                 ;
 
 /*
@@ -110,11 +110,12 @@ CASES:
                 ;
 
 FUNC_CALL:
-                IDENTIFIER '(' USED_ARGS ')'
+                IDENTIFIER '(' USED_ARGS ')'            {printf("#[Parsed_Func_Call]# ");}
                 ;
 USED_ARGS:
                 EXPRESSION ',' USED_ARGS
                 | EXPRESSION
+                |
                 ;
 
 FUNC_DECLARATION_STT:
@@ -183,7 +184,7 @@ EXPRESSION:
                 | EXPRESSION DIV EXPRESSION
                 | EXPRESSION POW EXPRESSION
                 | COMPARISONSTT
-                | FUNC_CALL                                 {printf("#[Parsed_Func_Call]# ");}
+                | FUNC_CALL                                 
                 | '(' EXPRESSION ')'
                 ;
 
@@ -219,7 +220,7 @@ void st_insert(char* data_type, char* name, int is_const){
     // print with new line
 
     printf(data_type);
-    print(name);
+    printf(name);
    
 }
 void st_print() {
