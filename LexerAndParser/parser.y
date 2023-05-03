@@ -63,7 +63,6 @@ STATEMENT:
                 | FUNC_DECLARATION_STT                      {printf("#[Parsed_Func_Declaration]# ");}
                 | assignmentSTT
                 | EXPRESSION SEMICOLON
-                | FUNC_CALL                                 {printf("#[Parsed_Func_Call]# ");}
                 | IF_STT                                    {printf("#[Parsed_If_STT]# ");}
                 | WHILE_STT                                 {printf("#[Parsed_While_LOOP]# ");}
                 | FOR_STT                                   {printf("#[Parsed_For_LOOP]# ");}
@@ -102,7 +101,7 @@ CASES:
                 ;
 
 FUNC_CALL:
-                IDENTIFIER '(' USED_ARGS ')' SEMICOLON
+                IDENTIFIER '(' USED_ARGS ')'
                 ;
 USED_ARGS:
                 EXPRESSION ',' USED_ARGS
@@ -175,6 +174,7 @@ EXPRESSION:
                 | EXPRESSION DIV EXPRESSION
                 | EXPRESSION POW EXPRESSION
                 | COMPARISONSTT
+                | FUNC_CALL                                 {printf("#[Parsed_Func_Call]# ");}
                 | '(' EXPRESSION ')'
                 ;
 

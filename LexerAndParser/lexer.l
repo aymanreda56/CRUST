@@ -3,6 +3,7 @@
 %}
 
 %%
+#[\s\t]*.*[\s\t]*#                  {}//discard comments
 "int"                           {printf("INT:%s | ", yytext);           return INT;}
 "float"                         {printf("FLOAT:%s | ", yytext);         return FLOAT;}
 "double"                        {printf("FLOAT:%s | ", yytext);         return FLOAT;}
@@ -35,11 +36,11 @@
 "/"                             {printf("DIV:%s | ", yytext);           return DIV;}
 "^"                             {printf("POW: %s | ", yytext);          return POW;}
 [)}{(:]                         {printf("special_TOKEN:%s | ", yytext); return *yytext;}
-[A-Z]+                          {printf("CONSTANT:%s | ", yytext);      return CONSTANT;}
-[a-zA-Z_][a-zA-Z0-9_]*          {printf("IDENTIFIER:%s | ", yytext);    return IDENTIFIER;}
-\"[a-zA-Z0-9_]+\"               {printf("STRING_LITERAL:%s | ", yytext);return STRING_LITERAL;}
+[A-Z]+                          {printf("CONSTANT:%s | ", yytext);   yylval.str = strdup(yytext);   return CONSTANT;}
+[a-zA-Z_][a-zA-Z0-9_]*          {printf("IDENTIFIER:%s | ", yytext);   yylval.str = strdup(yytext); return IDENTIFIER;}
+\"[a-zA-Z0-9_]+\"               {printf("STRING_LITERAL:%s | ", yytext); yylval.str = strdup(yytext); return STRING_LITERAL;}
 
-[0-9]+                          {printf("DIGIT:%s | ", yytext);         return DIGIT;}
+[0-9]+                          {printf("DIGIT:%s | ", yytext);    yylval.str = strdup(yytext);     return DIGIT;}
 [ \t]                           //ignore
  
 .                               {printf("UNK: %s | ", yytext);          return *yytext;}
