@@ -1,11 +1,37 @@
 %{
     #include <stdlib.h>
     #include <stdio.h>
+    #include <string.h>
+    // #include "../SymbolTable/SymbolTableEntry.h"
+    #include "parser.tab.h"
     void yyerror(char* );
     int yylex();
     void yyerror();
     extern FILE *yyin;
     extern FILE *yyout;
+
+    // extern enum yytokentype ;
+    //---------------------- data types -----------------
+    // typedef enum {int, float , bool,} Type;
+    //--------------------- Symbol Table -----------------
+    struct Entry {
+        char* name , value;
+        char* scope;
+        // struct Type dataType;
+        char* type; // var, func, class
+        char* dataType; // int, float, bool, string
+        int delcareLine;
+    };
+    //SymbolTableEntry* symbolTable = new SymbolTableEntry()
+    // const int maxSize=500;
+    struct Entry symbolTable[500];
+    int st_index=0;
+    //-- symbol table functions:  st_functionName()
+    void st_insert(char* data_type, char* name, int is_const);
+    void st_print();
+
+    // BOOL st_isExist();
+
 %}
 
 
@@ -51,15 +77,15 @@ STATEMENT:
 */
 
 TYPE:
-                INT
-                | FLOAT
-                | BOOL
-                | STRING
+                INT { $$ = "int"; }
+                | FLOAT { $$ = "float"; }
+                | BOOL  { $$ = "bool"; }
+                | STRING { $$ = "string"; }
                 ;
 
 DECLARATION_STT:                                                            
-                TYPE IDENTIFIER DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_Declaration]# ");}
-                | TYPE CONSTANT DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_CONST_Declaration]# ");}
+                TYPE IDENTIFIER DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_Declaration]# "); st_insert($1, $2,0);}
+                | TYPE CONSTANT DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_CONST_Declaration]# "); st_insert($1, $2,1); }
                 ;
 
 DECLARATION_TAIL:
@@ -174,13 +200,40 @@ int yywrap()
 {
     return 1;
 }
+void st_insert(char* data_type, char* name, int is_const){
+    //create new entry
+    struct Entry newEntry ;
+    newEntry.name = "test";
+    newEntry.dataType = data_type;
+    symbolTable[st_index] = newEntry;
+    st_index++;
+    // print with new line
+
+    printf(data_type);
+    print(name)
+   
+}
+void st_print() {
+    // write symbol table to file
+    FILE *fp = fopen("/symbol_table.txt", "w");
+    if(fp == NULL) {
+        printf("can't open symbol_table.txt file!\n");
+        exit(1);
+    }
+    // fprintf(fp, "\nName\tData Type\tScope\tType\tLine\tConst\tInitialized \n");
+    fprintf(fp, "\nData Type\n");
+
+    for(int i=0; i<st_index; i++) {
+        struct Entry *entry = &symbolTable[i];
+        fprintf(fp, "%s\n", entry->dataType);
+        // fprintf(fp, "%4s\t%9s\t%5d\t%4c\t%4d\t%3d\t%10d\n", entry->name, entry->dataType, entry->token_scope, entry->type, entry->line_no,entry->is_const, entry->is_initizalized); 
+    }
+}
+
 int main(int argc, char *argv[])
 { 
     yyin = fopen(argv[1], "r");
     yyparse();
-    if(yywrap())
-    {
-        printf("AYMMOOOOOON");
-    }
+    st_print();
     return 0;
 }
