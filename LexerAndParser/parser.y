@@ -32,8 +32,14 @@
 
     // BOOL st_isExist();
 
+};
+
 %}
 
+%union { 
+ int num; /* integer value */ 
+ char* str; /* symbol table index */ 
+}
 
 %token INT FLOAT BOOL STRING IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM
 %token EQUALITY NEG_EQUALITY
@@ -51,6 +57,9 @@
 %right EQ
 %right GT
 %right LT
+
+
+%type <str> INT FLOAT BOOL STRING CONSTANT IDENTIFIER TYPE
 
 %%
 PROGRAM:                                                    
