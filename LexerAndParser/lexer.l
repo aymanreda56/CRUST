@@ -1,5 +1,6 @@
 %{
     #include "parser.tab.h"
+    int line_number = 1;
 %}
 
 %%
@@ -44,5 +45,7 @@
 [ \t]                           //ignore
  
 .                               {printf("UNK: %s | ", yytext);          return *yytext;}
+\n line_number++;
+
 %%
 

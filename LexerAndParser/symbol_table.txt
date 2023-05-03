@@ -1,4 +1,4 @@
 
-Data Type
-int
-float
+Name	Data Type
+y	int	1
+x	float	2

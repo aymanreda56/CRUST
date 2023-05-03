@@ -9,6 +9,7 @@
     void yyerror();
     extern FILE *yyin;
     extern FILE *yyout;
+    extern int line_number;
 
     // extern enum yytokentype ;
     //---------------------- data types -----------------
@@ -20,7 +21,7 @@
         // struct Type dataType;
         char* type; // var, func, class
         char* dataType; // int, float, bool, string
-        int delcareLine;
+        int declareLine;
     };
     //SymbolTableEntry* symbolTable = new SymbolTableEntry()
     // const int maxSize=500;
@@ -214,6 +215,7 @@ void st_insert(char* data_type, char* name, int is_const){
     struct Entry newEntry ;
     newEntry.name = name;
     newEntry.dataType = data_type;
+    newEntry.declareLine = line_number;
 
     symbolTable[st_index] = newEntry;
     st_index++;
@@ -232,10 +234,11 @@ void st_print() {
     }
     // fprintf(fp, "\nName\tData Type\tScope\tType\tLine\n");
     fprintf(fp, "\nName\tData Type\n");
+    
 
     for(int i=0; i<st_index; i++) {
         struct Entry *entry = &symbolTable[i];
-        fprintf(fp, "%s\t%s\n", entry->name, entry->dataType);
+        fprintf(fp, "%s\t%s\t%d\n", entry->name, entry->dataType, entry->declareLine);
         // fprintf(fp, "%4s\t%9s\t%5d\t%4c\t%4d\t%3d\t%10d\n", entry->name, entry->dataType, entry->token_scope, entry->type, entry->declareLine); 
     }
     fclose(fp);
