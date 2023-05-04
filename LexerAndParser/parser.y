@@ -2,6 +2,8 @@
     #include <stdlib.h>
     #include <stdio.h>
     #include <string.h>
+    // include bool type
+    #include <stdbool.h>
     // #include "../SymbolTable/SymbolTableEntry.h"
     #include "parser.tab.h"
     void yyerror(char* );
@@ -16,9 +18,11 @@
     // typedef enum {int, float , bool,} Type;
     //--------------------- Symbol Table -----------------
     struct Entry {
-        int id;
+        int id,intValue,scope;
         char* name , value;
-        int scope;
+        float floatValue;
+        bool boolValue;
+        char* strValue; 
         // struct Type dataType;
         char* type; // var,const, func
         char* dataType; // int, float, bool, string (for func: return type)
@@ -26,10 +30,7 @@
         int argList[100];
         int argCount;
         int declareLine;
-        int isConst;
-        int isUsed;
-        int isInit;
-        int isArg;
+        int isConst, isArg, isUsed, isInit;
     };
     struct Entry symbolTable[500];
     int st_index=0;
@@ -51,6 +52,12 @@
  int num; /* integer value */ 
  char* str; /* symbol table index */ 
  float float_val;
+ bool bool_val;
+}
+
+%code requires
+{
+#include<stdbool.h>
 }
 
 %token INT FLOAT BOOL STRING IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM
@@ -71,8 +78,10 @@
 %right LT
 
 
-%type <str> INT FLOAT BOOL STRING CONSTANT IDENTIFIER TYPE
+%type <str> INT FLOAT BOOL STRING CONSTANT IDENTIFIER TYPE STRING_LITERAL
 %type <float_val> FLOAT_DIGIT
+%type <num> DIGIT
+%type <bool_val> BOOL_LITERAL
 %%
 PROGRAM:                                                    
                 PROGRAM STATEMENT                           {printf("\n ----> Parsing Succesful :D <---- \n");}        
@@ -105,8 +114,8 @@ TYPE:
                 ;
 
 DECLARATION_STT:                                                            
-                TYPE IDENTIFIER DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_Declaration]# "); st_insert($1, $2,"var",0);}
-                | TYPE CONSTANT DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_CONST_Declaration]# "); st_insert($1, $2,"const",0); }
+                TYPE IDENTIFIER {st_insert($1, $2,"var",0); printf("\n=>>>>> inserted");}   DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_Declaration]# ");}
+                | TYPE CONSTANT {st_insert($1, $2,"const",0);} DECLARATION_TAIL SEMICOLON   {printf("#[Parsed_CONST_Declaration]# "); }
                 ;
 
 DECLARATION_TAIL:
@@ -185,10 +194,10 @@ BLOCK:
 
 EXPRESSION:
                 IDENTIFIER
-                | DIGIT 
-                | FLOAT_DIGIT
-                | BOOL_LITERAL
-                | STRING_LITERAL
+                | DIGIT {  symbolTable[st_index-1].intValue= $1 ;}
+                | FLOAT_DIGIT { symbolTable[st_index-1].floatValue= $1 ;}
+                | BOOL_LITERAL  { symbolTable[st_index-1].boolValue= $1 ;}
+                | STRING_LITERAL  { symbolTable[st_index-1].strValue= $1 ;}
                 | CONSTANT
                 | EXPRESSION PLUS PLUS
                 | EXPRESSION SUB SUB
@@ -232,7 +241,7 @@ int is_exist(char* name){
     }
     return 0;
 }
-//------------------------------- INSERT IN SYMBOL TABLE  --------------------------------I
+//-------------------------------------- INSERT IN SYMBOL TABLE  ----------------------------------I
 void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     //------ create new entry
     struct Entry newEntry ;
@@ -254,9 +263,11 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     //------ if it's a function, set argCount and argList
     if ( strcmp(type, "func") == 0){
         int j =0;
-         printf("=======================================FUNC \n");
+        printf("=======================================FUNC \n");
         printf("block number: %d\n", block_number);
         printf("name: %s\n", name);
+        // print bool value
+        
         for(int i=0; i<st_index; i++) {
             if ( symbolTable[i].isArg  && symbolTable[i].scope == (block_number +1)){
                 newEntry.argList[j] = symbolTable[i].id;
@@ -279,12 +290,18 @@ void st_print() {
         exit(1);
     }
     //----- write symbol table header
-    fprintf(fp, "ID\t|Name\t|Type\t|DataType\t|Line\t|Scope\t|Args\n");
+    fprintf(fp, "ID\t|Name\t|Type\t|DataType\t|Line\t|Scope\t|Value\t\t|Args\n");
     fprintf(fp, "----------------------------------------------------------\n");
     //----- write symbol table entries
     for(int i=0; i< st_index; i++) {
         struct Entry *entry = &symbolTable[i];
         fprintf(fp, "%d\t|%s\t|%s\t|%s\t\t|%d\t|%d\t|", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope);
+        //---- store value of entry
+        if (strcmp(entry->dataType,"int")==0) {fprintf(fp, "%d\t\t|", entry->intValue);}
+        else if (strcmp(entry->dataType,"float")==0) {fprintf(fp, "%s\t\t|", entry->floatValue);}
+        else if (strcmp(entry->dataType,"bool")==0) {fprintf(fp, "%d\t\t|", entry->boolValue);}
+        else if (strcmp(entry->dataType,"string")==0) {fprintf(fp, "%s\t\t|", entry->strValue);}
+        else {fprintf(fp, "-");}
         //---- print arguments of functions
         if (strcmp(entry->type, "func") == 0)
         {
