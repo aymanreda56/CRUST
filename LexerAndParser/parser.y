@@ -50,7 +50,7 @@
 
 %union { 
  int num; /* integer value */ 
- char* str; /* symbol table index */ 
+ char* str; 
  float float_val;
  bool bool_val;
 }
@@ -194,7 +194,7 @@ BLOCK:
 
 EXPRESSION:
                 IDENTIFIER
-                | DIGIT {  symbolTable[st_index-1].intValue= $1 ;}
+                | DIGIT {  printf("===============>>>%d\n",$1  ); symbolTable[st_index-1].intValue= $1 ;}
                 | FLOAT_DIGIT { symbolTable[st_index-1].floatValue= $1 ;}
                 | BOOL_LITERAL  { symbolTable[st_index-1].boolValue= $1 ;}
                 | STRING_LITERAL  { symbolTable[st_index-1].strValue= $1 ;}
@@ -262,12 +262,7 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     else {newEntry.scope = scope_stack[scope_index];}
     //------ if it's a function, set argCount and argList
     if ( strcmp(type, "func") == 0){
-        int j =0;
-        printf("=======================================FUNC \n");
-        printf("block number: %d\n", block_number);
-        printf("name: %s\n", name);
-        // print bool value
-        
+        int j =0;        
         for(int i=0; i<st_index; i++) {
             if ( symbolTable[i].isArg  && symbolTable[i].scope == (block_number +1)){
                 newEntry.argList[j] = symbolTable[i].id;
@@ -298,8 +293,8 @@ void st_print() {
         fprintf(fp, "%d\t|%s\t|%s\t|%s\t\t|%d\t|%d\t|", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope);
         //---- store value of entry
         if (strcmp(entry->dataType,"int")==0) {fprintf(fp, "%d\t\t|", entry->intValue);}
-        else if (strcmp(entry->dataType,"float")==0) {fprintf(fp, "%s\t\t|", entry->floatValue);}
-        else if (strcmp(entry->dataType,"bool")==0) {fprintf(fp, "%d\t\t|", entry->boolValue);}
+        else if (strcmp(entry->dataType,"float")==0) {fp, fprintf(fp, "%f\t\t|", entry->floatValue);}
+        else if (strcmp(entry->dataType,"bool")==0) {fprintf(fp,"%s\t\t|", entry->boolValue ? "true" : "false");}
         else if (strcmp(entry->dataType,"string")==0) {fprintf(fp, "%s\t\t|", entry->strValue);}
         else {fprintf(fp, "-");}
         //---- print arguments of functions

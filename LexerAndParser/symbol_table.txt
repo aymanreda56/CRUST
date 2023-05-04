@@ -1,0 +1,6 @@
+ID	|Name	|Type	|DataType	|Line	|Scope	|Value		|Args
+----------------------------------------------------------
+0	|x	|var	|int		|1	|0	|9		|-
+1	|y	|var	|float		|2	|0	|3.300000		|-
+2	|h	|var	|string		|3	|0	|"FF"		|-
+3	|j	|var	|bool		|4	|0	|false		|-
