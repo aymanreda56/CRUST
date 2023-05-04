@@ -248,9 +248,9 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     newEntry.id = st_index;
     newEntry.isArg = is_arg;
     //----- set scope (if it's an argument, scope is the next scope)
-    // if (is_arg == 1){ newEntry.scope = scope_index + 1;}
-    // else {newEntry.scope = scope_stack[scope_index];}
-    newEntry.scope = scope_stack[scope_index];
+    if (is_arg == 1){ newEntry.scope = block_number+1;}
+    else {newEntry.scope = scope_stack[scope_index];}
+    // newEntry.scope = scope_stack[scope_index];
     //------ if it's a function, set argCount and argList
     if ( strcmp(type, "func") == 0){
         int j =0;
