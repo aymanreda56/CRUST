@@ -28,8 +28,6 @@
         int isUsed;
         int isInit;
     };
-    //SymbolTableEntry* symbolTable = new SymbolTableEntry()
-    // const int maxSize=500;
     struct Entry symbolTable[500];
     int st_index=0;
     //-- symbol table functions:  st_functionName()
@@ -42,8 +40,6 @@
     int scope_stack[500]; // stack of scopes (for nested scopes to store block number)
     void scope_start();
     void scope_end();
-    //--- handle errors
-
 
 %}
 
@@ -221,6 +217,7 @@ int yywrap()
 {
     return 1;
 }
+//------------------------------------------ SYMBOL TABLE---------------------------------------------
 int is_exist(char* name){
     for (int i = 0; i < st_index; i++){
         if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].scope == scope_index){
@@ -234,7 +231,7 @@ void st_insert(char* data_type, char* name, char* type, int is_const,int is_arg 
     struct Entry newEntry ;
     // check if name is already in symbol table
     if (is_exist(name) == 1){
-        printf("Error: %s is already declared in this scope\n", name);
+        printf("\n !!!!!!!!!!!! Error: %s is already declared in this scope !!!!!!!!!!!\n", name);
         exit(1);
     }
     // set new entry values
@@ -260,31 +257,27 @@ void st_print() {
         printf("can't open symbol_table.txt file!\n");
         exit(1);
     }
-    // fprintf(fp, "\nName\tData Type\tScope\tType\tLine\n");
     fprintf(fp, "\nName\tDataType\tLine\tScope\n");
-    
-
     for(int i=0; i<st_index; i++) {
         struct Entry *entry = &symbolTable[i];
         fprintf(fp, "%s\t%s\t\t%d\t%d\n", entry->name, entry->dataType, entry->declareLine, entry->scope);
-        // fprintf(fp, "%4s\t%9s\t%5d\t%4c\t%4d\t%3d\t%10d\n", entry->name, entry->dataType, entry->token_scope, entry->type, entry->declareLine); 
     }
     fclose(fp);
 }
+//---------------------------------------- HANDLE SCOPE -------------------------------
 void scope_start(){
-
+    //  TODO: store name of scope instead of number
     scope_stack[scope_index] = block_number;
     scope_index++;
     block_number++;
     // printf("\n scope start \n");
 }
 void scope_end(){
-    
-    scope_stack[scope_index] = -1; // end of scope
+    // scope_stack[scope_index] = -1; // end of scope
     scope_index--;
-    block_number--;
+    // block_number--;
 }
-
+//------------------------------------------- MAIN -------------------------------
 int main(int argc, char *argv[])
 { 
     yyin = fopen(argv[1], "r");
