@@ -17,20 +17,32 @@
     //--------------------- Symbol Table -----------------
     struct Entry {
         char* name , value;
-        char* scope;
+        int scope;
         // struct Type dataType;
-        char* type; // var, func, class
-        char* dataType; // int, float, bool, string
+        char* type; // var, func
+        char* dataType; // int, float, bool, string (for func: return type)
+        // list of arguments
+        char* argList[100];
         int declareLine;
+        int isConst;
+        int isUsed;
+        int isInit;
     };
     //SymbolTableEntry* symbolTable = new SymbolTableEntry()
     // const int maxSize=500;
     struct Entry symbolTable[500];
     int st_index=0;
     //-- symbol table functions:  st_functionName()
-    void st_insert(char* data_type, char* name, int is_const);
+    void st_insert(char* data_type, char* name, char* type, int is_const ,int is_arg);
     void st_print();
-    // BOOL st_isExist();
+    int is_exist(char* name);
+    //--- handle scope
+    int scope_index=0;
+    int block_number=0;
+    int scope_stack[500]; // stack of scopes (for nested scopes to store block number)
+    void scope_start();
+    void scope_end();
+    //--- handle errors
 
 
 %}
@@ -59,7 +71,6 @@
 
 
 %type <str> INT FLOAT BOOL STRING CONSTANT IDENTIFIER TYPE
-
 %%
 PROGRAM:                                                    
                 PROGRAM STATEMENT                           {printf("\n ----> Parsing Succesful :D <---- \n");}        
@@ -92,8 +103,8 @@ TYPE:
                 ;
 
 DECLARATION_STT:                                                            
-                TYPE IDENTIFIER DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_Declaration]# "); st_insert($1, $2,0);}
-                | TYPE CONSTANT DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_CONST_Declaration]# "); st_insert($1, $2,1); }
+                TYPE IDENTIFIER DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_Declaration]# "); st_insert($1, $2,'var',0,0);}
+                | TYPE CONSTANT DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_CONST_Declaration]# "); st_insert($1, $2,'var',1,0); }
                 ;
 
 DECLARATION_TAIL:
@@ -119,7 +130,7 @@ USED_ARGS:
                 ;
 
 FUNC_DECLARATION_STT:
-                TYPE IDENTIFIER '(' ARGS ')' BLOCK
+                TYPE IDENTIFIER '(' ARGS ')' BLOCK {st_insert($1, $2,'func',0,0);}
                 ;
 
 ARGS:
@@ -129,7 +140,7 @@ ARGS:
                 ;
 
 ARG_DECL:
-                TYPE IDENTIFIER
+                TYPE IDENTIFIER {st_insert($1, $2,'var',0,1);}
                 ;
 
 ENUM_DECLARATION_STT:
@@ -167,12 +178,12 @@ assignmentSTT:
                 ;
 
 BLOCK:
-                '{' PROGRAM '}'                            {printf("#[Parsed_Block]# ");}
+                '{' {scope_start();} PROGRAM '}' {scope_end();}                     {printf("#[Parsed_Block]# ");}
                 ;
 
 EXPRESSION:
                 IDENTIFIER
-                | DIGIT
+                | DIGIT 
                 | BOOL_LITERAL
                 | STRING_LITERAL
                 | CONSTANT
@@ -210,19 +221,36 @@ int yywrap()
 {
     return 1;
 }
-void st_insert(char* data_type, char* name, int is_const){
+int is_exist(char* name){
+    for (int i = 0; i < st_index; i++){
+        if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].scope == scope_index){
+            return 1;
+        }
+    }
+    return 0;
+}
+void st_insert(char* data_type, char* name, char* type, int is_const,int is_arg ){
     //create new entry
     struct Entry newEntry ;
+    // check if name is already in symbol table
+    if (is_exist(name) == 1){
+        printf("Error: %s is already declared in this scope\n", name);
+        exit(1);
+    }
+    // set new entry values
     newEntry.name = name;
     newEntry.dataType = data_type;
     newEntry.declareLine = line_number;
-
+    newEntry.type = type;
+    newEntry.isConst = is_const;
+    // set scope (if it's an argument, scope is the next scope)
+    if (is_arg == 1){
+        newEntry.scope = scope_index + 1;
+    }
+    else {newEntry.scope = scope_index;}
+    // insert new entry to symbol table
     symbolTable[st_index] = newEntry;
-    st_index++;
-    // print with new line
-
-    printf(data_type);
-    printf(name);
+    st_index++; // increment symbol table index
    
 }
 void st_print() {
@@ -233,15 +261,28 @@ void st_print() {
         exit(1);
     }
     // fprintf(fp, "\nName\tData Type\tScope\tType\tLine\n");
-    fprintf(fp, "\nName\tData Type\n");
+    fprintf(fp, "\nName\tDataType\tLine\tScope\n");
     
 
     for(int i=0; i<st_index; i++) {
         struct Entry *entry = &symbolTable[i];
-        fprintf(fp, "%s\t%s\t%d\n", entry->name, entry->dataType, entry->declareLine);
+        fprintf(fp, "%s\t%s\t\t%d\t%d\n", entry->name, entry->dataType, entry->declareLine, entry->scope);
         // fprintf(fp, "%4s\t%9s\t%5d\t%4c\t%4d\t%3d\t%10d\n", entry->name, entry->dataType, entry->token_scope, entry->type, entry->declareLine); 
     }
     fclose(fp);
+}
+void scope_start(){
+
+    scope_stack[scope_index] = block_number;
+    scope_index++;
+    block_number++;
+    // printf("\n scope start \n");
+}
+void scope_end(){
+    
+    scope_stack[scope_index] = -1; // end of scope
+    scope_index--;
+    block_number--;
 }
 
 int main(int argc, char *argv[])

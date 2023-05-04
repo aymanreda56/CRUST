@@ -1,2 +1,11 @@
-int y ; 
-float x;
+int y =8; 
+int y;
+bool x;
+int func (int c, int u ){
+string mm;
+int z =6;
+if y > 6 :
+{
+bool mo ;
+}
+}
