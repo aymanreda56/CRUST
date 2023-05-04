@@ -19,7 +19,7 @@
         char* name , value;
         int scope;
         // struct Type dataType;
-        char* type; // var, func
+        char* type; // var,const, func
         char* dataType; // int, float, bool, string (for func: return type)
         // list of arguments
         char* argList[100];
@@ -31,7 +31,7 @@
     struct Entry symbolTable[500];
     int st_index=0;
     //-- symbol table functions:  st_functionName()
-    void st_insert(char* data_type, char* name, char* type, int is_const ,int is_arg);
+    void st_insert(char* data_type, char* name, char* type, int is_arg);
     void st_print();
     int is_exist(char* name);
     //--- handle scope
@@ -99,8 +99,8 @@ TYPE:
                 ;
 
 DECLARATION_STT:                                                            
-                TYPE IDENTIFIER DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_Declaration]# "); st_insert($1, $2,'var',0,0);}
-                | TYPE CONSTANT DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_CONST_Declaration]# "); st_insert($1, $2,'var',1,0); }
+                TYPE IDENTIFIER DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_Declaration]# "); st_insert($1, $2,"var",0);}
+                | TYPE CONSTANT DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_CONST_Declaration]# "); st_insert($1, $2,"const",0); }
                 ;
 
 DECLARATION_TAIL:
@@ -126,7 +126,7 @@ USED_ARGS:
                 ;
 
 FUNC_DECLARATION_STT:
-                TYPE IDENTIFIER '(' ARGS ')' BLOCK {st_insert($1, $2,'func',0,0);}
+                TYPE IDENTIFIER '(' ARGS ')' BLOCK {st_insert($1, $2,"func",0);}
                 ;
 
 ARGS:
@@ -136,7 +136,7 @@ ARGS:
                 ;
 
 ARG_DECL:
-                TYPE IDENTIFIER {st_insert($1, $2,'var',0,1);}
+                TYPE IDENTIFIER {st_insert($1, $2,"var",1);}
                 ;
 
 ENUM_DECLARATION_STT:
@@ -226,7 +226,7 @@ int is_exist(char* name){
     }
     return 0;
 }
-void st_insert(char* data_type, char* name, char* type, int is_const,int is_arg ){
+void st_insert(char* data_type, char* name, char* type ,int is_arg ){
     //create new entry
     struct Entry newEntry ;
     // check if name is already in symbol table
@@ -239,7 +239,6 @@ void st_insert(char* data_type, char* name, char* type, int is_const,int is_arg 
     newEntry.dataType = data_type;
     newEntry.declareLine = line_number;
     newEntry.type = type;
-    newEntry.isConst = is_const;
     // set scope (if it's an argument, scope is the next scope)
     if (is_arg == 1){
         newEntry.scope = scope_index + 1;
@@ -257,10 +256,11 @@ void st_print() {
         printf("can't open symbol_table.txt file!\n");
         exit(1);
     }
-    fprintf(fp, "\nName\tDataType\tLine\tScope\n");
+    fprintf(fp, "\nName\t|Type\t|DataType\t|Line\t|Scope\n");
+    fprintf(fp, "-----------------------------------------------\n");
     for(int i=0; i<st_index; i++) {
         struct Entry *entry = &symbolTable[i];
-        fprintf(fp, "%s\t%s\t\t%d\t%d\n", entry->name, entry->dataType, entry->declareLine, entry->scope);
+        fprintf(fp, "%s\t|%s\t|%s\t\t|%d\t|%d\n", entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope);
     }
     fclose(fp);
 }
