@@ -301,8 +301,8 @@ void scope_start(){
     //  TODO: store name of scope instead of number
     block_number++;
     scope_index++;
-    int  scope_index_temp= block_number;
-    scope_stack[scope_index_temp] = block_number;
+    // int  scope_index_temp= block_number;
+    scope_stack[scope_index] = block_number;
     // printf("\n scope start \n");
 }
 void scope_end(){
