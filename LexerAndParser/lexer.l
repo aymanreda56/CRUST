@@ -18,8 +18,8 @@
 "for"                           {printf("FOR:%s | ", yytext);           return FOR;}
 "while"                         {printf("WHILE:%s | ", yytext);         return WHILE;}
 "do"                            {printf("DO:%s | ", yytext);            return DO;}
-"true"                          {printf("BOOL_LITERAL:%s | ", yytext);  return BOOL_LITERAL;}
-"false"                         {printf("BOOL_LITERAL:%s | ", yytext);  return BOOL_LITERAL;}     
+"true"                          {printf("BOOL_LITERAL:%s | ", yytext);   yylval.bool_val = true; return BOOL_LITERAL;}
+"false"                         {printf("BOOL_LITERAL:%s | ", yytext);   yylval.bool_val = false; return BOOL_LITERAL;}     
 "and"                           {printf("LOGIC_AND:%s | ", yytext);     return LOGIC_AND;}
 "or"                            {printf("LOGIC_OR:%s | ", yytext);      return LOGIC_OR;}
 "!"                             {printf("LOGIC_NOT:%s | ", yytext);     return LOGIC_NOT;}
@@ -41,7 +41,7 @@
 [a-zA-Z_][a-zA-Z0-9_]*          {printf("IDENTIFIER:%s | ", yytext);   yylval.str = strdup(yytext); return IDENTIFIER;}
 \"[a-zA-Z0-9_]+\"               {printf("STRING_LITERAL:%s | ", yytext); yylval.str = strdup(yytext); return STRING_LITERAL;}
 
-[0-9]+                          {printf("DIGIT:%s | ", yytext);    yylval.str = strdup(yytext);     return DIGIT;}
+[0-9]+                          {printf("DIGIT:%s | ", yytext);    yylval.num = atoi(yytext);     return DIGIT;}
 [0-9]+\.[0-9]+                  {printf("FLOAT_DIGIT:%s | ", yytext);    yylval.float_val= atof(yytext);   return FLOAT_DIGIT;}
 
 [ \t]                           //ignore
