@@ -42,6 +42,8 @@
 \"[a-zA-Z0-9_]+\"               {printf("STRING_LITERAL:%s | ", yytext); yylval.str = strdup(yytext); return STRING_LITERAL;}
 
 [0-9]+                          {printf("DIGIT:%s | ", yytext);    yylval.str = strdup(yytext);     return DIGIT;}
+[0-9]+\.[0-9]+                  {printf("FLOAT_DIGIT:%s | ", yytext);    yylval.float_val= atof(yytext);   return FLOAT_DIGIT;}
+
 [ \t]                           //ignore
  
 .                               {printf("UNK: %s | ", yytext);          return *yytext;}

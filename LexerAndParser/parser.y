@@ -49,13 +49,14 @@
 %union { 
  int num; /* integer value */ 
  char* str; /* symbol table index */ 
+ float float_val;
 }
 
 %token INT FLOAT BOOL STRING IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM
 %token EQUALITY NEG_EQUALITY
 %token SWITCH CASE
 %token LOGIC_AND LOGIC_OR LOGIC_NOT
-%token DIGIT IDENTIFIER
+%token DIGIT IDENTIFIER FLOAT_DIGIT
 %left LOGIC_AND LOGIC_OR
 %left EQUALITY NEG_EQUALITY
 %right LOGIC_NOT
@@ -70,6 +71,7 @@
 
 
 %type <str> INT FLOAT BOOL STRING CONSTANT IDENTIFIER TYPE
+%type <float_val> FLOAT_DIGIT
 %%
 PROGRAM:                                                    
                 PROGRAM STATEMENT                           {printf("\n ----> Parsing Succesful :D <---- \n");}        
@@ -183,6 +185,7 @@ BLOCK:
 EXPRESSION:
                 IDENTIFIER
                 | DIGIT 
+                | FLOAT_DIGIT
                 | BOOL_LITERAL
                 | STRING_LITERAL
                 | CONSTANT
@@ -210,8 +213,7 @@ COMPARISONSTT:
                 | LOGIC_NOT EXPRESSION
                 ;
 %%
-
-
+//------------------------------------------ FUNCTIONS ---------------------------------------------
 void yyerror(char* s)
 {
     fprintf(stderr, "%s\n", s);
@@ -229,29 +231,29 @@ int is_exist(char* name){
     }
     return 0;
 }
+//------------------------------- INSERT IN SYMBOL TABLE  --------------------------------I
 void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
-    //create new entry
+    //------ create new entry
     struct Entry newEntry ;
-    // check if name is already in symbol table
+    //----- check if name is already in symbol table
     if (is_exist(name) == 1){
         printf("\n !!!!!!!!!!!! Error: %s is already declared in this scope !!!!!!!!!!!\n", name);
         exit(1);
     }
-    // set new entry values
+    //------ set new entry values
     newEntry.name = name;
     newEntry.dataType = data_type;
     newEntry.declareLine = line_number;
     newEntry.type = type;
     newEntry.id = st_index;
     newEntry.isArg = is_arg;
-    // set scope (if it's an argument, scope is the next scope)
-    if (is_arg == 1){
-        newEntry.scope = scope_index + 1;
-    }
-    else {newEntry.scope = scope_index;}
+    //----- set scope (if it's an argument, scope is the next scope)
+    // if (is_arg == 1){ newEntry.scope = scope_index + 1;}
+    // else {newEntry.scope = scope_stack[scope_index];}
+    newEntry.scope = scope_stack[scope_index];
+    //------ if it's a function, set argCount and argList
     if ( strcmp(type, "func") == 0){
-            int j =0;
-        // store arguments of this function
+        int j =0;
         for(int i=0; i<st_index; i++) {
             if ( symbolTable[i].isArg  &&symbolTable[i].scope == scope_index + 1){
                 newEntry.argList[j] = symbolTable[i].id;
@@ -259,18 +261,12 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
             }
             }
             newEntry.argCount = j;
-             // print all arguments of this function
-    printf("=>>>>>>>>>>>>>>>>>>>args: \n");
-    for (int i = 0; i < j; i++){
-        printf("%d ", newEntry.argList[i]);        
     }
-    }
-   
-    // insert new entry to symbol table
+    //------ insert new entry to symbol table
     symbolTable[st_index] = newEntry;
     st_index++; // increment symbol table index
-   
 }
+//---------------------------------- PRINT SYMBOL TABLE ----------------------------------------------------
 void st_print() {
     //----- write symbol table to file
     FILE *fp = fopen("symbol_table.txt", "w");
@@ -300,12 +296,13 @@ void st_print() {
     }
     fclose(fp);
 }
-//---------------------------------------- HANDLE SCOPE -------------------------------
+//------------------------------------------- HANDLE SCOPE -----------------------------------------
 void scope_start(){
     //  TODO: store name of scope instead of number
-    scope_stack[scope_index] = block_number;
-    scope_index++;
     block_number++;
+    scope_index++;
+    int  scope_index_temp= block_number;
+    scope_stack[scope_index_temp] = block_number;
     // printf("\n scope start \n");
 }
 void scope_end(){
