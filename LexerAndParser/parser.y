@@ -33,6 +33,7 @@
     };
     struct Entry symbolTable[500];
     int st_index=0;
+    int in_loop=0;
     //-- symbol table functions:  st_functionName()
     void st_insert(char* data_type, char* name, char* type, int is_arg);
     void st_print();
@@ -131,7 +132,7 @@ USED_ARGS:
                 ;
 
 FUNC_DECLARATION_STT:
-                TYPE IDENTIFIER '(' ARGS ')' BLOCK {st_insert($1, $2,"func",0);}
+                TYPE IDENTIFIER '(' ARGS ')' {st_insert($1, $2,"func",0);} BLOCK 
                 ;
 
 ARGS:
@@ -171,7 +172,7 @@ DO_WHILE_STT:
                 ;
 
 FOR_STT:
-                FOR '(' STATEMENT STATEMENT STATEMENT ')' BLOCK
+                FOR '(' {in_loop = 1;} STATEMENT STATEMENT STATEMENT ')'{in_loop = 0;} BLOCK 
                 ;
 
 assignmentSTT:
@@ -248,14 +249,16 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     newEntry.id = st_index;
     newEntry.isArg = is_arg;
     //----- set scope (if it's an argument, scope is the next scope)
-    if (is_arg == 1){ newEntry.scope = block_number+1;}
+    if (is_arg == 1 || in_loop == 1){ newEntry.scope = block_number+1;}
     else {newEntry.scope = scope_stack[scope_index];}
-    // newEntry.scope = scope_stack[scope_index];
     //------ if it's a function, set argCount and argList
     if ( strcmp(type, "func") == 0){
         int j =0;
+         printf("=======================================FUNC \n");
+        printf("block number: %d\n", block_number);
+        printf("name: %s\n", name);
         for(int i=0; i<st_index; i++) {
-            if ( symbolTable[i].isArg  &&symbolTable[i].scope == scope_index + 1){
+            if ( symbolTable[i].isArg  && symbolTable[i].scope == (block_number +1)){
                 newEntry.argList[j] = symbolTable[i].id;
                 j++;
             }

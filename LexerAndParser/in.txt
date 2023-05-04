@@ -17,7 +17,7 @@ bool z1;
 }
 
 string m0;
-int fff(){
+int func1( int f4, float m4){
 
 int ll4=0;
 if ll4 == 0 :{
@@ -26,3 +26,7 @@ int kk5=0;
 	}
 }
 int g0=0;
+bool func2( int k6)
+{
+int x6;
+}
