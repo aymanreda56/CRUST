@@ -10,23 +10,26 @@
     extern FILE *yyin;
     extern FILE *yyout;
     extern int line_number;
-
+    //TODOS: store value , handle scope , test and check 
     // extern enum yytokentype ;
     //---------------------- data types -----------------
     // typedef enum {int, float , bool,} Type;
     //--------------------- Symbol Table -----------------
     struct Entry {
+        int id;
         char* name , value;
         int scope;
         // struct Type dataType;
         char* type; // var,const, func
         char* dataType; // int, float, bool, string (for func: return type)
-        // list of arguments
-        char* argList[100];
+        // list of arguments stored as IDs of them symbol table
+        int argList[100];
+        int argCount;
         int declareLine;
         int isConst;
         int isUsed;
         int isInit;
+        int isArg;
     };
     struct Entry symbolTable[500];
     int st_index=0;
@@ -226,7 +229,7 @@ int is_exist(char* name){
     }
     return 0;
 }
-void st_insert(char* data_type, char* name, char* type ,int is_arg ){
+void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     //create new entry
     struct Entry newEntry ;
     // check if name is already in symbol table
@@ -239,28 +242,61 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ){
     newEntry.dataType = data_type;
     newEntry.declareLine = line_number;
     newEntry.type = type;
+    newEntry.id = st_index;
+    newEntry.isArg = is_arg;
     // set scope (if it's an argument, scope is the next scope)
     if (is_arg == 1){
         newEntry.scope = scope_index + 1;
     }
     else {newEntry.scope = scope_index;}
+    if ( strcmp(type, "func") == 0){
+            int j =0;
+        // store arguments of this function
+        for(int i=0; i<st_index; i++) {
+            if ( symbolTable[i].isArg  &&symbolTable[i].scope == scope_index + 1){
+                newEntry.argList[j] = symbolTable[i].id;
+                j++;
+            }
+            }
+            newEntry.argCount = j;
+             // print all arguments of this function
+    printf("=>>>>>>>>>>>>>>>>>>>args: \n");
+    for (int i = 0; i < j; i++){
+        printf("%d ", newEntry.argList[i]);        
+    }
+    }
+   
     // insert new entry to symbol table
     symbolTable[st_index] = newEntry;
     st_index++; // increment symbol table index
    
 }
 void st_print() {
-    // write symbol table to file
+    //----- write symbol table to file
     FILE *fp = fopen("symbol_table.txt", "w");
+    //----- check if file is opened
     if(fp == NULL) {
         printf("can't open symbol_table.txt file!\n");
         exit(1);
     }
-    fprintf(fp, "\nName\t|Type\t|DataType\t|Line\t|Scope\n");
-    fprintf(fp, "-----------------------------------------------\n");
-    for(int i=0; i<st_index; i++) {
+    //----- write symbol table header
+    fprintf(fp, "ID\t|Name\t|Type\t|DataType\t|Line\t|Scope\t|Args\n");
+    fprintf(fp, "----------------------------------------------------------\n");
+    //----- write symbol table entries
+    for(int i=0; i< st_index; i++) {
         struct Entry *entry = &symbolTable[i];
-        fprintf(fp, "%s\t|%s\t|%s\t\t|%d\t|%d\n", entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope);
+        fprintf(fp, "%d\t|%s\t|%s\t|%s\t\t|%d\t|%d\t|", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope);
+        //---- print arguments of functions
+        if (strcmp(entry->type, "func") == 0)
+        {
+            for (int j = 0; j < entry->argCount; j++)
+            {
+            fprintf(fp, "%d,", entry->argList[j]);
+            }
+        }
+        else {fprintf(fp, "-");}
+       
+        fprintf(fp, "\n");
     }
     fclose(fp);
 }
