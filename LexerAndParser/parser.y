@@ -80,7 +80,8 @@
 %right LT
 
 
-%type <str> INT FLOAT BOOL STRING CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM
+
+%type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM
 %type <float_val> FLOAT_DIGIT
 %type <num> DIGIT
 %type <bool_val> BOOL_LITERAL
@@ -165,7 +166,7 @@ ERRONOUS_CASES:
 
 ERRONOUS_SWITCH_STT:
                 SWITCH error                    {printf("\n\n=====ERROR====\n MISSING identifier for switch statement at line %d\n\n", yylineno);}                            ':' '{' CASES '}'      
-                | SWITCH IDENTIFIER error       {printf("\n\n=====ERROR====\n unexpected identifier %s at switch statement at line %d\n\n",yylval, yylineno); }               ':'  '{' CASES '}'  
+                | SWITCH IDENTIFIER error       {printf("\n\n=====ERROR====\n unexpected identifier '%s' at switch statement at line %d\n\n",yylval, yylineno); }               ':'  '{' CASES '}'  
                 | SWITCH IDENTIFIER error       {printf("\n\n=====ERROR====\n MISSING colon ':' for switch statement (switchs must have a colon) at line %d\n\n", yylineno);} '{' CASES '}'
                 | SWITCH IDENTIFIER ':' error   {printf("\n\n=====ERROR====\n MISSING '{' for switch statement at line %d\n\n", yylineno);}                                   CASES '}'   
                 //| SWITCH IDENTIFIER ':' '{' CASES error {printf("\n\n=====ERROR====\n unclosed '}' for switch statement at line %d\n\n", yylineno);}    
@@ -193,18 +194,34 @@ USED_ARGS:
 
 
 FUNC_DECLARATION_STT:
-                TYPE IDENTIFIER '(' ARGS ')'   {st_insert($1, $2,"func",0);}     BLOCK 
-                | VOID IDENTIFIER '(' ARGS ')' {st_insert("void", $2,"func",0);} BLOCK 
+                ERRONOUS_FUNC_DECLARATION_STT                                       BLOCK
+                | TYPE IDENTIFIER '(' ARGS ')'   {st_insert($1, $2,"func",0);}      BLOCK                                   
+                | VOID IDENTIFIER '(' ARGS ')'   {st_insert("void", $2,"func",0);}  BLOCK 
+                | TYPE IDENTIFIER '(' ')'        {st_insert($1, $2,"func",0);}      BLOCK                                   
+                | VOID IDENTIFIER '(' ')'        {st_insert("void", $2,"func",0);}  BLOCK 
+                ;
+
+ERRONOUS_FUNC_DECLARATION_STT:
+                TYPE IDENTIFIER                     {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d for function %s\n\n", yylineno, $2);}                    ARGS ')'       {st_insert($1, $2,"func",0);} 
+                | TYPE IDENTIFIER '(' ARGS  '{'     {printf("\n\n=====ERROR====\n unclosed function parenthesis at line %d for function %s\n\n", yylineno, $2); yyclearin;                          st_insert($1, $2,"func",0);} 
+                | VOID IDENTIFIER                   {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d for function %s\n\n", yylineno, $2);}                    ARGS ')'       {st_insert($1, $2,"func",0);} 
+                | VOID IDENTIFIER '(' ARGS  '{'     {printf("\n\n=====ERROR====\n unclosed function parenthesis at line %d for function %s\n\n", yylineno, $2); yyclearin;                          st_insert($1, $2,"func",0);} 
+                | TYPE IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
+                | VOID IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
+                | TYPE IDENTIFIER '(' ARGS error    {printf("\n\n=====ERROR====\n unexpected token '%s' in argument list of function declaration at line %d\n\n", yylval, yylineno);}')'            {st_insert($1, $2,"func",0);}      
                 ;
 
 ARGS:
-                ARGS ',' ARG_DECL
+                ARG_DECL ',' ARGS
                 | ARG_DECL
-                |
+                | ERRONOUS_ARGS
                 ;
-
+ERRONOUS_ARGS:
+                ',' ARGS                   {printf("\n\n=====ERROR====\n unexpected ',' in argument list of function declaration at line %d\n\n", yylineno);}
+                ;
 ARG_DECL:
                 TYPE IDENTIFIER                             {st_insert($1, $2,"var",1);}
+                //| error IDENTIFIER              {printf("\n\n=====ERROR====\n erronous argument declaration in function declaration at line %d\n\n", yylineno);}
                 ;
 
 

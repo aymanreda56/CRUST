@@ -63,6 +63,16 @@ case 2 : {}
 }
 
 
+int errFunc int x){}
+
+int errFunc2 (int x{}
+
+
+int errFunc3 err(int x){}
+
+void errFunc4 (int x,){}
+void errFunc5 (,int x){}
+
 if(x > 2)
 {
     print(x);
