@@ -10,7 +10,13 @@
     extern FILE *yyin;
     extern FILE *yyout;
     extern int line_number;
-    //TODOS: enum , error handling  type checking 
+    ///TODOS
+    // ''' 1- symbol table: 
+    // store enum value 
+    // 2- error handling:
+    //   type checking ,const value change, scope checking, function call checking,
+    //  function return type checking + feh return wla la2 aslan , function argument checking, function
+    //   argument type checking, function argument count checking, function argument order checking '''
     //--------------------- Symbol Table -----------------
     struct Entry {
         int id,intValue,scope;
@@ -73,7 +79,7 @@
 %right LT
 
 
-%type <str> INT FLOAT BOOL STRING CONSTANT IDENTIFIER TYPE STRING_LITERAL
+%type <str> INT FLOAT BOOL STRING CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM
 %type <float_val> FLOAT_DIGIT
 %type <num> DIGIT
 %type <bool_val> BOOL_LITERAL
@@ -151,8 +157,8 @@ ARG_DECL:
                 ;
 
 ENUM_DECLARATION_STT:
-                ENUM IDENTIFIER '{' ENUM_ARGS '}'
-                | ENUM IDENTIFIER '{' ENUM_DEFINED_ARGS '}'
+                ENUM IDENTIFIER  '{' ENUM_ARGS '}' { st_insert("enum" , $2, "var" , 0); }
+                | ENUM IDENTIFIER '{' ENUM_DEFINED_ARGS '}' { st_insert("enum" , $2, "var" , 0); }
                 ;
 ENUM_ARGS:
                 IDENTIFIER ',' ENUM_ARGS
@@ -239,6 +245,7 @@ int is_exist(char* name){
 }
 //-------------------------------------- INSERT IN SYMBOL TABLE  ----------------------------------I
 void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
+    printf("##############################################");
     //------ create new entry
     struct Entry newEntry ;
     //----- check if name is already in symbol table
@@ -286,13 +293,13 @@ void st_print() {
     //----- write symbol table entries
     for(int i=0; i< st_index; i++) {
         struct Entry *entry = &symbolTable[i];
-        fprintf(fp, "%d\t|%s\t\t|%s\t|%s\t\t|%d\t|%d\t|", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope);
+        fprintf(fp, "%d\t|%s\t|%s\t|%s\t\t|%d\t|%d\t|", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope);
         //---- store value of entry
         if (strcmp(entry->dataType,"int")==0) {fprintf(fp, "%d\t\t|", entry->intValue);}
         else if (strcmp(entry->dataType,"float")==0) {fp, fprintf(fp, "%f\t\t|", entry->floatValue);}
         else if (strcmp(entry->dataType,"bool")==0) {fprintf(fp,"%s\t\t|", entry->boolValue ? "true" : "false");}
         else if (strcmp(entry->dataType,"string")==0) {fprintf(fp, "%s\t\t|", entry->strValue);}
-        else {fprintf(fp, "-");}
+        else {fprintf(fp, "-|");}
         //---- print arguments of functions
         if (strcmp(entry->type, "func") == 0)
         {
