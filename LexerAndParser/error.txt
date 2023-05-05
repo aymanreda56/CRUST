@@ -1,0 +1,20 @@
+int = x;
+
+int x x;
+
+
+switch x : {
+case 1 : {}
+2 : {}
+}
+
+
+print x);
+
+#print (x;#
+#should be handled#
+
+print(, x);
+
+
+

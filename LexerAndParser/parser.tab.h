@@ -44,6 +44,12 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 60 "parser.y"
+
+#include<stdbool.h>
+
+#line 53 "parser.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -58,33 +64,35 @@ extern int yydebug;
     FLOAT = 259,                   /* FLOAT  */
     BOOL = 260,                    /* BOOL  */
     STRING = 261,                  /* STRING  */
-    IF = 262,                      /* IF  */
-    FOR = 263,                     /* FOR  */
-    WHILE = 264,                   /* WHILE  */
-    BOOL_LITERAL = 265,            /* BOOL_LITERAL  */
-    DIV = 266,                     /* DIV  */
-    GT = 267,                      /* GT  */
-    LT = 268,                      /* LT  */
-    EQ = 269,                      /* EQ  */
-    SEMICOLON = 270,               /* SEMICOLON  */
-    PLUS = 271,                    /* PLUS  */
-    SUB = 272,                     /* SUB  */
-    MUL = 273,                     /* MUL  */
-    STRING_LITERAL = 274,          /* STRING_LITERAL  */
-    CONSTANT = 275,                /* CONSTANT  */
-    POW = 276,                     /* POW  */
-    ELSE = 277,                    /* ELSE  */
-    DO = 278,                      /* DO  */
-    ENUM = 279,                    /* ENUM  */
-    EQUALITY = 280,                /* EQUALITY  */
-    NEG_EQUALITY = 281,            /* NEG_EQUALITY  */
-    SWITCH = 282,                  /* SWITCH  */
-    CASE = 283,                    /* CASE  */
-    LOGIC_AND = 284,               /* LOGIC_AND  */
-    LOGIC_OR = 285,                /* LOGIC_OR  */
-    LOGIC_NOT = 286,               /* LOGIC_NOT  */
-    DIGIT = 287,                   /* DIGIT  */
-    IDENTIFIER = 288               /* IDENTIFIER  */
+    VOID = 262,                    /* VOID  */
+    IF = 263,                      /* IF  */
+    FOR = 264,                     /* FOR  */
+    WHILE = 265,                   /* WHILE  */
+    BOOL_LITERAL = 266,            /* BOOL_LITERAL  */
+    DIV = 267,                     /* DIV  */
+    GT = 268,                      /* GT  */
+    LT = 269,                      /* LT  */
+    EQ = 270,                      /* EQ  */
+    SEMICOLON = 271,               /* SEMICOLON  */
+    PLUS = 272,                    /* PLUS  */
+    SUB = 273,                     /* SUB  */
+    MUL = 274,                     /* MUL  */
+    STRING_LITERAL = 275,          /* STRING_LITERAL  */
+    CONSTANT = 276,                /* CONSTANT  */
+    POW = 277,                     /* POW  */
+    ELSE = 278,                    /* ELSE  */
+    DO = 279,                      /* DO  */
+    ENUM = 280,                    /* ENUM  */
+    EQUALITY = 281,                /* EQUALITY  */
+    NEG_EQUALITY = 282,            /* NEG_EQUALITY  */
+    SWITCH = 283,                  /* SWITCH  */
+    CASE = 284,                    /* CASE  */
+    LOGIC_AND = 285,               /* LOGIC_AND  */
+    LOGIC_OR = 286,                /* LOGIC_OR  */
+    LOGIC_NOT = 287,               /* LOGIC_NOT  */
+    DIGIT = 288,                   /* DIGIT  */
+    IDENTIFIER = 289,              /* IDENTIFIER  */
+    FLOAT_DIGIT = 290              /* FLOAT_DIGIT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -93,12 +101,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 38 "parser.y"
+#line 52 "parser.y"
  
  int num; /* integer value */ 
- char* str; /* symbol table index */ 
+ char* str; 
+ float float_val;
+ bool bool_val;
 
-#line 102 "parser.tab.h"
+#line 112 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
