@@ -100,6 +100,7 @@ STATEMENT:
                 | SWITCH_STT                                {printf("#[Parsed_SWITCH_STT]# ");}
                 | ENUM_DECLARATION_STT                      {printf("#[Parsed_Enum_Declaration]# ");}
                 | BLOCK
+                | error SEMICOLON                       //Error handler using ; as a delimiter
                 ;
 
 /*
