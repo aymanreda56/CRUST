@@ -1,0 +1,24 @@
+ID	|Name		|Type	|DataType	|Line	|Scope	|Value		|Args
+-------------------------------------------------------------------------------------------
+0	|X		|const	|int		|1	|0	|0		|-
+1	|y0		|var	|float		|2	|0	|3.300000		|-
+2	|x1		|var	|int		|4	|1	|0		|-
+3	|y1		|var	|float		|4	|1	|0.000000		|-
+4	|sum		|func	|int		|4	|0	|0		|2,3,
+5	|h1		|var	|string		|6	|1	|"FF"		|-
+6	|j2		|var	|bool		|10	|2	|false		|-
+7	|m1		|var	|bool		|12	|1	|true		|-
+8	|j0		|var	|bool		|14	|0	|true		|-
+9	|g3		|var	|int		|16	|3	|0		|-
+10	|h3		|var	|float		|16	|3	|0.000000		|-
+11	|mfunc		|func	|string		|16	|0	|(null)		|9,10,
+12	|i4		|var	|int		|17	|4	|6		|-
+13	|x4		|var	|int		|21	|4	|6		|-
+14	|y5		|var	|int		|24	|5	|0		|-
+15	|k4		|var	|float		|27	|4	|0.000000		|-
+16	|NN		|const	|string		|31	|3	|"FFFF"		|-
+17	|d0		|var	|float		|35	|0	|8.400000		|-
+18	|c6		|var	|int		|36	|6	|0		|-
+19	|h6		|var	|float		|36	|6	|272008302207532160000000.000000		|-
+20	|func3		|func	|string		|36	|0	|(null)		|18,19,
+21	|f6		|var	|string		|39	|6	|"GGG"		|-

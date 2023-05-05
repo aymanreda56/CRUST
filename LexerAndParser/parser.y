@@ -2,9 +2,7 @@
     #include <stdlib.h>
     #include <stdio.h>
     #include <string.h>
-    // include bool type
     #include <stdbool.h>
-    // #include "../SymbolTable/SymbolTableEntry.h"
     #include "parser.tab.h"
     void yyerror(char* );
     int yylex();
@@ -12,10 +10,7 @@
     extern FILE *yyin;
     extern FILE *yyout;
     extern int line_number;
-    //TODOS: store value , handle scope , test and check 
-    // extern enum yytokentype ;
-    //---------------------- data types -----------------
-    // typedef enum {int, float , bool,} Type;
+    //TODOS: enum , error handling  type checking 
     //--------------------- Symbol Table -----------------
     struct Entry {
         int id,intValue,scope;
@@ -115,7 +110,7 @@ TYPE:
                 ;
 
 DECLARATION_STT:                                                            
-                TYPE IDENTIFIER {st_insert($1, $2,"var",0); printf("\n=>>>>> inserted");}   DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_Declaration]# ");}
+                TYPE IDENTIFIER {st_insert($1, $2,"var",0); }   DECLARATION_TAIL SEMICOLON           {printf("#[Parsed_Declaration]# ");}
                 | TYPE CONSTANT {st_insert($1, $2,"const",0);} DECLARATION_TAIL SEMICOLON   {printf("#[Parsed_CONST_Declaration]# "); }
                 ;
 
@@ -195,7 +190,7 @@ BLOCK:
 
 EXPRESSION:
                 IDENTIFIER
-                | DIGIT {  printf("===============>>>%d\n",$1  ); symbolTable[st_index-1].intValue= $1 ;}
+                | DIGIT { symbolTable[st_index-1].intValue= $1 ;}
                 | FLOAT_DIGIT { symbolTable[st_index-1].floatValue= $1 ;}
                 | BOOL_LITERAL  { symbolTable[st_index-1].boolValue= $1 ;}
                 | STRING_LITERAL  { symbolTable[st_index-1].strValue= $1 ;}
@@ -286,12 +281,12 @@ void st_print() {
         exit(1);
     }
     //----- write symbol table header
-    fprintf(fp, "ID\t|Name\t|Type\t|DataType\t|Line\t|Scope\t|Value\t\t|Args\n");
-    fprintf(fp, "----------------------------------------------------------\n");
+    fprintf(fp, "ID\t|Name\t\t|Type\t|DataType\t|Line\t|Scope\t|Value\t\t|Args\n");
+    fprintf(fp, "-------------------------------------------------------------------------------------------\n");
     //----- write symbol table entries
     for(int i=0; i< st_index; i++) {
         struct Entry *entry = &symbolTable[i];
-        fprintf(fp, "%d\t|%s\t|%s\t|%s\t\t|%d\t|%d\t|", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope);
+        fprintf(fp, "%d\t|%s\t\t|%s\t|%s\t\t|%d\t|%d\t|", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope);
         //---- store value of entry
         if (strcmp(entry->dataType,"int")==0) {fprintf(fp, "%d\t\t|", entry->intValue);}
         else if (strcmp(entry->dataType,"float")==0) {fp, fprintf(fp, "%f\t\t|", entry->floatValue);}
@@ -314,17 +309,13 @@ void st_print() {
 }
 //------------------------------------------- HANDLE SCOPE -----------------------------------------
 void scope_start(){
-    //  TODO: store name of scope instead of number
+    //----- increment block number and scope index
     block_number++;
     scope_index++;
-    // int  scope_index_temp= block_number;
     scope_stack[scope_index] = block_number;
-    // printf("\n scope start \n");
 }
 void scope_end(){
-    // scope_stack[scope_index] = -1; // end of scope
-    scope_index--;
-    // block_number--;
+    scope_index--; // decrement scope index
 }
 //------------------------------------------- MAIN -------------------------------
 int main(int argc, char *argv[])
