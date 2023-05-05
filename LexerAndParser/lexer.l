@@ -38,7 +38,7 @@
 "*"                             {printf("MUL:%s | ", yytext);          nword++; nchar+=yyleng;                                return MUL;}
 "/"                             {printf("DIV:%s | ", yytext);          nword++; nchar+=yyleng;                                return DIV;}
 "^"                             {printf("POW: %s | ", yytext);         nword++; nchar+=yyleng;                                return POW;}
-[)}{(:]                         {printf("special_TOKEN:%s | ", yytext);nword++; nchar+=yyleng;                                return *yytext;}
+[)}{(:,]                         {printf("special_TOKEN:%s | ", yytext);nword++; nchar+=yyleng;                                return *yytext;}
 [A-Z]+                          {printf("CONSTANT:%s | ", yytext);   yylval.str = strdup(yytext); nword++; nchar+=yyleng;     return CONSTANT;}
 [a-zA-Z_][a-zA-Z0-9_]*          {printf("IDENTIFIER:%s | ", yytext);   yylval.str = strdup(yytext); nword++; nchar+=yyleng;   return IDENTIFIER;}
 \"[a-zA-Z0-9_]+\"               {printf("STRING_LITERAL:%s | ", yytext); yylval.str = strdup(yytext); nword++; nchar+=yyleng; return STRING_LITERAL;}
