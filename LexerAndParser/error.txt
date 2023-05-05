@@ -1,3 +1,5 @@
+#x = 3;#
+
 int = x;
 
 int x x;
@@ -28,9 +30,36 @@ bool ah =  <= ad;
 bool ai = ad <= ;
 
 
+
+switch :{
+    case 1: {}
+}
+
+
+switch x y :{
+    case 1: {}
+}
+
+
+
+switch x y {
+    case 1: {}
+}
+
+switch x:
+    case 1: {}
+}
+
+
 switch x : {
 case 1 : {}
 2 : {}
+}
+
+
+switch x : {
+case 1 : 
+case 2 : {}
 }
 
 

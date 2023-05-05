@@ -144,11 +144,23 @@ DECLARATION_TAIL:
 
 SWITCH_STT:
                 SWITCH IDENTIFIER ':' '{' CASES '}'
+                | ERRONOUS_SWITCH_STT
+                //todo, handle unclose parenthesis for switch stt
                 ;
+
 CASES:
                 CASE EXPRESSION ':' BLOCK CASES
-                | error EXPRESSION ':' BLOCK CASES          {printf("\n\n=====ERROR====\n MISSING 'case' at line %d\n\n", yylineno);}//Error handler
+                | error EXPRESSION {printf("\n\n=====ERROR====\n MISSING 'case' at line %d\n\n", yylineno);} ':' BLOCK CASES     
+                | CASE EXPRESSION ':' error {printf("\n\n=====ERROR====\n MISSING case block at line %d\n\n", yylineno);} CASES         
                 |
+                ;
+
+ERRONOUS_SWITCH_STT:
+                SWITCH error {printf("\n\n=====ERROR====\n MISSING identifier for switch statement at line %d\n\n", yylineno);} ':' '{' CASES '}'      
+                | SWITCH IDENTIFIER error {printf("\n\n=====ERROR====\n unexpected identifier %s at switch statement at line %d\n\n",yylval, yylineno); } ':'  '{' CASES '}'  
+                | SWITCH IDENTIFIER error {printf("\n\n=====ERROR====\n MISSING colon ':' for switch statement (switchs must have a colon) at line %d\n\n", yylineno);} '{' CASES '}'
+                | SWITCH IDENTIFIER ':' error {printf("\n\n=====ERROR====\n MISSING '{' for switch statement at line %d\n\n", yylineno);} CASES '}'   
+                //| SWITCH IDENTIFIER ':' '{' CASES error {printf("\n\n=====ERROR====\n unclosed '}' for switch statement at line %d\n\n", yylineno);}    
                 ;
 
 FUNC_CALL:
