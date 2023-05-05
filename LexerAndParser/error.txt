@@ -3,11 +3,41 @@ int = x;
 int x x;
 
 
+int y =;
+
+bool z = > 5;
+bool m = 5 >;
+
+
+bool n = < 5;
+bool l = 5 <;
+
+bool aa = (3 == );
+bool ab = ( == 3);
+
+bool ac = (3 != );
+bool ad = ( != 3);
+
+bool ae = !;
+
+bool af =  and ad;
+bool ag = ad and;
+
+
+bool ah =  <= ad;
+bool ai = ad <= ;
+
+
 switch x : {
 case 1 : {}
 2 : {}
 }
 
+
+if(x > 2)
+{
+    print(x);
+}
 
 print x);
 
@@ -15,6 +45,15 @@ print x);
 #should be handled#
 
 print(, x);
+
+
+#if (x > 3):#
+
+print(x);
+#}#
+
+#parenthesis handling should be done#
+
 
 
 

@@ -1,3 +1,17 @@
-ID	|Name	|Type	|DataType	|Line	|Scope	|Value		|Args
-----------------------------------------------------------
-0	|x	|var	|int		|3	|0	|2		|-
+ID	|Name		|Type	|DataType	|Line	|Scope	|Value		|Args
+-------------------------------------------------------------------------------------------
+0	|x	|var	|int		|3	|0	|0		|-
+1	|y	|var	|int		|6	|0	|0		|-
+2	|z	|var	|bool		|8	|0	|true		|-
+3	|m	|var	|bool		|9	|0	|true		|-
+4	|n	|var	|bool		|12	|0	|true		|-
+5	|l	|var	|bool		|13	|0	|true		|-
+6	|aa	|var	|bool		|15	|0	|true		|-
+7	|ab	|var	|bool		|16	|0	|true		|-
+8	|ac	|var	|bool		|18	|0	|true		|-
+9	|ad	|var	|bool		|19	|0	|true		|-
+10	|ae	|var	|bool		|21	|0	|true		|-
+11	|af	|var	|bool		|23	|0	|true		|-
+12	|ag	|var	|bool		|24	|0	|true		|-
+13	|ah	|var	|bool		|27	|0	|true		|-
+14	|ai	|var	|bool		|28	|0	|true		|-

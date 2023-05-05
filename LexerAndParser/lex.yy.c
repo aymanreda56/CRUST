@@ -833,202 +833,202 @@ YY_RULE_SETUP
 case 2:
 YY_RULE_SETUP
 #line 11 "lexer.l"
-{printf("INT:%s | ", yytext);          nword++; nchar+=yyleng;                                return INT;}
+{printf("INT:%s | ", yytext);            nword++; nchar+=yyleng;                                return INT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 12 "lexer.l"
-{printf("VOID:%s | ", yytext);         nword++; nchar+=yyleng;                                return VOID;}
+{printf("VOID:%s | ", yytext);           nword++; nchar+=yyleng;                                return VOID;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 13 "lexer.l"
-{printf("FLOAT:%s | ", yytext);        nword++; nchar+=yyleng;                                return FLOAT;}
+{printf("FLOAT:%s | ", yytext);          nword++; nchar+=yyleng;                                return FLOAT;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 14 "lexer.l"
-{printf("FLOAT:%s | ", yytext);        nword++; nchar+=yyleng;                                return FLOAT;}
+{printf("FLOAT:%s | ", yytext);          nword++; nchar+=yyleng;                                return FLOAT;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 15 "lexer.l"
-{printf("BOOL:%s | ", yytext);         nword++; nchar+=yyleng;                                return BOOL;}
+{printf("BOOL:%s | ", yytext);           nword++; nchar+=yyleng;                                return BOOL;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 16 "lexer.l"
-{printf("STRING:%s | ", yytext);       nword++; nchar+=yyleng;                                return STRING;}
+{printf("STRING:%s | ", yytext);         nword++; nchar+=yyleng;                                return STRING;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 17 "lexer.l"
-{printf("ENUM:%s | ", yytext);         nword++; nchar+=yyleng;                                return ENUM;}
+{printf("ENUM:%s | ", yytext);           nword++; nchar+=yyleng;                                return ENUM;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 18 "lexer.l"
-{printf("SWITCH:%s | ", yytext);       nword++; nchar+=yyleng;                                return SWITCH;}
+{printf("SWITCH:%s | ", yytext);         nword++; nchar+=yyleng;                                return SWITCH;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 19 "lexer.l"
-{printf("CASE:%s | ", yytext);         nword++; nchar+=yyleng;                                return CASE;}
+{printf("CASE:%s | ", yytext);           nword++; nchar+=yyleng;                                return CASE;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 20 "lexer.l"
-{printf("IF:%s | ", yytext);           nword++; nchar+=yyleng;                                return IF;}
+{printf("IF:%s | ", yytext);             nword++; nchar+=yyleng;                                return IF;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 21 "lexer.l"
-{printf("ELSE:%s | ", yytext);         nword++; nchar+=yyleng;                                return ELSE;}
+{printf("ELSE:%s | ", yytext);           nword++; nchar+=yyleng;                                return ELSE;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 22 "lexer.l"
-{printf("FOR:%s | ", yytext);          nword++; nchar+=yyleng;                                return FOR;}
+{printf("FOR:%s | ", yytext);            nword++; nchar+=yyleng;                                return FOR;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 23 "lexer.l"
-{printf("WHILE:%s | ", yytext);        nword++; nchar+=yyleng;                                return WHILE;}
+{printf("WHILE:%s | ", yytext);          nword++; nchar+=yyleng;                                return WHILE;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 24 "lexer.l"
-{printf("DO:%s | ", yytext);           nword++; nchar+=yyleng;                                return DO;}
+{printf("DO:%s | ", yytext);             nword++; nchar+=yyleng;                                return DO;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 25 "lexer.l"
-{printf("BOOL_LITERAL:%s | ", yytext); nword++; nchar+=yyleng;  yylval.bool_val = true;       return BOOL_LITERAL;}
+{printf("BOOL_LITERAL:%s | ", yytext);   nword++; nchar+=yyleng;  yylval.bool_val = true;       return BOOL_LITERAL;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 26 "lexer.l"
-{printf("BOOL_LITERAL:%s | ", yytext); nword++; nchar+=yyleng;  yylval.bool_val = false;      return BOOL_LITERAL;}     
+{printf("BOOL_LITERAL:%s | ", yytext);   nword++; nchar+=yyleng;  yylval.bool_val = false;      return BOOL_LITERAL;}     
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 27 "lexer.l"
-{printf("LOGIC_AND:%s | ", yytext);    nword++; nchar+=yyleng;                                return LOGIC_AND;}
+{printf("LOGIC_AND:%s | ", yytext);      nword++; nchar+=yyleng;                                return LOGIC_AND;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 28 "lexer.l"
-{printf("LOGIC_OR:%s | ", yytext);     nword++; nchar+=yyleng;                                return LOGIC_OR;}
+{printf("LOGIC_OR:%s | ", yytext);       nword++; nchar+=yyleng;                                return LOGIC_OR;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 29 "lexer.l"
-{printf("LOGIC_NOT:%s | ", yytext);    nword++; nchar+=yyleng;                                return LOGIC_NOT;}
+{printf("LOGIC_NOT:%s | ", yytext);      nword++; nchar+=yyleng;                                return LOGIC_NOT;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 31 "lexer.l"
-{printf("EQUALITY:%s | ", yytext);     nword++; nchar+=yyleng;                                return EQUALITY;}
+{printf("EQUALITY:%s | ", yytext);       nword++; nchar+=yyleng;                                return EQUALITY;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 32 "lexer.l"
-{printf("NEG_EQUALITY:%s | ", yytext); nword++; nchar+=yyleng;                                return NEG_EQUALITY;}
+{printf("NEG_EQUALITY:%s | ", yytext);   nword++; nchar+=yyleng;                                return NEG_EQUALITY;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 34 "lexer.l"
-{printf("GT:%s | ", yytext);           nword++; nchar+=yyleng;                                return GT;}
+{printf("GT:%s | ", yytext);             nword++; nchar+=yyleng;                                return GT;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 35 "lexer.l"
-{printf("LT:%s | ", yytext);           nword++; nchar+=yyleng;                                return LT;}
+{printf("LT:%s | ", yytext);             nword++; nchar+=yyleng;                                return LT;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 36 "lexer.l"
-{printf("EQ:%s | ", yytext);           nword++; nchar+=yyleng;                                return EQ;}         
+{printf("EQ:%s | ", yytext);             nword++; nchar+=yyleng;                                return EQ;}         
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 37 "lexer.l"
-{printf("SEMICOLON:%s | ", yytext);    nword++; nchar+=yyleng;                                return SEMICOLON;}
+{printf("SEMICOLON:%s | ", yytext);      nword++; nchar+=yyleng;                                return SEMICOLON;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 38 "lexer.l"
-{printf("PLUS:%s | ", yytext);         nword++; nchar+=yyleng;                                return PLUS;}
+{printf("PLUS:%s | ", yytext);           nword++; nchar+=yyleng;                                return PLUS;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 39 "lexer.l"
-{printf("SUB:%s | ", yytext);          nword++; nchar+=yyleng;                                return SUB;}
+{printf("SUB:%s | ", yytext);            nword++; nchar+=yyleng;                                return SUB;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 40 "lexer.l"
-{printf("MUL:%s | ", yytext);          nword++; nchar+=yyleng;                                return MUL;}
+{printf("MUL:%s | ", yytext);            nword++; nchar+=yyleng;                                return MUL;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 41 "lexer.l"
-{printf("DIV:%s | ", yytext);          nword++; nchar+=yyleng;                                return DIV;}
+{printf("DIV:%s | ", yytext);            nword++; nchar+=yyleng;                                return DIV;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 42 "lexer.l"
-{printf("POW: %s | ", yytext);         nword++; nchar+=yyleng;                                return POW;}
+{printf("POW: %s | ", yytext);           nword++; nchar+=yyleng;                                return POW;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 44 "lexer.l"
-{printf("special_TOKEN:%s | ", yytext);nword++; nchar+=yyleng;                                return *yytext;}
+#line 43 "lexer.l"
+{printf("special_TOKEN:%s | ", yytext) ;nword++; nchar+=yyleng;                                return *yytext;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 45 "lexer.l"
-{printf("CONSTANT:%s | ", yytext);   yylval.str = strdup(yytext); nword++; nchar+=yyleng;     return CONSTANT;}
+#line 44 "lexer.l"
+{printf("CONSTANT:%s | ", yytext);   yylval.str = strdup(yytext);     nword++; nchar+=yyleng;     return CONSTANT;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 46 "lexer.l"
-{printf("IDENTIFIER:%s | ", yytext);   yylval.str = strdup(yytext); nword++; nchar+=yyleng;   return IDENTIFIER;}
+#line 45 "lexer.l"
+{printf("IDENTIFIER:%s | ", yytext);   yylval.str = strdup(yytext);   nword++; nchar+=yyleng;   return IDENTIFIER;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 47 "lexer.l"
+#line 46 "lexer.l"
 {printf("STRING_LITERAL:%s | ", yytext); yylval.str = strdup(yytext); nword++; nchar+=yyleng; return STRING_LITERAL;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 49 "lexer.l"
+#line 48 "lexer.l"
 {printf("DIGIT:%s | ", yytext);  nword++; nchar+=yyleng;  yylval.num = atoi(yytext);     return DIGIT;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 50 "lexer.l"
+#line 49 "lexer.l"
 {printf("FLOAT_DIGIT:%s | ", yytext);  nword++; nchar+=yyleng;  yylval.float_val= atof(yytext);   return FLOAT_DIGIT;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 52 "lexer.l"
+#line 51 "lexer.l"
 //ignore
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 54 "lexer.l"
+#line 53 "lexer.l"
 {printf("UNK: %s | ", yytext);     nchar++;    return *yytext;}
 	YY_BREAK
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-#line 55 "lexer.l"
+#line 54 "lexer.l"
 {nchar++;line_number++;}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 57 "lexer.l"
+#line 56 "lexer.l"
 ECHO;
 	YY_BREAK
 #line 1034 "lex.yy.c"
@@ -2048,7 +2048,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 57 "lexer.l"
+#line 56 "lexer.l"
 
 
 
