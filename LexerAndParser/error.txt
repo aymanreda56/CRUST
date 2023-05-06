@@ -83,6 +83,12 @@ do {}
 while {x}
 
 
+x =;
+
+x 3;
+
+
+
 switch :{
     case 1: {}
 }

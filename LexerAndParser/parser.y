@@ -78,6 +78,8 @@
 %right EQ
 %right GT
 %right LT
+%left '{'
+%left '}'
 
 
 %type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM
@@ -301,12 +303,15 @@ ERRONOUS_FOR_LOOP:
 
 assignmentSTT:
                 IDENTIFIER EQ EXPRESSION SEMICOLON          {printf("#[Parsed_Assignment]# ");}
+                | IDENTIFIER error EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
+                | IDENTIFIER EQ SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
                 ;
 
 
 BLOCK:
                 '{' {scope_start();} PROGRAM '}' {scope_end();}                     {printf("#[Parsed_Block]# ");}
                 //| '{' PROGRAM error                                         {printf("\n=====ERROR====\n Missing closing parenthesis '{' at line %d\n", yylineno);}//Error handler
+                //TODO handle opened curly braces but not closed
                 ;
 
 
@@ -325,6 +330,7 @@ USED_ARGS:
 
 
 EXPRESSION:
+                
                 IDENTIFIER
                 | DIGIT { symbolTable[st_index-1].intValue= $1 ;}
                 | FLOAT_DIGIT { symbolTable[st_index-1].floatValue= $1 ;}
@@ -333,6 +339,7 @@ EXPRESSION:
                 | CONSTANT
                 | EXPRESSION PLUS PLUS
                 | EXPRESSION SUB SUB
+                
                 | EXPRESSION PLUS EXPRESSION
                 | EXPRESSION SUB EXPRESSION
                 | EXPRESSION MUL EXPRESSION
@@ -341,6 +348,20 @@ EXPRESSION:
                 | COMPARISONSTT
                 | FUNC_CALL                                 
                 | '(' EXPRESSION ')'
+                | ERRONOUS_EXPRESSION           {printf("\n\n=====ERROR====\n Expression error at line %d\n\n", yylineno);}
+                ;
+
+ERRONOUS_EXPRESSION:
+                //EXPRESSION PLUS error
+                //| EXPRESSION SUB
+                //| EXPRESSION MUL
+                //| EXPRESSION DIV
+                //| EXPRESSION POW
+                error PLUS EXPRESSION           
+                | error SUB EXPRESSION          
+                | error MUL EXPRESSION          
+                | error DIV EXPRESSION          
+                | error POW EXPRESSION          
                 ;
 
 
