@@ -79,6 +79,7 @@
 %right GT
 %right LT
 
+
 %type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM
 %type <float_val> FLOAT_DIGIT
 %type <num> DIGIT
@@ -266,17 +267,35 @@ WHILE_STT:
 ERRONOUS_WHILE_STT:
                 WHILE error ':'                               {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);}  BLOCK
                 | WHILE EXPRESSION                            {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);}         BLOCK
-                | WHILE EXPRESSION ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);}
+                | WHILE EXPRESSION ':' error '}'              {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);}
+                //TODO handle unclosed curly braces
                 ;
 
 
 DO_WHILE_STT:
                 DO BLOCK WHILE '(' EXPRESSION ')'
+                | ERRONOUS_DO_WHILE
+                ;
+ERRONOUS_DO_WHILE:
+                DO   error                          {printf("\n\n=====ERROR====\n Missing DO-Block for the DO-WHILE loop at line %d\n\n", yylineno);}                              WHILE '(' EXPRESSION ')'
+                | DO BLOCK WHILE error              {printf("\n\n=====ERROR====\n Missing opening parenthesis '(' for the DO-WHILE loop at line %d\n\n", yylineno);}               EXPRESSION ')'
+                | DO BLOCK error                    {printf("\n\n=====ERROR====\n Missing WHILE DO-WHILE loop at line %d\n\n", yylineno);}                                         '(' EXPRESSION ')'
+                | DO error                          {printf("\n\n=====ERROR====\n Missing opening curly braces '{' for the DO-Block for DO-WHILE loop at line %d\n\n", yylineno);} '}' WHILE '(' EXPRESSION ')'
+                | DO BLOCK WHILE '{' EXPRESSION '}' {printf("\n\n=====ERROR====\n DO-WHILE loop accepts braces () not curly braces {} at line %d\n\n", yylineno);}
+                //| DO BLOCK {printf("\n\n=====ERROR====\n Missing While loop for the DO-Block for DO-WHILE loop at line %d\n\n", yylineno);}
+                //TODO handle missing while statement, user only wrote the Do statement (we might agree that it is acceptable)
                 ;
 
 
 FOR_STT:
                 FOR '(' {in_loop = 1;} STATEMENT STATEMENT STATEMENT ')'{in_loop = 0;} BLOCK 
+                | ERRONOUS_FOR_LOOP
+                ;
+ERRONOUS_FOR_LOOP:
+                //FOR '(' STATEMENT ')'  {printf("\n\n=====ERROR====\n Missing a third statement inside the FOR loop at line %d\n\n", yylineno);}  BLOCK
+                FOR error STATEMENT STATEMENT STATEMENT ')'            {printf("\n\n=====ERROR====\n Missing opening braces '(' in the FOR loop at line %d\n\n", yylineno);}  BLOCK
+                | FOR '(' ';' STATEMENT STATEMENT STATEMENT ')'  {printf("\n\n=====ERROR====\n unexpected semicolon in the FOR loop at line %d\n\n", yylineno);}  BLOCK
+                //TODO 7agat keteeer, ana ma5noooo2   >:(
                 ;
 
 

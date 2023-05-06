@@ -9,10 +9,10 @@ ID	|Name		|Type	|DataType	|Line	|Scope	|Value		|Args
 6	|ag	|var	|bool		|29	|0	|true		|-
 7	|ah	|var	|bool		|32	|0	|true		|-
 8	|ai	|var	|bool		|33	|0	|true		|-
-9	|x	|var	|int		|100	|11	|745		|-
-10	|errFunc	|func	|int		|100	|0	|0		|9,
-11	|x	|var	|int		|102	|12	|745		|-
-12	|errFunc2	|func	|int		|102	|0	|0		|11,
-13	|x	|var	|int		|107	|13	|745		|-
-14	|x	|var	|int		|108	|14	|745		|-
-15	|errFunc5	|func	|void		|108	|0	|-|14,
+9	|x	|var	|int		|118	|14	|563		|-
+10	|errFunc	|func	|int		|118	|0	|0		|9,
+11	|x	|var	|int		|120	|15	|563		|-
+12	|errFunc2	|func	|int		|120	|0	|0		|11,
+13	|x	|var	|int		|125	|16	|563		|-
+14	|x	|var	|int		|126	|17	|563		|-
+15	|errFunc5	|func	|void		|126	|0	|-|14,

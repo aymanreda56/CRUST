@@ -64,6 +64,24 @@ while :
     
 }
 
+do 
+while(x)
+
+
+do {}
+while x)
+
+
+do {}
+(x)
+
+
+do }
+while (x)
+
+do {}
+while {x}
+
 
 switch :{
     case 1: {}
