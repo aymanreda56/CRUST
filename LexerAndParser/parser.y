@@ -116,7 +116,6 @@ STATEMENT:
                 | error ')'                                 {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);}//Error handler using ; as a delimiter
                 ;
 
-
 /*
 | MATCHED_IF_STT                            {printf("#[Parsed_Matched_If_STT]# ");}
 */
@@ -133,6 +132,7 @@ DECLARATION_STT:
                 | TYPE CONSTANT {st_insert($1, $2,"const",0);}  DECLARATION_TAIL            {printf("#[Parsed_CONST_Declaration]# "); }
                 | error IDENTIFIER    SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING variable type at line %d\n\n", yylineno);}//Error handler
                 | error CONSTANT      SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING constant type at line %d\n\n", yylineno);}//Error handler
+                | TYPE IDENTIFIER IDENTIFIER SEMICOLON                                      {printf("\n\n=====ERROR====\n unexpected identifier %s at line %d\n\n",$3, yylineno);}
                 ;
 
 
@@ -141,6 +141,11 @@ DECLARATION_TAIL:
                 | error EXPRESSION   SEMICOLON                                              {printf("\n\n=====ERROR====\n MISSING '=' at line %d\n\n", yylineno);}//Error handler
                 | EQ error SEMICOLON                                                        {printf("\n\n=====ERROR====\n unexpected '=' without second operand at line %d\n\n", yylineno);}//Error handler
                 | SEMICOLON
+                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); yyclearin; yyclearin;} '}'
+                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); yyclearin; yyclearin;} ')'
+                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); yyclearin; yyclearin;} RES_WORD
+                //|                                                                     {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);} '}'
+                | error RES_WORD                                                           {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);} 
                 ;
 
 
@@ -335,6 +340,14 @@ ERRONOUS_COMPARISONSTT:
                 //| EXPRESSION error EXPRESSION   %prec GT          {printf("\n\n=====ERROR====\n Missing or invalid operator at line %d\n\n", yylineno);}
                 ;
                 
+
+
+
+RES_WORD:
+                INT | FLOAT| BOOL| STRING| VOID| IF| FOR| WHILE|  CONSTANT | ELSE | DO| ENUM| SWITCH| CASE;
+
+
+
 
 
 
