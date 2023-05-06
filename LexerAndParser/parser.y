@@ -248,11 +248,11 @@ ERRONOUS_ENUM_DECLARATION_STT:
 
 IF_STT:
                 IF EXPRESSION ':' BLOCK
-                | IF EXPRESSION ':' BLOCK ELSE error '}'      {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}//Error handler
+                | IF EXPRESSION ':' BLOCK ELSE error '}'      {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}
                 | IF EXPRESSION ':' BLOCK ELSE BLOCK
-                | IF '(' EXPRESSION ')'                {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);} BLOCK
-                | IF       ':'                     {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} BLOCK
-                | IF EXPRESSION ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the IF statement at line %d\n\n", yylineno);}//Error handler
+                | IF EXPRESSION                               {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);}        BLOCK
+                | IF       ':'                                {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} BLOCK
+                | IF EXPRESSION ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the IF statement at line %d\n\n", yylineno);}
                 
                 //TODO handle opened parenthesis but not closed
                 ;
@@ -260,13 +260,13 @@ IF_STT:
 
 WHILE_STT:
                 WHILE EXPRESSION ':' BLOCK
-                | ERRONOUS_WHILE_STT  BLOCK
+                | ERRONOUS_WHILE_STT  
                 ;
 
 ERRONOUS_WHILE_STT:
-                WHILE error ':'                               {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);} 
-                | WHILE '(' EXPRESSION ')' error              {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);} 
-                //| WHILE EXPRESSION ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);}//Error handler
+                WHILE error ':'                               {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);}  BLOCK
+                | WHILE EXPRESSION                            {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);}         BLOCK
+                | WHILE EXPRESSION ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);}
                 ;
 
 

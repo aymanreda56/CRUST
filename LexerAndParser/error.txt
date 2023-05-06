@@ -38,7 +38,7 @@ if :
 
 }
 
-if af :
+if ae :
 }
 
 
@@ -46,11 +46,6 @@ if af :
 while x 
 {
 
-}
-
-if af :
-{
-    int z = 0;
 }
 
 
