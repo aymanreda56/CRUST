@@ -79,19 +79,19 @@
 %right GT
 %right LT
 
-
-
 %type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM
 %type <float_val> FLOAT_DIGIT
 %type <num> DIGIT
 %type <bool_val> BOOL_LITERAL
 
 
-//leave those as they are please, they will not hurt your memory as long as you restart your laptop once every while.
+//leave those as they are please, their absence wont hurt your memory as long as you restart your laptop once every while.
+//they are just handlers for the memory leak problem of bison, and I still don't know how to make them work
 //%destructor { } <str>
 //%destructor { free ($$); } <*>
 //%destructor { free ($$); printf ("%d", @$.first_line); } INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM EQUALITY NEG_EQUALITY SWITCH CASE LOGIC_AND LOGIC_OR LOGIC_NOT DIGIT IDENTIFIER FLOAT_DIGIT
 //%destructor { printf ("Discarding tagless symbol.\n"); } <>
+
 
 %%
 PROGRAM:                                                    
@@ -255,6 +255,10 @@ IF_STT:
                 IF EXPRESSION ':' BLOCK
                 | IF EXPRESSION ':' BLOCK ELSE BLOCK
                 | IF '(' EXPRESSION ')' error '{'             {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);}//Error handler
+                | IF error ':'                                {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} '{'
+                | IF EXPRESSION ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the IF statement at line %d\n\n", yylineno);}//Error handler
+                | IF EXPRESSION ':' BLOCK ELSE error '}'      {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}//Error handler
+                //TODO handle opened parenthesis but not closed
                 ;
 
 

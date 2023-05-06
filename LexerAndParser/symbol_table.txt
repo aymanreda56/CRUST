@@ -14,10 +14,10 @@ ID	|Name		|Type	|DataType	|Line	|Scope	|Value		|Args
 11	|ag	|var	|bool		|29	|0	|true		|-
 12	|ah	|var	|bool		|32	|0	|true		|-
 13	|ai	|var	|bool		|33	|0	|true		|-
-14	|x	|var	|int		|69	|8	|471		|-
-15	|errFunc	|func	|int		|69	|0	|0		|14,
-16	|x	|var	|int		|71	|9	|471		|-
-17	|errFunc2	|func	|int		|71	|0	|0		|16,
-18	|x	|var	|int		|76	|10	|471		|-
-19	|x	|var	|int		|77	|11	|471		|-
-20	|errFunc5	|func	|void		|77	|0	|-|19,
+14	|x	|var	|int		|82	|10	|552		|-
+15	|errFunc	|func	|int		|82	|2	|0		|14,
+16	|x	|var	|int		|84	|11	|552		|-
+17	|errFunc2	|func	|int		|84	|2	|0		|16,
+18	|x	|var	|int		|89	|12	|552		|-
+19	|x	|var	|int		|90	|13	|552		|-
+20	|errFunc5	|func	|void		|90	|2	|-|19,
