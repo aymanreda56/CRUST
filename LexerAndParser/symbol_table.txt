@@ -1,23 +1,11 @@
 ID	|Name		|Type	|DataType	|Line	|Scope	|Value		|Args
 -------------------------------------------------------------------------------------------
 0	|p	|var	|float		|7	|0	|3.100000		|-
-1	|z	|var	|bool		|13	|0	|true		|-
-2	|m	|var	|bool		|14	|0	|true		|-
-3	|n	|var	|bool		|17	|0	|true		|-
-4	|l	|var	|bool		|18	|0	|true		|-
-5	|aa	|var	|bool		|20	|0	|true		|-
-6	|ab	|var	|bool		|21	|0	|true		|-
-7	|ac	|var	|bool		|23	|0	|true		|-
-8	|ad	|var	|bool		|24	|0	|true		|-
-9	|ae	|var	|bool		|26	|0	|true		|-
-10	|af	|var	|bool		|28	|0	|true		|-
-11	|ag	|var	|bool		|29	|0	|true		|-
-12	|ah	|var	|bool		|32	|0	|true		|-
-13	|ai	|var	|bool		|33	|0	|true		|-
-14	|x	|var	|int		|82	|10	|552		|-
-15	|errFunc	|func	|int		|82	|2	|0		|14,
-16	|x	|var	|int		|84	|11	|552		|-
-17	|errFunc2	|func	|int		|84	|2	|0		|16,
-18	|x	|var	|int		|89	|12	|552		|-
-19	|x	|var	|int		|90	|13	|552		|-
-20	|errFunc5	|func	|void		|90	|2	|-|19,
+1	|ab	|var	|bool		|21	|0	|true		|-
+2	|ac	|var	|bool		|23	|0	|true		|-
+3	|ad	|var	|bool		|24	|0	|true		|-
+4	|ae	|var	|bool		|26	|0	|true		|-
+5	|af	|var	|bool		|28	|0	|true		|-
+6	|ag	|var	|bool		|29	|0	|true		|-
+7	|ah	|var	|bool		|32	|0	|true		|-
+8	|ai	|var	|bool		|33	|0	|true		|-

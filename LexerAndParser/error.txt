@@ -41,10 +41,33 @@ if :
 if af :
 }
 
+
+
+while x 
+{
+
+}
+
 if af :
-{}
-#else#
-#{#
+{
+    int z = 0;
+}
+
+
+
+
+
+
+while ae :
+
+    
+}
+
+
+while :
+{
+    
+}
 
 
 switch :{

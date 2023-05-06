@@ -141,9 +141,9 @@ DECLARATION_TAIL:
                 | error EXPRESSION   SEMICOLON                                              {printf("\n\n=====ERROR====\n MISSING '=' at line %d\n\n", yylineno);}//Error handler
                 | EQ error SEMICOLON                                                        {printf("\n\n=====ERROR====\n unexpected '=' without second operand at line %d\n\n", yylineno);}//Error handler
                 | SEMICOLON
-                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); yyclearin; yyclearin;} '}'
-                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); yyclearin; yyclearin;} ')'
-                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); yyclearin; yyclearin;} RES_WORD
+                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); } '}'
+                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); } ')'
+                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); } RES_WORD
                 //|                                                                     {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);} '}'
                 | error RES_WORD                                                           {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);} 
                 ;
@@ -183,17 +183,6 @@ ERRONOUS_SWITCH_STT:
 
 
 
-FUNC_CALL:
-                IDENTIFIER '(' USED_ARGS ')'            {printf("#[Parsed_Func_Call]# ");}
-                | IDENTIFIER error ')'                  {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);}//Error handler
-                //| IDENTIFIER '(' USED_ARGS error        {printf("\n=====ERROR====\n unclosed function parenthesis 'case' at line %d\n", yylineno);}//Error handler
-                ;
-USED_ARGS:
-                EXPRESSION ',' USED_ARGS
-                | error ',' USED_ARGS                   {printf("\n\n=====ERROR====\n Missing first argument in function's argument list or erronous ',' at line %d\n\n", yylineno);}//Error handler
-                | EXPRESSION
-                |
-                ;
 
 
 
@@ -235,9 +224,10 @@ ARG_DECL:
 
 
 ENUM_DECLARATION_STT:
-                ENUM IDENTIFIER  '{' ENUM_ARGS '}'          { st_insert("enum" , $2, "var" , 0); }
-                | ENUM IDENTIFIER '{' ENUM_DEFINED_ARGS '}' { st_insert("enum" , $2, "var" , 0); }
+                ENUM IDENTIFIER  '{' ENUM_HELPER '}'          { st_insert("enum" , $2, "var" , 0); }
+                | ERRONOUS_ENUM_DECLARATION_STT
                 ;
+ENUM_HELPER     : ENUM_ARGS | ENUM_DEFINED_ARGS;
 ENUM_ARGS:
                 IDENTIFIER ',' ENUM_ARGS
                 | IDENTIFIER
@@ -246,24 +236,37 @@ ENUM_DEFINED_ARGS:
                 IDENTIFIER EQ EXPRESSION ',' ENUM_DEFINED_ARGS
                 | IDENTIFIER EQ EXPRESSION
                 ;
-
+ERRONOUS_ENUM_DECLARATION_STT:
+                ENUM error '{' ENUM_HELPER '}'              {printf("\n\n=====ERROR====\n missing identifier for ENUM statement at line %d\n\n", yylineno);}
+                | ENUM IDENTIFIER ENUM_HELPER '}'           {printf("\n\n=====ERROR====\n missing opening curly braces for ENUM statement at line %d\n\n", yylineno);}
+                //TODO unclosed parenthesis
+                | ENUM IDENTIFIER '{' error '}'             {printf("\n\n=====ERROR====\n missing arguments in the ENUM statement at line %d\n\n", yylineno);}
+                ;
 
 
 
 
 IF_STT:
                 IF EXPRESSION ':' BLOCK
-                | IF EXPRESSION ':' BLOCK ELSE BLOCK
-                | IF '(' EXPRESSION ')' error '{'             {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);}//Error handler
-                | IF error ':'                                {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} '{'
-                | IF EXPRESSION ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the IF statement at line %d\n\n", yylineno);}//Error handler
                 | IF EXPRESSION ':' BLOCK ELSE error '}'      {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}//Error handler
+                | IF EXPRESSION ':' BLOCK ELSE BLOCK
+                | IF '(' EXPRESSION ')'                {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);} BLOCK
+                | IF       ':'                     {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} BLOCK
+                | IF EXPRESSION ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the IF statement at line %d\n\n", yylineno);}//Error handler
+                
                 //TODO handle opened parenthesis but not closed
                 ;
 
 
 WHILE_STT:
                 WHILE EXPRESSION ':' BLOCK
+                | ERRONOUS_WHILE_STT  BLOCK
+                ;
+
+ERRONOUS_WHILE_STT:
+                WHILE error ':'                               {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);} 
+                | WHILE '(' EXPRESSION ')' error              {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);} 
+                //| WHILE EXPRESSION ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);}//Error handler
                 ;
 
 
@@ -285,6 +288,20 @@ assignmentSTT:
 BLOCK:
                 '{' {scope_start();} PROGRAM '}' {scope_end();}                     {printf("#[Parsed_Block]# ");}
                 //| '{' PROGRAM error                                         {printf("\n=====ERROR====\n Missing closing parenthesis '{' at line %d\n", yylineno);}//Error handler
+                ;
+
+
+
+FUNC_CALL:
+                IDENTIFIER '(' USED_ARGS ')'            {printf("#[Parsed_Func_Call]# ");}
+                | IDENTIFIER error ')'                  {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);}//Error handler
+                //| IDENTIFIER '(' USED_ARGS error        {printf("\n=====ERROR====\n unclosed function parenthesis 'case' at line %d\n", yylineno);}//Error handler
+                ;
+USED_ARGS:
+                EXPRESSION ',' USED_ARGS
+                | error ',' USED_ARGS                   {printf("\n\n=====ERROR====\n Missing first argument in function's argument list or erronous ',' at line %d\n\n", yylineno);}//Error handler
+                | EXPRESSION
+                |
                 ;
 
 
