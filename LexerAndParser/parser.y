@@ -332,7 +332,7 @@ BLOCK:
 
 
 FUNC_CALL:
-                IDENTIFIER {  lookup($1);}'(' USED_ARGS ')'            {printf("#[Parsed_Func_Call]# ");}
+                IDENTIFIER { lookup($1);}'(' USED_ARGS ')'            {printf("#[Parsed_Func_Call]# ");}
                 | IDENTIFIER error ')'                  {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);}//Error handler
                 //| IDENTIFIER '(' USED_ARGS error        {printf("\n=====ERROR====\n unclosed function parenthesis 'case' at line %d\n", yylineno);}//Error handler
                 ;
@@ -467,7 +467,11 @@ int lookup(char* name) {
         if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].outOfScope == 0 ){
             // printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$lookup: %s found in scope %d\n", name, scope_index);
             if (symbolTable[i].isInit == 0 && strcmp(symbolTable[i].type, "var") == 0  ) 
-            {printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name);}
+            {
+            if ( i != assign_index)// 3shan lw kan el var 3la el LHS s3tha 3ady ex: int x=9; int z; z =x;
+            {
+                printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name);}
+            }
             return i;
         }
     }
@@ -546,6 +550,15 @@ void check_type( int i) {
     {
         printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );
     }
+    else
+    {
+        symbolTable[assign_index].isInit=1;
+        // assign value to the variable
+        if ( symbolTable[i].dataType == "int") {symbolTable[assign_index].intValue= symbolTable[i].intValue ;}
+        else if (symbolTable[i].dataType == "float"){symbolTable[assign_index].floatValue= symbolTable[i].floatValue ;}
+        else if (symbolTable[i].dataType == "string"){symbolTable[assign_index].strValue= symbolTable[i].strValue ;}
+        else if (symbolTable[i].dataType == "bool"){symbolTable[assign_index].boolValue= symbolTable[i].boolValue ;}
+    }
 }
 //----------------------------------------------- PRINT SYMBOL TABLE ----------------------------------------------------
 void st_print() {
@@ -570,7 +583,7 @@ void st_print() {
         else if (strcmp(entry->dataType,"bool")==0) {fprintf(fp,"%s\t\t|", entry->boolValue ? "true" : "false");}
         else if (strcmp(entry->dataType,"string")==0) {fprintf(fp, "%s\t\t|", entry->strValue);}
         }
-        else {fprintf(fp, "-|");}
+        else {fprintf(fp, "-\t\t|");}
         //---- print arguments of functions
         if (strcmp(entry->type, "func") == 0)
         {
