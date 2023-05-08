@@ -12,11 +12,12 @@
     extern FILE *yyout;
     extern int line_number;
     //TODO  add float and int, add string values ...
-    //TODO if you have 2 x in diffrent scopes and both are in your scope take the closet 
+    //TODO if you have 2 x in diffrent scopes and both are in valid scopes take the closet DONE
     //TODO unused variables
+    //TODO type mismatch lel < > w kda
     ///TODOS
     // ''' 1- symbol table: 
-    // store enum value , check el type w kda 
+    // store enum value , check el type bta3o w kda 
     // 2- error handling:
     //   type checking ,const value change, undeclared variables, used before assign, scope checking, function call checking,
     //  function return type checking + feh return wla la2 aslan , function argument checking, function
@@ -440,7 +441,7 @@ int yywrap()
 {
     return 1;
 }
-//------------------------------------------ SYMBOL TABLE---------------------------------------------
+//--------------------------------------------------- SYMBOL TABLE---------------------------------------------
 int is_exist(char* name){
     for (int i = 0; i < st_index; i++){
         //TODO SCOPE CHECK
@@ -456,10 +457,13 @@ int lookup(char* name) {
     // If the symbol exists, it returns its index in the table.
     // 
     // printf("lookup: %s\n", name);
+    // printf("lookup: st_index = %d\n", st_index);
     // printf("lookup: scope_index = %d\n", scope_index);
-    for (int i = 0; i < st_index; i++){
+    // loop on the table from down to up to take the variable from the closest scope as closet one will
+    // be with higher index in the table
+    for (int i = st_index-1 ; i >= 0; i--){
         if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].outOfScope == 0 ){
-            // printf("lookup: %s found in scope %d\n", name, scope_index);
+            // printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$lookup: %s found in scope %d\n", name, scope_index);
             if (symbolTable[i].isInit == 0)
             {printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name);}
             return i;
@@ -552,12 +556,12 @@ void st_print() {
         exit(1);
     }
     //----- write symbol table header
-    fprintf(fp, "ID\t|Name\t\t|Type\t|DataType\t|Line\t|Scope\tisInit\t|Value\t\t|Args\n");
+    fprintf(fp, "ID\t|Name\t|Type\t|DataType\t|Line\t|Scope\tisInit\t|Value\t\t|Args\n");
     fprintf(fp, "-------------------------------------------------------------------------------------------\n");
     //----- write symbol table entries
     for(int i=0; i< st_index; i++) {
         struct Entry *entry = &symbolTable[i];
-        fprintf(fp, "%d\t|%s\t|%s\t|%s\t\t|%d\t|%d\t|%d\t", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope,entry->isInit);
+        fprintf(fp, "%d\t|%s\t|%s\t|%s\t\t|%d\t|%d\t|%d\t|", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope,entry->isInit);
         //---- store value of entry
         if (entry->isInit == 1) {
         if (strcmp(entry->dataType,"int")==0) {fprintf(fp, "%d\t\t|", entry->intValue);}
