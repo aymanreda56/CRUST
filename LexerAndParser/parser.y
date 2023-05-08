@@ -13,9 +13,9 @@
     extern int line_number;
     ///TODOS
     // ''' 1- symbol table: 
-    // store enum value 
+    // store enum value , check el type w kda 
     // 2- error handling:
-    //   type checking ,const value change, undeclared variables, scope checking, function call checking,
+    //   type checking ,const value change, undeclared variables, used before assign, scope checking, function call checking,
     //  function return type checking + feh return wla la2 aslan , function argument checking, function
     //   argument type checking, function argument count checking, function argument order checking '''
     //--------------------- Symbol Table -----------------
@@ -36,6 +36,7 @@
     struct Entry symbolTable[500]; //TODO: need to be dynamic?
     int st_index=0;
     int in_loop=0;
+    int assign_index=-1;
     //-- symbol table functions:  st_functionName()
     void st_insert(char* data_type, char* name, char* type, int is_arg);
     void st_print();
@@ -49,10 +50,10 @@
     void scope_end();
     //--- handle errors
     // void check_const(int index);
-    void assign_int( int d);
-    void assign_str( char* s);
-    void assign_bool( bool b);
-    void assign_float( float f);
+    void assign_int( int d , int i);
+    void assign_str( char* s , int i);
+    void assign_bool( bool b , int i);
+    void assign_float( float f , int i);
 
 
 %}
@@ -69,7 +70,7 @@
 #include<stdbool.h>
 }
 
-%token INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM
+%token INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM 
 %token EQUALITY NEG_EQUALITY
 %token SWITCH CASE
 %token LOGIC_AND LOGIC_OR LOGIC_NOT
@@ -89,7 +90,7 @@
 %left '}'
 
 
-%type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM
+%type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM 
 %type <float_val> FLOAT_DIGIT
 %type <num> DIGIT
 %type <bool_val> BOOL_LITERAL
@@ -138,8 +139,8 @@ TYPE:
                 ;
 
 DECLARATION_STT:                                                            
-                TYPE IDENTIFIER {st_insert($1, $2,"var",0); }   DECLARATION_TAIL            {printf("#[Parsed_Declaration]# ");}
-                | TYPE CONSTANT {st_insert($1, $2,"const",0);}  DECLARATION_TAIL            {printf("#[Parsed_CONST_Declaration]# "); }
+                TYPE IDENTIFIER {st_insert($1, $2,"var",0); assign_index= st_index-1; }   DECLARATION_TAIL            {printf("#[Parsed_Declaration]# "); }
+                | TYPE CONSTANT {st_insert($1, $2,"const",0);  assign_index= st_index-1;}  DECLARATION_TAIL            {printf("#[Parsed_CONST_Declaration]# "); }
                 | error IDENTIFIER    SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING variable type at line %d\n\n", yylineno);}//Error handler
                 | error CONSTANT      SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING constant type at line %d\n\n", yylineno);}//Error handler
                 | TYPE IDENTIFIER IDENTIFIER SEMICOLON                                      {printf("\n\n=====ERROR====\n unexpected identifier %s at line %d\n\n",$3, yylineno);}
@@ -147,10 +148,10 @@ DECLARATION_STT:
 
 
 DECLARATION_TAIL:
-                EQ EXPRESSION   SEMICOLON
+                EQ EXPRESSION  SEMICOLON 
                 | error EXPRESSION   SEMICOLON                                              {printf("\n\n=====ERROR====\n MISSING '=' at line %d\n\n", yylineno);}//Error handler
                 | EQ error SEMICOLON                                                        {printf("\n\n=====ERROR====\n unexpected '=' without second operand at line %d\n\n", yylineno);}//Error handler
-                | SEMICOLON
+                | SEMICOLON 
                 | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); } '}'
                 | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); } ')'
                 | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); } RES_WORD
@@ -307,11 +308,11 @@ ERRONOUS_FOR_LOOP:
                 //TODO 7agat keteeer, ana ma5noooo2   >:(
                 ;
 
-//TODO hl m7taga a7ot call lel lookup t7t? 
+//TODO hl m7taga a7ot call lel lookup t7t? i think yes bs kda kda da error so no need to store assign index 
 assignmentSTT:
-                IDENTIFIER EQ { int i =lookup($1); } EXPRESSION SEMICOLON          {printf("#[Parsed_Assignment]# ");}
-                | IDENTIFIER error EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
-                | IDENTIFIER {lookup($1);} EQ SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
+                IDENTIFIER EQ { int assign_index =lookup($1); } EXPRESSION SEMICOLON          {printf("#[Parsed_Assignment]# ");}
+                | IDENTIFIER { lookup($1);} error EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
+                | IDENTIFIER { lookup($1);} EQ SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
                 ;
 
 
@@ -339,10 +340,10 @@ USED_ARGS:
 EXPRESSION:
                 
                 IDENTIFIER  { lookup($1); }
-                | DIGIT { assign_int($1) ;}
-                | FLOAT_DIGIT { assign_float($1); }
-                | BOOL_LITERAL  { assign_bool($1); }
-                | STRING_LITERAL  {  assign_str($1); }
+                | DIGIT { assign_int($1, assign_index) ;}
+                | FLOAT_DIGIT { assign_float($1,assign_index); }
+                | BOOL_LITERAL  { assign_bool($1, assign_index); }
+                | STRING_LITERAL  {  assign_str($1 ,assign_index); }
                 | CONSTANT
                 | EXPRESSION PLUS PLUS
                 | EXPRESSION SUB SUB
@@ -469,7 +470,7 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     //----- check if name is already in symbol table
     int L=is_exist(name) ;
     if (L != -1){
-        printf("\n !!!!!!!!!!!! Error: %s is already declared in this scope at line %d !!!!!!!!!!!\n", name, L);
+        printf("\n !!!!!!!!!!!! Error at line %d: %s is already declared in this scope at line %d !!!!!!!!!!!\n",line_number, name, L);
     }
     //------ set new entry values
     newEntry.name = name;
@@ -479,6 +480,7 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     newEntry.id = st_index;
     newEntry.isArg = is_arg;
     newEntry.outOfScope = 0;
+    newEntry.isInit = 0;// assume all uninitialized untill assign 
     //----- set scope (if it's an argument, scope is the next scope)
     if (is_arg == 1 || in_loop == 1){ newEntry.scope = block_number+1;}
     else {newEntry.scope = scope_stack[scope_index];}
@@ -504,23 +506,29 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
 //         printf("\n !!!!!!!!!!!! Error at line %d: %s is a constant variable !!!!!!!!!!!\n", line_number, symbolTable[index].name);
 //     }
 // }
-void assign_int (int d ) {
-    if (symbolTable[st_index-1].dataType == "int"){symbolTable[st_index-1].intValue= d ;}
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s integer variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[st_index-1].name, symbolTable[st_index-1].dataType );}
+void assign_int (int d , int i) {
+    if (symbolTable[i].dataType == "int") {symbolTable[i].intValue= d ;
+    printf("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF %s \n", symbolTable[i].name);
+    symbolTable[i].isInit= 1 ;
+    }
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );}
 }
-void assign_float( float f) {
-    if (symbolTable[st_index-1].dataType == "float"){symbolTable[st_index-1].floatValue= f ;}
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[st_index-1].name,symbolTable[st_index-1].dataType );}
+void assign_float( float f, int i) {
+    if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= f ;
+    symbolTable[i].isInit= 1 ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
 }
-void assign_str( char* s) {
-    if (symbolTable[st_index-1].dataType == "string"){symbolTable[st_index-1].strValue= s ;}
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned string value !!!!!!!!!!!\n", line_number, symbolTable[st_index-1].name,symbolTable[st_index-1].dataType );}
+void assign_str( char* s , int i) {
+    if (symbolTable[i].dataType == "string"){symbolTable[i].strValue= s ;
+    symbolTable[i].isInit= 1 ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned string value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
 }
-void assign_bool( bool b) {
-    if (symbolTable[st_index-1].dataType == "bool"){symbolTable[st_index-1].boolValue= b ;}
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[st_index-1].name,symbolTable[st_index-1].dataType );}
+void assign_bool( bool b , int i) {
+    if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;
+    symbolTable[i].isInit= 1 ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
 }
-//---------------------------------- PRINT SYMBOL TABLE ----------------------------------------------------
+//----------------------------------------------- PRINT SYMBOL TABLE ----------------------------------------------------
 void st_print() {
     //----- write symbol table to file
     FILE *fp = fopen("symbol_table.txt", "w");
@@ -530,17 +538,19 @@ void st_print() {
         exit(1);
     }
     //----- write symbol table header
-    fprintf(fp, "ID\t|Name\t\t|Type\t|DataType\t|Line\t|Scope\t|Value\t\t|Args\n");
+    fprintf(fp, "ID\t|Name\t\t|Type\t|DataType\t|Line\t|Scope\tisInit\t|Value\t\t|Args\n");
     fprintf(fp, "-------------------------------------------------------------------------------------------\n");
     //----- write symbol table entries
     for(int i=0; i< st_index; i++) {
         struct Entry *entry = &symbolTable[i];
-        fprintf(fp, "%d\t|%s\t|%s\t|%s\t\t|%d\t|%d\t|", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope);
+        fprintf(fp, "%d\t|%s\t|%s\t|%s\t\t|%d\t|%d\t|%d\t", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope,entry->isInit);
         //---- store value of entry
+        if (entry->isInit == 1) {
         if (strcmp(entry->dataType,"int")==0) {fprintf(fp, "%d\t\t|", entry->intValue);}
         else if (strcmp(entry->dataType,"float")==0) {fp, fprintf(fp, "%f\t\t|", entry->floatValue);}
         else if (strcmp(entry->dataType,"bool")==0) {fprintf(fp,"%s\t\t|", entry->boolValue ? "true" : "false");}
         else if (strcmp(entry->dataType,"string")==0) {fprintf(fp, "%s\t\t|", entry->strValue);}
+        }
         else {fprintf(fp, "-|");}
         //---- print arguments of functions
         if (strcmp(entry->type, "func") == 0)
@@ -556,7 +566,7 @@ void st_print() {
     }
     fclose(fp);
 }
-//------------------------------------------- HANDLE SCOPE -----------------------------------------
+//--------------------------------------------------- HANDLE SCOPE ---------------------------------------------------
 void scope_start(){
     //----- increment block number and scope index
     block_number++;
