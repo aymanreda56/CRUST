@@ -15,7 +15,7 @@
     // ''' 1- symbol table: 
     // store enum value 
     // 2- error handling:
-    //   type checking ,const value change, scope checking, function call checking,
+    //   type checking ,const value change, undeclared variables, scope checking, function call checking,
     //  function return type checking + feh return wla la2 aslan , function argument checking, function
     //   argument type checking, function argument count checking, function argument order checking '''
     //--------------------- Symbol Table -----------------
@@ -432,11 +432,12 @@ int yywrap()
 //------------------------------------------ SYMBOL TABLE---------------------------------------------
 int is_exist(char* name){
     for (int i = 0; i < st_index; i++){
+        //TODO SCOPE CHECK
         if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].scope == scope_index){
-            return 1;
+            return symbolTable[i].declareLine;
         }
     }
-    return 0;
+    return -1;
 }
 int lookup(char* name) {
     // 
@@ -460,8 +461,9 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     //------ create new entry
     struct Entry newEntry ;
     //----- check if name is already in symbol table
-    if (is_exist(name) == 1){
-        printf("\n !!!!!!!!!!!! Error: %s is already declared in this scope !!!!!!!!!!!\n", name);
+    int L=is_exist(name) ;
+    if (L != -1){
+        printf("\n !!!!!!!!!!!! Error: %s is already declared in this scope at line %d !!!!!!!!!!!\n", name, L);
         exit(1);
     }
     //------ set new entry values
