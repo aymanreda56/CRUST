@@ -43,6 +43,7 @@
     int st_index=0;
     int in_loop=0;
     int assign_index=-1;
+    int isParam=0;
     //-- symbol table functions:  st_functionName()
     void st_insert(char* data_type, char* name, char* type, int is_arg);
     void st_print();
@@ -332,7 +333,7 @@ BLOCK:
 
 
 FUNC_CALL:
-                IDENTIFIER { lookup($1);}'(' USED_ARGS ')'            {printf("#[Parsed_Func_Call]# ");}
+                IDENTIFIER {int i = lookup($1); check_type(i);} '(' { isParam =1;}  USED_ARGS { isParam =0;}  ')'            {printf("#[Parsed_Func_Call]# ");}
                 | IDENTIFIER error ')'                  {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);}//Error handler
                 //| IDENTIFIER '(' USED_ARGS error        {printf("\n=====ERROR====\n unclosed function parenthesis 'case' at line %d\n", yylineno);}//Error handler
                 ;
@@ -351,17 +352,16 @@ EXPRESSION:
                 | FLOAT_DIGIT { assign_float($1, assign_index); }
                 | BOOL_LITERAL  { assign_bool($1, assign_index); }
                 | STRING_LITERAL  {  assign_str($1, assign_index); }
-                | CONSTANT
+                | CONSTANT // TODO need to assign te value of the constant to the assign_index
                 | EXPRESSION PLUS PLUS
                 | EXPRESSION SUB SUB
-                
                 | EXPRESSION PLUS EXPRESSION
                 | EXPRESSION SUB EXPRESSION
                 | EXPRESSION MUL EXPRESSION
                 | EXPRESSION DIV EXPRESSION
                 | EXPRESSION POW EXPRESSION
                 | COMPARISONSTT
-                | FUNC_CALL                                 
+                | FUNC_CALL {}                                
                 | '(' EXPRESSION ')'
                 | ERRONOUS_EXPRESSION           {printf("\n\n=====ERROR====\n Expression error at line %d\n\n", yylineno);}
                 ;
@@ -516,12 +516,6 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     st_index++; // increment symbol table index
 }
 //---------------------------------- HANDLE TYPE MISMATCH ERRORS ------------------------------------------------------------------
-// void check_const(int index) {
-
-//     if (strcmp( symbolTable[index].type, "const") == 0) {
-//         printf("\n !!!!!!!!!!!! Error at line %d: %s is a constant variable !!!!!!!!!!!\n", line_number, symbolTable[index].name);
-//     }
-// }
 
 // for declaration statments take the st_index -1 3shan lesa m3molo insert but for assignment 3ady take assign_index coming from lookup function
 void assign_int (int d , int i) {
@@ -545,18 +539,21 @@ void assign_bool( bool b , int i) {
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
 }
 void check_type( int i) {
+    if ( isParam == 1) { return ;}
 
     if (i != -1 && symbolTable[i].dataType != symbolTable[assign_index].dataType)
     {
-        printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );
+        if (strcmp(symbolTable[i].type,"func")== 0){ printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s return value is %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
+        else {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
     }
     else
     {
         symbolTable[assign_index].isInit=1;
+         printf("\n 1 !!! \n" );
         // assign value to the variable
-        if ( symbolTable[i].dataType == "int") {symbolTable[assign_index].intValue= symbolTable[i].intValue ;}
+        if ( strcmp(symbolTable[i].dataType,"int") ==0) {symbolTable[assign_index].intValue= symbolTable[i].intValue ;}
         else if (symbolTable[i].dataType == "float"){symbolTable[assign_index].floatValue= symbolTable[i].floatValue ;}
-        else if (symbolTable[i].dataType == "string"){symbolTable[assign_index].strValue= symbolTable[i].strValue ;}
+        else if ( strcmp(symbolTable[i].dataType, "string")==0){symbolTable[assign_index].strValue= symbolTable[i].strValue ;}
         else if (symbolTable[i].dataType == "bool"){symbolTable[assign_index].boolValue= symbolTable[i].boolValue ;}
     }
 }
