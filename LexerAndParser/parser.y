@@ -12,7 +12,8 @@
     extern FILE *yyout;
     extern int line_number;
     //TODO  add float and int, add string values ...
-    //TODO string x="D"; int y = x;
+    //TODO if you have 2 x in diffrent scopes and both are in your scope take the closet 
+    //TODO unused variables
     ///TODOS
     // ''' 1- symbol table: 
     // store enum value , check el type w kda 
@@ -51,6 +52,7 @@
     void scope_start();
     void scope_end();
     //--- handle errors
+    void check_type( int i);
     // void check_const(int index);
     void assign_int( int d , int i);
     void assign_str( char* s , int i);
@@ -312,7 +314,7 @@ ERRONOUS_FOR_LOOP:
 
 //TODO hl m7taga a7ot call lel lookup t7t? i think yes bs kda kda da error so no need to store assign index 
 assignmentSTT:
-                IDENTIFIER EQ { int assign_index =lookup($1); } EXPRESSION SEMICOLON          {printf("#[Parsed_Assignment]# ");}
+                IDENTIFIER EQ { assign_index =lookup($1); } EXPRESSION SEMICOLON          {printf("#[Parsed_Assignment]# ");}
                 | IDENTIFIER { lookup($1);} error EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
                 | IDENTIFIER { lookup($1);} EQ SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
                 ;
@@ -341,11 +343,11 @@ USED_ARGS:
 
 EXPRESSION:
                 
-                IDENTIFIER  { lookup($1); }
+                IDENTIFIER  { int i = lookup($1); check_type(i); }
                 | DIGIT { assign_int($1, assign_index) ;}
-                | FLOAT_DIGIT { assign_float($1,assign_index); }
+                | FLOAT_DIGIT { assign_float($1, assign_index); }
                 | BOOL_LITERAL  { assign_bool($1, assign_index); }
-                | STRING_LITERAL  {  assign_str($1 ,assign_index); }
+                | STRING_LITERAL  {  assign_str($1, assign_index); }
                 | CONSTANT
                 | EXPRESSION PLUS PLUS
                 | EXPRESSION SUB SUB
@@ -456,7 +458,7 @@ int lookup(char* name) {
     // printf("lookup: %s\n", name);
     // printf("lookup: scope_index = %d\n", scope_index);
     for (int i = 0; i < st_index; i++){
-        if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].outOfScope == 0){
+        if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].outOfScope == 0 ){
             // printf("lookup: %s found in scope %d\n", name, scope_index);
             if (symbolTable[i].isInit == 0)
             {printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name);}
@@ -510,6 +512,8 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
 //         printf("\n !!!!!!!!!!!! Error at line %d: %s is a constant variable !!!!!!!!!!!\n", line_number, symbolTable[index].name);
 //     }
 // }
+
+// for declaration statments take the st_index -1 3shan lesa m3molo insert but for assignment 3ady take assign_index coming from lookup function
 void assign_int (int d , int i) {
     if (symbolTable[i].dataType == "int") {symbolTable[i].intValue= d ;
     symbolTable[i].isInit= 1 ;
@@ -530,6 +534,13 @@ void assign_bool( bool b , int i) {
     if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;
     symbolTable[i].isInit= 1 ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+}
+void check_type( int i) {
+
+    if (i != -1 && symbolTable[i].dataType != symbolTable[assign_index].dataType)
+    {
+        printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );
+    }
 }
 //----------------------------------------------- PRINT SYMBOL TABLE ----------------------------------------------------
 void st_print() {
