@@ -456,7 +456,7 @@ int is_exist(char* name){
 int lookup(char* name) {
     // 
     // This method returns -1 if the symbol does not exist in the symbol table. 
-    // If the symbol exists, it returns its index in the table.
+    // If the symbol ex ists, it returns its index in the table.
     // 
     // printf("lookup: %s\n", name);
     // printf("lookup: st_index = %d\n", st_index);
@@ -521,24 +521,23 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
 
 // for declaration statments take the st_index -1 3shan lesa m3molo insert but for assignment 3ady take assign_index coming from lookup function
 void assign_int (int d , int i) {
-    if (symbolTable[i].dataType == "int") {symbolTable[i].intValue= d ;
     symbolTable[i].isInit= 1 ;
-    }
+    if (symbolTable[i].dataType == "int") {symbolTable[i].intValue= d ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );}
 }
 void assign_float( float f, int i) {
-    if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= f ;
-    symbolTable[i].isInit= 1 ;}
+    symbolTable[i].isInit= 1 ;
+    if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= f ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
 }
 void assign_str( char* s , int i) {
-    if (symbolTable[i].dataType == "string"){symbolTable[i].strValue= s ;
-    symbolTable[i].isInit= 1 ;}
+    symbolTable[i].isInit= 1 ;
+    if (symbolTable[i].dataType == "string"){symbolTable[i].strValue= s ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned string value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
 }
 void assign_bool( bool b , int i) {
-    if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;
-    symbolTable[i].isInit= 1 ;}
+    symbolTable[i].isInit= 1 ;
+    if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
 }
 void check_type( int i) {
