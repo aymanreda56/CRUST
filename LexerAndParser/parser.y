@@ -41,6 +41,7 @@
     void st_insert(char* data_type, char* name, char* type, int is_arg);
     void st_print();
     int is_exist(char* name);
+    int lookup(char* name);
     //--- handle scope
     int scope_index=0;
     int block_number=0;
@@ -331,7 +332,7 @@ USED_ARGS:
 
 EXPRESSION:
                 
-                IDENTIFIER
+                IDENTIFIER  { lookup($1); }
                 | DIGIT { symbolTable[st_index-1].intValue= $1 ;}
                 | FLOAT_DIGIT { symbolTable[st_index-1].floatValue= $1 ;}
                 | BOOL_LITERAL  { symbolTable[st_index-1].boolValue= $1 ;}
@@ -437,9 +438,25 @@ int is_exist(char* name){
     }
     return 0;
 }
+int lookup(char* name) {
+    // 
+    // This method returns -1 if the symbol does not exist in the symbol table. If the symbol exists in the symbol table, 
+    // it returns its index in the table.
+    // 
+    printf("lookup: %s\n", name);
+    printf("lookup: scope_index = %d\n", scope_index);
+    for (int i = 0; i < st_index; i++){
+        if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].scope == scope_index){
+            printf("lookup: %s found in scope %d\n", name, scope_index);
+            return i;
+        }
+    }
+    printf("\n !!!!!!!!!!!! Error: %s undeclared variable in this scope !!!!!!!!!!!\n", name);
+    return -1;
+}
 //-------------------------------------- INSERT IN SYMBOL TABLE  ----------------------------------I
 void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
-    printf("##############################################");
+
     //------ create new entry
     struct Entry newEntry ;
     //----- check if name is already in symbol table
