@@ -11,15 +11,17 @@
     extern FILE *yyin;
     extern FILE *yyout;
     extern int line_number;
-    //TODO  add float and int, add string values ...
+    //TODO  add float and int DONE
     //TODO if you have 2 x in diffrent scopes and both are in valid scopes take the closet DONE
     //TODO unused variables
     //TODO type mismatch lel < > w kda
+    //TODO division by zero
     ///TODOS
     // ''' 1- symbol table: 
     // store enum value , check el type bta3o w kda 
     // 2- error handling:
-    //   type checking ,const value change, undeclared variables, used before assign, scope checking, function call checking,
+    //   type checking (DONE) ,const value change, undeclared variables (DONE), used before assign (DONE)
+    //, scope checking (DONE), function call checking,
     //  function return type checking + feh return wla la2 aslan , function argument checking, function
     //   argument type checking, function argument count checking, function argument order checking '''
     //--------------------- Symbol Table -----------------
@@ -330,7 +332,7 @@ BLOCK:
 
 
 FUNC_CALL:
-                IDENTIFIER '(' USED_ARGS ')'            {printf("#[Parsed_Func_Call]# ");}
+                IDENTIFIER {  lookup($1);}'(' USED_ARGS ')'            {printf("#[Parsed_Func_Call]# ");}
                 | IDENTIFIER error ')'                  {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);}//Error handler
                 //| IDENTIFIER '(' USED_ARGS error        {printf("\n=====ERROR====\n unclosed function parenthesis 'case' at line %d\n", yylineno);}//Error handler
                 ;
@@ -464,12 +466,12 @@ int lookup(char* name) {
     for (int i = st_index-1 ; i >= 0; i--){
         if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].outOfScope == 0 ){
             // printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$lookup: %s found in scope %d\n", name, scope_index);
-            if (symbolTable[i].isInit == 0)
+            if (symbolTable[i].isInit == 0 && strcmp(symbolTable[i].type, "var") == 0  ) 
             {printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name);}
             return i;
         }
     }
-    printf("\n !!!!!!!!!!!! Error at line %d: %s undeclared variable in this scope !!!!!!!!!!!\n", line_number, name);
+    printf("\n !!!!!!!!!!!! Error at line %d: %s undeclared identifier in this scope !!!!!!!!!!!\n", line_number, name);
     return -1;
 }
 //-------------------------------------- INSERT IN SYMBOL TABLE  ----------------------------------I
