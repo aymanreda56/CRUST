@@ -32,7 +32,7 @@
         int argList[100];
         int argCount;
         int declareLine;
-        int isConst, isArg, isUsed, isInit;
+        int isConst, isArg, isUsed, isInit, outOfScope;
     };
     struct Entry symbolTable[500];
     int st_index=0;
@@ -441,13 +441,13 @@ int is_exist(char* name){
 }
 int lookup(char* name) {
     // 
-    // This method returns -1 if the symbol does not exist in the symbol table. If the symbol exists in the symbol table, 
-    // it returns its index in the table.
+    // This method returns -1 if the symbol does not exist in the symbol table. 
+    // If the symbol exists, it returns its index in the table.
     // 
     printf("lookup: %s\n", name);
     printf("lookup: scope_index = %d\n", scope_index);
     for (int i = 0; i < st_index; i++){
-        if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].scope == scope_index){
+        if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].outOfScope == 0){
             printf("lookup: %s found in scope %d\n", name, scope_index);
             return i;
         }
@@ -473,6 +473,7 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     newEntry.type = type;
     newEntry.id = st_index;
     newEntry.isArg = is_arg;
+    newEntry.outOfScope = 0;
     //----- set scope (if it's an argument, scope is the next scope)
     if (is_arg == 1 || in_loop == 1){ newEntry.scope = block_number+1;}
     else {newEntry.scope = scope_stack[scope_index];}
@@ -535,7 +536,13 @@ void scope_start(){
     scope_stack[scope_index] = block_number;
 }
 void scope_end(){
-    scope_index--; // decrement scope index
+    //----- make all symbols in this scope out of scope
+    for (int i = 0; i < st_index; i++){
+        if (symbolTable[i].scope == scope_stack[scope_index]){
+            symbolTable[i].outOfScope = 1;
+        }
+    }
+    scope_index--; // decrement scope index   
 }
 //------------------------------------------- MAIN -------------------------------
 int main(int argc, char *argv[])
