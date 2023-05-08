@@ -11,6 +11,8 @@
     extern FILE *yyin;
     extern FILE *yyout;
     extern int line_number;
+    //TODO  add float and int, add string values ...
+    //TODO string x="D"; int y = x;
     ///TODOS
     // ''' 1- symbol table: 
     // store enum value , check el type w kda 
@@ -456,6 +458,8 @@ int lookup(char* name) {
     for (int i = 0; i < st_index; i++){
         if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].outOfScope == 0){
             // printf("lookup: %s found in scope %d\n", name, scope_index);
+            if (symbolTable[i].isInit == 0)
+            {printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name);}
             return i;
         }
     }
@@ -508,7 +512,6 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
 // }
 void assign_int (int d , int i) {
     if (symbolTable[i].dataType == "int") {symbolTable[i].intValue= d ;
-    printf("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF %s \n", symbolTable[i].name);
     symbolTable[i].isInit= 1 ;
     }
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );}
