@@ -301,11 +301,11 @@ ERRONOUS_FOR_LOOP:
                 //TODO 7agat keteeer, ana ma5noooo2   >:(
                 ;
 
-
+//TODO hl m7taga a7ot call lel lookup t7t? 
 assignmentSTT:
-                IDENTIFIER EQ EXPRESSION SEMICOLON          {printf("#[Parsed_Assignment]# ");}
+                IDENTIFIER {lookup($1);} EQ EXPRESSION SEMICOLON          {printf("#[Parsed_Assignment]# ");}
                 | IDENTIFIER error EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
-                | IDENTIFIER EQ SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
+                | IDENTIFIER {lookup($1);} EQ SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
                 ;
 
 
@@ -452,7 +452,7 @@ int lookup(char* name) {
             return i;
         }
     }
-    printf("\n !!!!!!!!!!!! Error: %s undeclared variable in this scope !!!!!!!!!!!\n", name);
+    printf("\n !!!!!!!!!!!! Error at line %d: %s undeclared variable in this scope !!!!!!!!!!!\n", line_number, name);
     return -1;
 }
 //-------------------------------------- INSERT IN SYMBOL TABLE  ----------------------------------I
