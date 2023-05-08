@@ -1,0 +1,31 @@
+int x0=9;
+float y0 = 5.5;
+if y0 < 4.5:
+{
+
+    float x1 =8.5;
+    if y0 == 5.5 :
+    {
+        y0=x1;
+
+        bool y2=true;
+        if y2 == false:
+        {
+        int c3=0;
+        int x3 =8;
+        x3=c3;
+
+        }
+        int g2=4;
+    }
+
+    if y0 == 4.5:
+    {
+    int x4;
+    }
+
+    int h1;
+}
+int z0=6;
+x0=z0;
+
