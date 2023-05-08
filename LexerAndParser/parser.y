@@ -25,7 +25,6 @@
         float floatValue;
         bool boolValue;
         char* strValue; 
-        // struct Type dataType;
         char* type; // var,const, func
         char* dataType; // int, float, bool, string (for func: return type)
         // list of arguments stored as IDs of them symbol table
@@ -34,7 +33,7 @@
         int declareLine;
         int isConst, isArg, isUsed, isInit, outOfScope;
     };
-    struct Entry symbolTable[500];
+    struct Entry symbolTable[500]; //TODO: need to be dynamic?
     int st_index=0;
     int in_loop=0;
     //-- symbol table functions:  st_functionName()
@@ -48,6 +47,13 @@
     int scope_stack[500]; // stack of scopes (for nested scopes to store block number)
     void scope_start();
     void scope_end();
+    //--- handle errors
+    // void check_const(int index);
+    void assign_int( int d);
+    void assign_str( char* s);
+    void assign_bool( bool b);
+    void assign_float( float f);
+
 
 %}
 
@@ -303,7 +309,7 @@ ERRONOUS_FOR_LOOP:
 
 //TODO hl m7taga a7ot call lel lookup t7t? 
 assignmentSTT:
-                IDENTIFIER {lookup($1);} EQ EXPRESSION SEMICOLON          {printf("#[Parsed_Assignment]# ");}
+                IDENTIFIER EQ { int i =lookup($1); } EXPRESSION SEMICOLON          {printf("#[Parsed_Assignment]# ");}
                 | IDENTIFIER error EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
                 | IDENTIFIER {lookup($1);} EQ SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
                 ;
@@ -333,10 +339,10 @@ USED_ARGS:
 EXPRESSION:
                 
                 IDENTIFIER  { lookup($1); }
-                | DIGIT { symbolTable[st_index-1].intValue= $1 ;}
-                | FLOAT_DIGIT { symbolTable[st_index-1].floatValue= $1 ;}
-                | BOOL_LITERAL  { symbolTable[st_index-1].boolValue= $1 ;}
-                | STRING_LITERAL  { symbolTable[st_index-1].strValue= $1 ;}
+                | DIGIT { assign_int($1) ;}
+                | FLOAT_DIGIT { assign_float($1); }
+                | BOOL_LITERAL  { assign_bool($1); }
+                | STRING_LITERAL  {  assign_str($1); }
                 | CONSTANT
                 | EXPRESSION PLUS PLUS
                 | EXPRESSION SUB SUB
@@ -444,11 +450,11 @@ int lookup(char* name) {
     // This method returns -1 if the symbol does not exist in the symbol table. 
     // If the symbol exists, it returns its index in the table.
     // 
-    printf("lookup: %s\n", name);
-    printf("lookup: scope_index = %d\n", scope_index);
+    // printf("lookup: %s\n", name);
+    // printf("lookup: scope_index = %d\n", scope_index);
     for (int i = 0; i < st_index; i++){
         if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].outOfScope == 0){
-            printf("lookup: %s found in scope %d\n", name, scope_index);
+            // printf("lookup: %s found in scope %d\n", name, scope_index);
             return i;
         }
     }
@@ -464,7 +470,6 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     int L=is_exist(name) ;
     if (L != -1){
         printf("\n !!!!!!!!!!!! Error: %s is already declared in this scope at line %d !!!!!!!!!!!\n", name, L);
-        exit(1);
     }
     //------ set new entry values
     newEntry.name = name;
@@ -491,6 +496,29 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     //------ insert new entry to symbol table
     symbolTable[st_index] = newEntry;
     st_index++; // increment symbol table index
+}
+//---------------------------------- HANDLE TYPE MISMATCH ERRORS ------------------------------------------------------------------
+// void check_const(int index) {
+
+//     if (strcmp( symbolTable[index].type, "const") == 0) {
+//         printf("\n !!!!!!!!!!!! Error at line %d: %s is a constant variable !!!!!!!!!!!\n", line_number, symbolTable[index].name);
+//     }
+// }
+void assign_int (int d ) {
+    if (symbolTable[st_index-1].dataType == "int"){symbolTable[st_index-1].intValue= d ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s integer variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[st_index-1].name, symbolTable[st_index-1].dataType );}
+}
+void assign_float( float f) {
+    if (symbolTable[st_index-1].dataType == "float"){symbolTable[st_index-1].floatValue= f ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[st_index-1].name,symbolTable[st_index-1].dataType );}
+}
+void assign_str( char* s) {
+    if (symbolTable[st_index-1].dataType == "string"){symbolTable[st_index-1].strValue= s ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned string value !!!!!!!!!!!\n", line_number, symbolTable[st_index-1].name,symbolTable[st_index-1].dataType );}
+}
+void assign_bool( bool b) {
+    if (symbolTable[st_index-1].dataType == "bool"){symbolTable[st_index-1].boolValue= b ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[st_index-1].name,symbolTable[st_index-1].dataType );}
 }
 //---------------------------------- PRINT SYMBOL TABLE ----------------------------------------------------
 void st_print() {
