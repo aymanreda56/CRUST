@@ -458,16 +458,11 @@ int is_exist(char* name){
 int lookup(char* name) {
     // 
     // This method returns -1 if the symbol does not exist in the symbol table. 
-    // If the symbol ex ists, it returns its index in the table.
-    // 
-    // printf("lookup: %s\n", name);
-    // printf("lookup: st_index = %d\n", st_index);
-    // printf("lookup: scope_index = %d\n", scope_index);
+    // If the symbol exists, it returns its index in the table.
     // loop on the table from down to up to take the variable from the closest scope as closet one will
     // be with higher index in the table
     for (int i = st_index-1 ; i >= 0; i--){
         if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].outOfScope == 0 ){
-            // printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$lookup: %s found in scope %d\n", name, scope_index);
             if (symbolTable[i].isInit == 0 && strcmp(symbolTable[i].type, "var") == 0  ) 
             {
             if ( i != assign_index)// 3shan lw kan el var 3la el LHS s3tha 3ady ex: int x=9; int z; z =x;
@@ -489,8 +484,7 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     //----- check if name is already in symbol table
     int L=is_exist(name) ;
     if (L != -1){
-        printf("\n !!!!!!!!!!!! Error at line %d: %s is already declared in this scope at line %d !!!!!!!!!!!\n",line_number, name, L);
-    }
+        printf("\n !!!!!!!!!!!! Error at line %d: %s is already declared in this scope at line %d !!!!!!!!!!!\n",line_number, name, L); }
     //------ set new entry values
     newEntry.name = name;
     newEntry.dataType = data_type;
@@ -543,6 +537,7 @@ void assign_bool( bool b , int i) {
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
 }
 void check_type( int i) {
+    // this functio check type matching between 2 identifiers before assign the value
     if ( is_param == 1) { return ;}
 
     if (i != -1 && symbolTable[i].dataType != symbolTable[assign_index].dataType)
@@ -616,9 +611,7 @@ void scope_end(){
 }
 void unused_print() {
     for(int i=0; i< st_index; i++) {
-        if ( symbolTable[i].isUsed == 0)
-        {
-
+        if ( symbolTable[i].isUsed == 0) {
         if (strcmp(symbolTable[i].type,"func") == 0){printf("\n !!!!!!!!!!!! Function %s Declared at line %d but never called !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
         else {printf("\n !!!!!!!!!!!! Unused Identifier %s Declared at line %d !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
         }
