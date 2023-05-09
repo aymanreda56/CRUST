@@ -11,9 +11,9 @@
     extern FILE *yyin;
     extern FILE *yyout;
     extern int line_number;
-    //TODO  add float and int DONE
-    //TODO if you have 2 x in diffrent scopes and both are in valid scopes take the closet DONE
-    //TODO unused variables
+    //TODO  add float and int error DONE
+    //TODO if you have 2 x in diffrent scopes and both are in valid scopes take the closet (DONE)
+    //TODO unused variables (DONE)
     //TODO type mismatch lel < > w kda
     //TODO division by zero
     //TODO check err.txt err2.txt
@@ -59,7 +59,7 @@
     void scope_end();
     //--- handle errors
     void check_type( int i);
-    // void check_const(int index);
+    void unused_print() ;
     void assign_int( int d , int i);
     void assign_str( char* s , int i);
     void assign_bool( bool b , int i);
@@ -474,6 +474,7 @@ int lookup(char* name) {
             {
                 printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name);}
             }
+            symbolTable[i].isUsed=1;
             return i;
         }
     }
@@ -498,7 +499,8 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     newEntry.id = st_index;
     newEntry.isArg = is_arg;
     newEntry.outOfScope = 0;
-    newEntry.isInit = 0;// assume all uninitialized untill assign 
+    newEntry.isInit = 0;// assume all uninitialized untill assign
+    newEntry.isUsed = 0; // assume all unused untill used
     //----- set scope (if it's an argument, scope is the next scope)
     if (is_arg == 1 || in_loop == 1){ newEntry.scope = block_number+1;}
     else {newEntry.scope = scope_stack[scope_index];}
@@ -612,11 +614,22 @@ void scope_end(){
     }
     scope_index--; // decrement scope index   
 }
+void unused_print() {
+    for(int i=0; i< st_index; i++) {
+        if ( symbolTable[i].isUsed == 0)
+        {
+
+        if (strcmp(symbolTable[i].type,"func") == 0){printf("\n !!!!!!!!!!!! Function %s Declared at line %d but never called !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
+        else {printf("\n !!!!!!!!!!!! Unused Identifier %s Declared at line %d !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
+        }
+    }
+}
 //------------------------------------------- MAIN -------------------------------
 int main(int argc, char *argv[])
 { 
     yyin = fopen(argv[1], "r");
     yyparse();
     st_print();
+    unused_print();
     return 0;
 }
