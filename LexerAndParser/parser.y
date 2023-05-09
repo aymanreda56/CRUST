@@ -45,6 +45,7 @@
     int in_loop=0;
     int assign_index=-1;
     int is_param=0;
+    int arg_count=0;
     //-- symbol table functions:  st_functionName()
     void st_insert(char* data_type, char* name, char* type, int is_arg);
     void st_print();
@@ -334,14 +335,14 @@ BLOCK:
 
 
 FUNC_CALL:
-                IDENTIFIER {int i = lookup($1); check_type(i);} '(' { is_param =1;}  USED_ARGS { is_param =0;}  ')'            {printf("#[Parsed_Func_Call]# ");}
+                IDENTIFIER {int i = lookup($1); check_type(i);} '(' { is_param =1;}  USED_ARGS { is_param =0;}  ')' { printf("#[Parsed_Func_Call]# ");}
                 | IDENTIFIER error ')'                  {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);}//Error handler
                 //| IDENTIFIER '(' USED_ARGS error        {printf("\n=====ERROR====\n unclosed function parenthesis 'case' at line %d\n", yylineno);}//Error handler
                 ;
 USED_ARGS:      
-                EXPRESSION ',' USED_ARGS 
+                EXPRESSION ',' USED_ARGS { arg_count++; }
                 | error ',' USED_ARGS                   {printf("\n\n=====ERROR====\n Missing first argument in function's argument list or erronous ',' at line %d\n\n", yylineno);}//Error handler
-                | EXPRESSION
+                | EXPRESSION {arg_count++ ;}
                 |
                 ;
 
@@ -353,7 +354,7 @@ EXPRESSION:
                 | FLOAT_DIGIT { assign_float($1, assign_index); }
                 | BOOL_LITERAL  { assign_bool($1, assign_index); }
                 | STRING_LITERAL  {  assign_str($1, assign_index); }
-                | CONSTANT // TODO need to assign te value of the constant to the assign_index
+                | CONSTANT { int i = lookup($1); check_type(i); } 
                 | EXPRESSION PLUS PLUS
                 | EXPRESSION SUB SUB
                 | EXPRESSION PLUS EXPRESSION
@@ -550,7 +551,6 @@ void check_type( int i) {
     else
     {
         symbolTable[assign_index].isInit=1;
-         printf("\n 1 !!! \n" );
         // assign value to the variable
         if ( strcmp(symbolTable[i].dataType,"int") ==0) {symbolTable[assign_index].intValue= symbolTable[i].intValue ;}
         else if (symbolTable[i].dataType == "float"){symbolTable[assign_index].floatValue= symbolTable[i].floatValue ;}
