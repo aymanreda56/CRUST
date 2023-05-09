@@ -1,22 +1,11 @@
-ID	|Name		|Type	|DataType	|Line	|Scope	|Value		|Args
+ID	|Name	|Type	|DataType	|Line	|Scope	isInit	|Value		|Args
 -------------------------------------------------------------------------------------------
-0	|p	|var	|float		|7	|0	|3.100000		|-
-1	|m	|var	|bool		|14	|0	|true		|-
-2	|n	|var	|bool		|17	|0	|true		|-
-3	|l	|var	|bool		|18	|0	|true		|-
-4	|aa	|var	|bool		|20	|0	|true		|-
-5	|ab	|var	|bool		|21	|0	|true		|-
-6	|ac	|var	|bool		|23	|0	|true		|-
-7	|ad	|var	|bool		|24	|0	|true		|-
-8	|ae	|var	|bool		|26	|0	|true		|-
-9	|af	|var	|bool		|28	|0	|true		|-
-10	|ag	|var	|bool		|29	|0	|true		|-
-11	|ah	|var	|bool		|32	|0	|true		|-
-12	|ai	|var	|bool		|33	|0	|true		|-
-13	|x	|var	|int		|124	|14	|593		|-
-14	|errFunc	|func	|int		|124	|0	|0		|13,
-15	|x	|var	|int		|126	|15	|593		|-
-16	|errFunc2	|func	|int		|126	|0	|0		|15,
-17	|x	|var	|int		|131	|16	|593		|-
-18	|x	|var	|int		|132	|17	|593		|-
-19	|errFunc5	|func	|void		|132	|0	|-|18,
+0	|z	|var	|int		|1	|1	|0	|-		|-
+1	|h	|var	|int		|1	|1	|0	|-		|-
+2	|func1	|func	|int		|1	|0	|0	|-		|0,1,
+3	|g	|var	|int		|4	|1	|1	|0		|-
+4	|y	|var	|int		|6	|0	|1	|6		|-
+5	|x	|var	|int		|7	|0	|1	|7		|-
+6	|BB	|const	|float		|8	|0	|1	|6.500000		|-
+7	|k	|var	|float		|9	|0	|1	|6.500000		|-
+8	|s	|var	|int		|11	|0	|1	|7		|-

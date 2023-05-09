@@ -1,4 +1,11 @@
-int x =9;
-float y =3.3;
-string h ="FF";
-bool j = false;
+int func1(int z, int h){
+
+
+int g=0;
+}
+int y =6;
+int x = 7;
+float BB= 6.5;
+float k ;
+k=BB;
+int s=x;
