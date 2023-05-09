@@ -23,8 +23,8 @@
     // 2- error handling:
     //   type checking (DONE) ,const value change, undeclared variables (DONE), used before assign (DONE)
     //, scope checking (DONE), function call checking (DONE),
-    //  function return type checking + feh return wla la2 aslan , function argument checking, function
-    //   argument type checking, function argument count checking, function argument order checking '''
+    //  function return type checking+ feh return wla la2 aslan , function argument checking, function
+    //   argument type checking, function argument count checking (count), function argument order checking '''
     //--------------------- Symbol Table -----------------
     struct Entry {
         int id,intValue,scope;
@@ -46,6 +46,7 @@
     int assign_index=-1;
     int is_param=0;
     int arg_count=0;
+    int called_func_index=0;
     //-- symbol table functions:  st_functionName()
     void st_insert(char* data_type, char* name, char* type, int is_arg);
     void st_print();
@@ -64,6 +65,7 @@
     void assign_str( char* s , int i);
     void assign_bool( bool b , int i);
     void assign_float( float f , int i);
+    void arg_count_check( int i);
 
 
 %}
@@ -335,7 +337,7 @@ BLOCK:
 
 
 FUNC_CALL:
-                IDENTIFIER {int i = lookup($1); check_type(i);} '(' { is_param =1;}  USED_ARGS { is_param =0; printf("Arg count DDDDDDDDDDDDDDDDDDDDD   %d \n", arg_count) ;}  ')' { printf("#[Parsed_Func_Call]# ");}
+                IDENTIFIER {called_func_index = lookup($1); check_type(called_func_index);} '(' { is_param =1;}  USED_ARGS { is_param =0; arg_count_check(called_func_index);}   ')' { printf("#[Parsed_Func_Call]# ");}
                 | IDENTIFIER error ')'                  {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);}//Error handler
                 //| IDENTIFIER '(' USED_ARGS error        {printf("\n=====ERROR====\n unclosed function parenthesis 'case' at line %d\n", yylineno);}//Error handler
                 ;
@@ -542,7 +544,7 @@ void check_type( int i) {
 
     if (i != -1 && symbolTable[i].dataType != symbolTable[assign_index].dataType)
     {
-        if (strcmp(symbolTable[i].type,"func")== 0){ printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s return value is %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
+        if (strcmp(symbolTable[i].type,"func")== 0){ printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s return %s value  !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
         else {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
     }
     else
@@ -613,9 +615,16 @@ void unused_print() {
     for(int i=0; i< st_index; i++) {
         if ( symbolTable[i].isUsed == 0) {
         if (strcmp(symbolTable[i].type,"func") == 0){printf("\n !!!!!!!!!!!! Function %s Declared at line %d but never called !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
+        else if ( symbolTable[i].isArg == 1){printf("\n !!!!!!!!!!!! Unused Argument %s Declared in Function at line %d !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
         else {printf("\n !!!!!!!!!!!! Unused Identifier %s Declared at line %d !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
         }
     }
+}
+void arg_count_check( int i) {
+    if ( arg_count > symbolTable[i].argCount )
+    {printf("\n !!!!!!!!!!!! Error at line %d : too many arguments for function call expected %d got %d !!!!!!!!!!!\n", line_number, symbolTable[i].argCount, arg_count); }
+    else if ( arg_count < symbolTable[i].argCount )
+    {printf("\n !!!!!!!!!!!! Error at line %d : too few arguments for function call expected %d got %d !!!!!!!!!!!\n", line_number, symbolTable[i].argCount, arg_count); }
 }
 //------------------------------------------- MAIN -------------------------------
 int main(int argc, char *argv[])
