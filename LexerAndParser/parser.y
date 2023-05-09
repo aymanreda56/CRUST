@@ -335,7 +335,7 @@ BLOCK:
 
 
 FUNC_CALL:
-                IDENTIFIER {int i = lookup($1); check_type(i);} '(' { is_param =1;}  USED_ARGS { is_param =0;}  ')' { printf("#[Parsed_Func_Call]# ");}
+                IDENTIFIER {int i = lookup($1); check_type(i);} '(' { is_param =1;}  USED_ARGS { is_param =0; printf("Arg count DDDDDDDDDDDDDDDDDDDDD   %d \n", arg_count) ;}  ')' { printf("#[Parsed_Func_Call]# ");}
                 | IDENTIFIER error ')'                  {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);}//Error handler
                 //| IDENTIFIER '(' USED_ARGS error        {printf("\n=====ERROR====\n unclosed function parenthesis 'case' at line %d\n", yylineno);}//Error handler
                 ;
@@ -463,7 +463,7 @@ int lookup(char* name) {
     // be with higher index in the table
     for (int i = st_index-1 ; i >= 0; i--){
         if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].outOfScope == 0 ){
-            if (symbolTable[i].isInit == 0 && strcmp(symbolTable[i].type, "var") == 0  ) 
+            if (symbolTable[i].isInit == 0 && strcmp(symbolTable[i].type, "var") == 0 && symbolTable[i].isArg == 0 ) 
             {
             if ( i != assign_index)// 3shan lw kan el var 3la el LHS s3tha 3ady ex: int x=9; int z; z =x;
             {
