@@ -16,15 +16,15 @@
     //TODO unused variables (DONE)
     //TODO type mismatch lel < > w kda
     //TODO division by zero
-    //TODO check err.txt err2.txt
+    //TODO check err.txt err2.txt err3.txt
     ///TODOS
     // ''' 1- symbol table: 
     // store enum value , check el type bta3o w kda 
     // 2- error handling:
     //   type checking (DONE) ,const value change, undeclared variables (DONE), used before assign (DONE)
     //, scope checking (DONE), function call checking (DONE),
-    //  function return type checking+ feh return wla la2 aslan , function argument checking, function
-    //   argument type checking, function argument count checking (count), function argument order checking '''
+    //  function return type checking+ feh return wla la2 aslan ,function
+    //   argument type checking (count), function argument count checking (count), function argument order checking '''
     //--------------------- Symbol Table -----------------
     struct Entry {
         int id,intValue,scope;
@@ -337,12 +337,12 @@ BLOCK:
 
 
 FUNC_CALL:
-                IDENTIFIER {called_func_index = lookup($1); check_type(called_func_index);} '(' { is_param =1;}  USED_ARGS { is_param =0; arg_count_check(called_func_index);}   ')' { printf("#[Parsed_Func_Call]# ");}
+                IDENTIFIER {called_func_index = lookup($1); check_type(called_func_index); } '(' { is_param =1;}  USED_ARGS { is_param =0; arg_count_check(called_func_index); arg_count=0;}   ')' { printf("#[Parsed_Func_Call]# ");}
                 | IDENTIFIER error ')'                  {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);}//Error handler
                 //| IDENTIFIER '(' USED_ARGS error        {printf("\n=====ERROR====\n unclosed function parenthesis 'case' at line %d\n", yylineno);}//Error handler
                 ;
 USED_ARGS:      
-                EXPRESSION ',' USED_ARGS { arg_count++; }
+                EXPRESSION { arg_count++; }  ',' USED_ARGS 
                 | error ',' USED_ARGS                   {printf("\n\n=====ERROR====\n Missing first argument in function's argument list or erronous ',' at line %d\n\n", yylineno);}//Error handler
                 | EXPRESSION {arg_count++ ;}
                 |
@@ -538,13 +538,23 @@ void assign_bool( bool b , int i) {
     if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
 }
+// void check_param_type (int i) {
+
+// }
 void check_type( int i) {
     // this functio check type matching between 2 identifiers before assign the value
-    if ( is_param == 1) { return ;}
+    if ( is_param == 1) { 
+        assign_index = arg_count;
+        printf("\nparammmmmmmmmmmmmmm %s\n", symbolTable[i].name);
+        printf("\nparammmmmmmmmmmmmmm %d\n", arg_count);        
+        }
+
 
     if (i != -1 && symbolTable[i].dataType != symbolTable[assign_index].dataType)
     {
         if (strcmp(symbolTable[i].type,"func")== 0){ printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s return %s value  !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
+        else if (is_param == 1)
+        {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Incorrect argument type %s is %s variable but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
         else {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
     }
     else
