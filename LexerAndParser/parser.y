@@ -73,7 +73,7 @@
 //_____________________________ CODE GEN _________________________
     #include <fcntl.h>             //for creating file
     #include <errno.h>             //for checking for file
-    int codeGen = 1;
+    int codeGen = 0;
     char* VirtualStack [1000];
     int VirtualSP = -1;
     int tempNumber = 0;
