@@ -35,7 +35,7 @@
 "<"                             {printf("LT:%s | ", yytext);             nword++; nchar+=yyleng;                                return LT;}
 "="                             {printf("EQ:%s | ", yytext);             nword++; nchar+=yyleng;                                return EQ;}         
 ";"                             {printf("SEMICOLON:%s | ", yytext);      nword++; nchar+=yyleng;                                return SEMICOLON;}
-"+"                             {printf("PLUS:%s | ", yytext);           nword++; nchar+=yyleng;                                return PLUS;}
+"+"                             {printf("PLUS:%s | ", yytext);           nword++; nchar+=yyleng;  yylval.str = strdup(yytext);                              return PLUS;}
 "-"                             {printf("SUB:%s | ", yytext);            nword++; nchar+=yyleng;                                return SUB;}
 "*"                             {printf("MUL:%s | ", yytext);            nword++; nchar+=yyleng;                                return MUL;}
 "/"                             {printf("DIV:%s | ", yytext);            nword++; nchar+=yyleng;                                return DIV;}

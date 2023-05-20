@@ -73,13 +73,26 @@
 //_____________________________ CODE GEN _________________________
     #include <fcntl.h>             //for creating file
     #include <errno.h>             //for checking for file
+    int codeGen = 1;
     char* VirtualStack [1000];
     int VirtualSP = -1;
     int tempNumber = 0;
+    int labelNumber = 0;
+    int endlabelNumber=0;
+    char temp_label[50] = "L";
+    char temp_endlabel[50] = "END";
     char* popVStack();
+    char temp_var[50] = "t";
     void pushVStack(char* s);
     void CodeGenAss();
     void CodeGenOp();
+    void printIF();
+    void printLLVM(char* s);
+    char* makeLabel();
+    char* makeEndLabel();
+    void printWHILE();
+    void controlTerminator(int isWhile);
+    void CodeGenLogical();
 //================================================================
 
 %}
@@ -105,10 +118,10 @@
 %left EQUALITY NEG_EQUALITY
 %right LOGIC_NOT
 %right POW
-%left MUL
-%left DIV
 %left PLUS
 %left SUB
+%left MUL
+%left DIV
 %right EQ
 %right GT
 %right LT
@@ -116,7 +129,7 @@
 %left '}'
 
 
-%type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM
+%type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM PLUS
 %type <float_val> FLOAT_DIGIT
 %type <num> DIGIT
 %type <bool_val> BOOL_LITERAL
@@ -281,22 +294,29 @@ ERRONOUS_ENUM_DECLARATION_STT:
                 ;
 
 
-
+IF_STT_HELPER:
+                IF {printIF();}EXPRESSION
+                ;
+IF_STT_HELPER1:
+                ':' BLOCK {controlTerminator(0);}
+                ;
 
 IF_STT:
-                IF EXPRESSION ':' BLOCK
-                | IF EXPRESSION ':' BLOCK ELSE error '}'      {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}
-                | IF EXPRESSION ':' BLOCK ELSE BLOCK
-                | IF EXPRESSION                               {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);}        BLOCK
-                | IF       ':'                                {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} BLOCK
-                | IF EXPRESSION ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the IF statement at line %d\n\n", yylineno);}
+                IF_STT_HELPER IF_STT_HELPER1
+                | IF_STT_HELPER IF_STT_HELPER1 ELSE BLOCK
+                | IF_STT_HELPER IF_STT_HELPER1 ELSE error '}'      {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}
+                | IF_STT_HELPER                               {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);}        BLOCK{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
+                | IF       ':'                                {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} BLOCK{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
+                | IF_STT_HELPER ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the IF statement at line %d\n\n", yylineno);}
                 
                 //TODO handle opened parenthesis but not closed
                 ;
 
 
+
+
 WHILE_STT:
-                WHILE EXPRESSION ':' BLOCK
+                WHILE {printWHILE();} EXPRESSION ':' BLOCK {controlTerminator(1);}
                 | ERRONOUS_WHILE_STT  
                 ;
 
@@ -337,7 +357,7 @@ ERRONOUS_FOR_LOOP:
 //TODO hl m7taga a7ot call lel lookup t7t? i think yes bs kda kda da error so no need to store assign index 
 //AYMON : SOLVED the conflicts
 helperAssignmentRule:
-                IDENTIFIER {pushVStack($1);} EQ  {assign_index = lookup($1);}
+                IDENTIFIER  EQ  {pushVStack($1); assign_index = lookup($1);}
                 ;
 
 assignmentSTT:
@@ -407,14 +427,14 @@ ERRONOUS_EXPRESSION:
 
 
 COMPARISONSTT:
-                EXPRESSION GT EXPRESSION
-                | EXPRESSION LT EXPRESSION
-                | EXPRESSION LT EQ EXPRESSION
-                | EXPRESSION GT EQ EXPRESSION
-                | EXPRESSION EQUALITY EXPRESSION
-                | EXPRESSION NEG_EQUALITY EXPRESSION
-                | EXPRESSION LOGIC_AND EXPRESSION
-                | EXPRESSION LOGIC_OR EXPRESSION
+                EXPRESSION GT EXPRESSION                {pushVStack(">"); CodeGenLogical();}
+                | EXPRESSION LT EXPRESSION              {pushVStack("<"); CodeGenLogical();}
+                | EXPRESSION LT EQ EXPRESSION           {pushVStack("<="); CodeGenLogical();}
+                | EXPRESSION GT EQ EXPRESSION           {pushVStack(">="); CodeGenLogical();}
+                | EXPRESSION EQUALITY EXPRESSION        {pushVStack("="); CodeGenLogical();}
+                | EXPRESSION NEG_EQUALITY EXPRESSION    {pushVStack("!="); CodeGenLogical();}
+                | EXPRESSION LOGIC_AND EXPRESSION       {pushVStack("and"); CodeGenLogical();}
+                | EXPRESSION LOGIC_OR EXPRESSION        {pushVStack("or"); CodeGenLogical();}
                 | LOGIC_NOT EXPRESSION
                 | ERRONOUS_COMPARISONSTT
                 ;
@@ -662,7 +682,13 @@ void arg_count_check( int i) {
 void pushVStack(char* var)
 {   
     VirtualSP++;
-    VirtualStack[VirtualSP] = var;
+    VirtualStack[VirtualSP] = strdup(var);
+    printf("\nPUSHED %s\n", var);
+    for (int i = VirtualSP ; i >=0; i--)
+    {
+        printf("\nDEBUG: %s", VirtualStack[i]);
+    }
+    
 };
 
 char* popVStack ()
@@ -674,6 +700,7 @@ char* popVStack ()
     //VirtualSP--;
     char* returner =  VirtualStack[VirtualSP];
     VirtualSP--;
+    printf("\nPOPED %s\n", returner);
     return returner;
 };
 
@@ -693,10 +720,11 @@ char* newTemp()
 
 void CodeGenAss()
 {
+    if(codeGen){
     //printf("DEBUG %s", VirtualStack[VirtualSP]);
-    FILE *fp = fopen("LLVM.txt", "a");
+    FILE *llfile = fopen("LLVM.txt", "a");
     
-    if(fp == NULL) {
+    if(llfile == NULL) {
         printf("can't open LLVM.txt file!\n");
         exit(1);
     }
@@ -707,44 +735,134 @@ void CodeGenAss()
     char* carrier = popVStack();
     //strcpy(value, popVStack());
     //strcpy(carrier, popVStack());
-    fprintf(fp, "%s = %s\n", carrier, value);
-    fclose (fp);
+    fprintf(llfile, "%s = %s\n", carrier, value);
+    fclose (llfile);
 
     //printf("DEBUG %s", VirtualStack[VirtualSP]);
+    }
 };
 
 void CodeGenOp()
 {
 
-
-    
-
+    if(codeGen){
     char* second_operand = popVStack();
     char* operation = popVStack();
     char* first_operand = popVStack();
     
     
-    char* temp_var;
+    
     //strcpy(temp_var, newTemp());
-    strcpy(temp_var, "t");
-    char numtostring[10];
-    itoa(tempNumber, numtostring, 10);
-    strcat(temp_var, numtostring);
+    
+    char dumstr[10];
+    itoa(tempNumber, dumstr, 10);
+    strcat(temp_var, dumstr);
     
     tempNumber++;
 
+    pushVStack(temp_var);
+
+
     
 
-    FILE *fp = fopen("LLVM.txt", "a");
-    if(fp == NULL) {
+    FILE *llvfile = fopen("LLVM.txt", "a");
+    if(llvfile == NULL) {
         printf("can't open LLVM.txt file!\n");
         exit(1);
     }
     
-    fprintf(fp, "%s = %s %s %s\n", temp_var, first_operand, operation, second_operand);
-    fclose (fp);
+    fprintf(llvfile, "%s = %s %s %s\n", temp_var, first_operand, operation, second_operand);
+    fclose (llvfile);
 
-    pushVStack(temp_var);
+    temp_var[strlen(temp_var)-1] = '\0';
+    }
+};
+
+char* makeLabel()
+{
+    char dumstr[10];
+    itoa(labelNumber, dumstr, 10);
+    strcat(temp_label, dumstr);
+    return temp_label;
+};
+
+void resetTempLabel()
+{
+    temp_label[strlen(temp_label)-1] = '\0';
+    labelNumber++;
+};
+
+char* makeEndLabel()
+{
+    char dumstr[10];
+    itoa(endlabelNumber, dumstr, 10);
+    strcat(temp_endlabel, dumstr);
+    return temp_endlabel;
+};
+
+void CodeGenLogical()
+{
+    if(codeGen)
+    {
+char* equality_OP = popVStack();
+char* second_operand = popVStack();
+char* first_operand = popVStack();
+printf("loloooooooooooooooooo%s", first_operand);
+
+
+
+makeEndLabel();
+makeLabel();
+
+
+//char* inlineLabel = makeLabel();
+//char* secondLabel = makeEndLabel();
+printf("loloooooooooooooooooo%s", first_operand);
+   FILE *llvfile = fopen("LLVM.txt", "a");
+    if(llvfile == NULL) {printf("can't open LLVM.txt file!\n");exit(1);}
+    fprintf(llvfile, "%s %s %s goto %s\ngoto %s\n%s : \n", first_operand, equality_OP, second_operand, temp_label, temp_endlabel, temp_label); fclose (llvfile);   }
+
+
+    resetTempLabel();
+};
+
+void printIF(){
+    if(codeGen){
+    FILE *llvfile = fopen("LLVM.txt", "a");
+    if(llvfile == NULL) {printf("can't open LLVM.txt file!\n");exit(1);}
+    fprintf(llvfile, "IF "); fclose (llvfile);   }
+};
+void printLLVM(char* s)
+{
+    if(codeGen){
+    FILE *llvfile = fopen("LLVM.txt", "a");
+    if(llvfile == NULL) {printf("can't open LLVM.txt file!\n");exit(1);}
+    fprintf(llvfile, s); fclose (llvfile);   }
+};
+
+
+void printWHILE()
+{
+    printLLVM(makeLabel());
+    //resetLabel();
+    printLLVM(":\n");
+    printIF();
+};
+
+void controlTerminator(int isWhile)
+{
+    if(isWhile)
+    {
+        printLLVM("goto ");
+        printLLVM(makeLabel());
+        printLLVM("\n");
+        resetLabel();
+    }
+
+    printLLVM(strdup(temp_endlabel));
+    printLLVM(":\n");
+    temp_endlabel[strlen(temp_endlabel)-1] = '\0';
+    endlabelNumber++;
 
 };
 //==============================================================================================================================================================

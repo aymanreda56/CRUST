@@ -1,1 +1,15 @@
-t0 = 1 + 1
+x = 1
+IF x = 3 goto L0
+goto END0
+L0 : 
+y = 2
+END0:
+t0 = 1 + 2
+a = t0
+IF x > 3 goto L1
+goto END1
+L1 : 
+z = 2
+END1:
+x = 2
+x = 1
