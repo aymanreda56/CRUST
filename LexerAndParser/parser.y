@@ -115,7 +115,7 @@
 %left '}'
 
 
-%type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM PLUS SUB MUL DIV GT LT EQ POW
+%type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM
 %type <float_val> FLOAT_DIGIT
 %type <num> DIGIT
 %type <bool_val> BOOL_LITERAL
@@ -334,10 +334,15 @@ ERRONOUS_FOR_LOOP:
                 ;
 
 //TODO hl m7taga a7ot call lel lookup t7t? i think yes bs kda kda da error so no need to store assign index 
+//AYMON : SOLVED the conflicts
+helperAssignmentRule:
+                IDENTIFIER {pushVStack($1);} EQ  {assign_index = lookup($1);}
+                ;
+
 assignmentSTT:
-                IDENTIFIER {pushVStack($1);} EQ { assign_index =lookup($1);} EXPRESSION {CodeGenAss();} SEMICOLON          {printf("#[Parsed_Assignment]# ");}
-                | IDENTIFIER { lookup($1);} error EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
-                | IDENTIFIER { lookup($1);} EQ SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
+                helperAssignmentRule SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
+                | helperAssignmentRule EXPRESSION SEMICOLON          {CodeGenAss();printf("#[Parsed_Assignment]# ");}
+                | IDENTIFIER  error{pushVStack($1); assign_index = lookup($1);} EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
                 ;
 
 
@@ -370,13 +375,14 @@ EXPRESSION:
                 | BOOL_LITERAL  { assign_bool($1, assign_index); if($1==true){pushVStack("true");}else{pushVStack("false");}}
                 | STRING_LITERAL  {  assign_str($1, assign_index); pushVStack($1);}
                 | CONSTANT { int i = lookup($1); check_type(i); pushVStack($1);} 
-                | EXPRESSION PLUS PLUS
-                | EXPRESSION SUB SUB
+                //| SUB EXPRESSION
+                | EXPRESSION PLUS PLUS {pushVStack("+"); pushVStack("1"); CodeGenOp();}
+                | EXPRESSION SUB SUB   {pushVStack("-"); pushVStack("1"); CodeGenOp();}
                 | EXPRESSION PLUS {pushVStack("+");} EXPRESSION  {CodeGenOp();}
-                | EXPRESSION SUB EXPRESSION
-                | EXPRESSION MUL EXPRESSION
-                | EXPRESSION DIV EXPRESSION
-                | EXPRESSION POW EXPRESSION
+                | EXPRESSION SUB  {pushVStack("-");} EXPRESSION  {CodeGenOp();}
+                | EXPRESSION MUL  {pushVStack("*");} EXPRESSION  {CodeGenOp();}
+                | EXPRESSION DIV  {pushVStack("/");} EXPRESSION  {CodeGenOp();}
+                | EXPRESSION POW  {pushVStack("^");} EXPRESSION  {CodeGenOp();}
                 | COMPARISONSTT
                 | FUNC_CALL {}                                
                 | '(' EXPRESSION ')'
@@ -390,7 +396,7 @@ ERRONOUS_EXPRESSION:
                 //| EXPRESSION DIV
                 //| EXPRESSION POW
                 error PLUS EXPRESSION           
-                | error SUB EXPRESSION          
+                //| error SUB EXPRESSION          
                 | error MUL EXPRESSION          
                 | error DIV EXPRESSION          
                 | error POW EXPRESSION          
