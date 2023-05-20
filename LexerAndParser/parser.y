@@ -68,6 +68,19 @@
     void arg_count_check( int i);
 
 
+
+//_____________________________ CODE GEN _________________________
+    #include <fcntl.h>             //for creating file
+    #include <errno.h>             //for checking for file
+    char* VirtualStack [1000];
+    int VirtualSP = -1;
+    int tempNumber = 0;
+    char* popVStack();
+    void pushVStack(char* s);
+    void CodeGenAss();
+    void CodeGenOp();
+//================================================================
+
 %}
 
 %union { 
@@ -102,7 +115,7 @@
 %left '}'
 
 
-%type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM 
+%type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM PLUS SUB MUL DIV GT LT EQ POW
 %type <float_val> FLOAT_DIGIT
 %type <num> DIGIT
 %type <bool_val> BOOL_LITERAL
@@ -322,7 +335,7 @@ ERRONOUS_FOR_LOOP:
 
 //TODO hl m7taga a7ot call lel lookup t7t? i think yes bs kda kda da error so no need to store assign index 
 assignmentSTT:
-                IDENTIFIER EQ { assign_index =lookup($1); } EXPRESSION SEMICOLON          {printf("#[Parsed_Assignment]# ");}
+                IDENTIFIER {pushVStack($1);} EQ { assign_index =lookup($1);} EXPRESSION {CodeGenAss();} SEMICOLON          {printf("#[Parsed_Assignment]# ");}
                 | IDENTIFIER { lookup($1);} error EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
                 | IDENTIFIER { lookup($1);} EQ SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
                 ;
@@ -351,15 +364,15 @@ USED_ARGS:
 
 EXPRESSION:
                 
-                IDENTIFIER  { int i = lookup($1); check_type(i); }
-                | DIGIT { assign_int($1, assign_index) ;}
-                | FLOAT_DIGIT { assign_float($1, assign_index); }
-                | BOOL_LITERAL  { assign_bool($1, assign_index); }
-                | STRING_LITERAL  {  assign_str($1, assign_index); }
-                | CONSTANT { int i = lookup($1); check_type(i); } 
+                IDENTIFIER  { int i = lookup($1); check_type(i); pushVStack($1);}
+                | DIGIT { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring);}
+                | FLOAT_DIGIT { assign_float($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring);}
+                | BOOL_LITERAL  { assign_bool($1, assign_index); if($1==true){pushVStack("true");}else{pushVStack("false");}}
+                | STRING_LITERAL  {  assign_str($1, assign_index); pushVStack($1);}
+                | CONSTANT { int i = lookup($1); check_type(i); pushVStack($1);} 
                 | EXPRESSION PLUS PLUS
                 | EXPRESSION SUB SUB
-                | EXPRESSION PLUS EXPRESSION
+                | EXPRESSION PLUS {pushVStack("+");} EXPRESSION  {CodeGenOp();}
                 | EXPRESSION SUB EXPRESSION
                 | EXPRESSION MUL EXPRESSION
                 | EXPRESSION DIV EXPRESSION
@@ -636,9 +649,100 @@ void arg_count_check( int i) {
     else if ( arg_count < symbolTable[i].argCount )
     {printf("\n !!!!!!!!!!!! Error at line %d : too few arguments for function call expected %d got %d !!!!!!!!!!!\n", line_number, symbolTable[i].argCount, arg_count); }
 }
+
+
+// ____________________________________________________________________________ CODE GEN _______________________________________________________________________
+void pushVStack(char* var)
+{   //printf("DEBUG %s", VirtualStack[VirtualSP]);
+    VirtualSP++;
+    VirtualStack[VirtualSP] = var;
+    //strcpy(VirtualStack[VirtualSP++], var);
+    //printf("DEBUG %s", VirtualStack[VirtualSP]);
+};
+
+char* popVStack ()
+{
+    //printf("DEBUG %s", VirtualStack[VirtualSP]);
+    //char* returner = VirtualStack[VirtualSP];
+    //char* returner = VirtualStack[VirtualSP--];
+    //strcpy(returner, VirtualStack[VirtualSP--]);
+    //VirtualSP--;
+    char* returner =VirtualStack[VirtualSP];
+    VirtualSP--;
+    return returner;
+};
+
+
+char* newTemp()
+{
+    char* tempVar;
+    char numtostring[5];
+    itoa(tempNumber, numtostring, 10);
+    strcpy(tempVar, "t");
+    strcat(tempVar, numtostring);
+    tempNumber++;
+    return tempVar;
+};
+
+void CodeGenAss()
+{
+    //printf("DEBUG %s", VirtualStack[VirtualSP]);
+    FILE *fp = fopen("LLVM.txt", "a");
+    
+    if(fp == NULL) {
+        printf("can't open LLVM.txt file!\n");
+        exit(1);
+    }
+
+    //char* value = popVStack();
+    //char* carrier = popVStack();
+    char* value = popVStack();
+    char* carrier = popVStack();
+    //strcpy(value, popVStack());
+    //strcpy(carrier, popVStack());
+    fprintf(fp, "%s = %s\n", carrier, value);
+    fclose (fp);
+
+    //printf("DEBUG %s", VirtualStack[VirtualSP]);
+};
+
+void CodeGenOp()
+{
+    char* second_operand = popVStack();
+    char* operation = popVStack();
+    char* first_operand = popVStack();
+    char* temp_var = newTemp();
+    
+    
+
+    FILE *fp = fopen("LLVM.txt", "a");
+    if(fp == NULL) {
+        printf("can't open LLVM.txt file!\n");
+        exit(1);
+    }
+    
+    fprintf(fp, "%s = %s %s %s\n", temp_var,first_operand, operation, second_operand);
+    printf("\n\n\n%s\n",first_operand);
+    printf("\n\n\n%s = %s %s %s\n", temp_var,first_operand, operation, second_operand);
+    fclose (fp);
+
+    pushVStack(temp_var);
+
+};
+//==============================================================================================================================================================
+
+
+
+
+
 //------------------------------------------- MAIN -------------------------------
 int main(int argc, char *argv[])
 { 
+    int ret = remove("LLVM.txt");
+
+    if(ret != 0){
+        printf("\nCreating Intermediate Code File ...\n");
+    }
     yyin = fopen(argv[1], "r");
     yyparse();
     st_print();
