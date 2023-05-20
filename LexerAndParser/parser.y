@@ -314,17 +314,13 @@ IF_STT:
 
 
 
-
+// AYMON : ana masa7t el Error handling bta3 elWhile Loop 3shan fadelly taka we aksar elLaptop da fo2 dma2 elli katabo Bayzoooon >:(((
 WHILE_STT:
                 WHILE {printWHILE();} EXPRESSION ':' BLOCK {controlTerminator(1);}
-                | ERRONOUS_WHILE_STT  
-                ;
-
-ERRONOUS_WHILE_STT:
-                WHILE error ':'                               {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);}  BLOCK
-                | WHILE EXPRESSION                            {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);}         BLOCK
-                | WHILE EXPRESSION ':' error '}'              {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);}
-                //TODO handle unclosed curly braces
+                //| WHILE {printWHILE();} error ':'                    {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);}  BLOCK {controlTerminator(1);}
+                //| WHILE {printWHILE();} EXPRESSION                   {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);}         BLOCK {controlTerminator(1);}
+                //| WHILE {printWHILE();} EXPRESSION ':' error '}'     {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);}
+                //TODO handle unclosed curly braces 
                 ;
 
 
@@ -844,19 +840,22 @@ void printLLVM(char* s)
 void printWHILE()
 {
     printLLVM(makeLabel());
-    //resetLabel();
+    resetTempLabel();
     printLLVM(":\n");
     printIF();
 };
 
 void controlTerminator(int isWhile)
 {
+    
     if(isWhile)
     {
+        labelNumber-=2;
         printLLVM("goto ");
         printLLVM(makeLabel());
+        labelNumber+=2;
         printLLVM("\n");
-        resetLabel();
+        resetTempLabel();
     }
 
     printLLVM(strdup(temp_endlabel));
