@@ -11,6 +11,7 @@
     extern FILE *yyin;
     extern FILE *yyout;
     extern int line_number;
+    extern int yy_flex_debug;
     //TODO  add float and int error DONE
     //TODO if you have 2 x in diffrent scopes and both are in valid scopes take the closet (DONE)
     //TODO unused variables (DONE)
@@ -68,6 +69,32 @@
     void arg_count_check( int i);
 
 
+
+//_____________________________ CODE GEN _________________________
+    #include <fcntl.h>             //for creating file
+    #include <errno.h>             //for checking for file
+    int codeGen = 1;
+    char* VirtualStack [1000];
+    int VirtualSP = -1;
+    int tempNumber = 0;
+    int labelNumber = 0;
+    int endlabelNumber=0;
+    char temp_label[50] = "L";
+    char temp_endlabel[50] = "END";
+    char* popVStack();
+    char temp_var[50] = "t";
+    void pushVStack(char* s);
+    void CodeGenAss();
+    void CodeGenOp();
+    void printIF();
+    void printLLVM(char* s);
+    char* makeLabel();
+    char* makeEndLabel();
+    void printWHILE();
+    void controlTerminator(int isWhile);
+    void CodeGenLogical();
+//================================================================
+
 %}
 
 %union { 
@@ -91,10 +118,10 @@
 %left EQUALITY NEG_EQUALITY
 %right LOGIC_NOT
 %right POW
-%left MUL
-%left DIV
 %left PLUS
 %left SUB
+%left MUL
+%left DIV
 %right EQ
 %right GT
 %right LT
@@ -102,7 +129,7 @@
 %left '}'
 
 
-%type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM 
+%type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM PLUS
 %type <float_val> FLOAT_DIGIT
 %type <num> DIGIT
 %type <bool_val> BOOL_LITERAL
@@ -168,7 +195,7 @@ DECLARATION_TAIL:
                 | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); } ')'
                 | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); } RES_WORD
                 //|                                                                     {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);} '}'
-                | error RES_WORD                                                           {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);} 
+                //| error RES_WORD                                                           {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);} 
                 ;
 
 
@@ -267,30 +294,33 @@ ERRONOUS_ENUM_DECLARATION_STT:
                 ;
 
 
-
+IF_STT_HELPER:
+                IF {printIF();}EXPRESSION
+                ;
+IF_STT_HELPER1:
+                ':' BLOCK {controlTerminator(0);}
+                ;
 
 IF_STT:
-                IF EXPRESSION ':' BLOCK
-                | IF EXPRESSION ':' BLOCK ELSE error '}'      {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}
-                | IF EXPRESSION ':' BLOCK ELSE BLOCK
-                | IF EXPRESSION                               {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);}        BLOCK
-                | IF       ':'                                {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} BLOCK
-                | IF EXPRESSION ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the IF statement at line %d\n\n", yylineno);}
+                IF_STT_HELPER IF_STT_HELPER1
+                | IF_STT_HELPER IF_STT_HELPER1 ELSE BLOCK
+                | IF_STT_HELPER IF_STT_HELPER1 ELSE error '}'      {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}
+                | IF_STT_HELPER                               {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);}        BLOCK{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
+                | IF       ':'                                {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} BLOCK{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
+                | IF_STT_HELPER ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the IF statement at line %d\n\n", yylineno);}
                 
                 //TODO handle opened parenthesis but not closed
                 ;
 
 
-WHILE_STT:
-                WHILE EXPRESSION ':' BLOCK
-                | ERRONOUS_WHILE_STT  
-                ;
 
-ERRONOUS_WHILE_STT:
-                WHILE error ':'                               {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);}  BLOCK
-                | WHILE EXPRESSION                            {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);}         BLOCK
-                | WHILE EXPRESSION ':' error '}'              {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);}
-                //TODO handle unclosed curly braces
+// AYMON : ana masa7t el Error handling bta3 elWhile Loop 3shan fadelly taka we aksar elLaptop da fo2 dma2 elli katabo Bayzoooon >:(((
+WHILE_STT:
+                WHILE {printWHILE();} EXPRESSION ':' BLOCK {controlTerminator(1);}
+                //| WHILE {printWHILE();} error ':'                    {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);}  BLOCK {controlTerminator(1);}
+                //| WHILE {printWHILE();} EXPRESSION                   {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);}         BLOCK {controlTerminator(1);}
+                //| WHILE {printWHILE();} EXPRESSION ':' error '}'     {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);}
+                //TODO handle unclosed curly braces 
                 ;
 
 
@@ -321,10 +351,15 @@ ERRONOUS_FOR_LOOP:
                 ;
 
 //TODO hl m7taga a7ot call lel lookup t7t? i think yes bs kda kda da error so no need to store assign index 
+//AYMON : SOLVED the conflicts
+helperAssignmentRule:
+                IDENTIFIER  EQ  {pushVStack($1); assign_index = lookup($1);}
+                ;
+
 assignmentSTT:
-                IDENTIFIER EQ { assign_index =lookup($1); } EXPRESSION SEMICOLON          {printf("#[Parsed_Assignment]# ");}
-                | IDENTIFIER { lookup($1);} error EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
-                | IDENTIFIER { lookup($1);} EQ SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
+                helperAssignmentRule SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
+                | helperAssignmentRule EXPRESSION SEMICOLON          {CodeGenAss();printf("#[Parsed_Assignment]# ");}
+                | IDENTIFIER  error{pushVStack($1); assign_index = lookup($1);} EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
                 ;
 
 
@@ -351,19 +386,20 @@ USED_ARGS:
 
 EXPRESSION:
                 
-                IDENTIFIER  { int i = lookup($1); check_type(i); }
-                | DIGIT { assign_int($1, assign_index) ;}
-                | FLOAT_DIGIT { assign_float($1, assign_index); }
-                | BOOL_LITERAL  { assign_bool($1, assign_index); }
-                | STRING_LITERAL  {  assign_str($1, assign_index); }
-                | CONSTANT { int i = lookup($1); check_type(i); } 
-                | EXPRESSION PLUS PLUS
-                | EXPRESSION SUB SUB
-                | EXPRESSION PLUS EXPRESSION
-                | EXPRESSION SUB EXPRESSION
-                | EXPRESSION MUL EXPRESSION
-                | EXPRESSION DIV EXPRESSION
-                | EXPRESSION POW EXPRESSION
+                IDENTIFIER  { int i = lookup($1); check_type(i); pushVStack($1);}
+                | DIGIT { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring);}
+                | FLOAT_DIGIT { assign_float($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring);}
+                | BOOL_LITERAL  { assign_bool($1, assign_index); if($1==true){pushVStack("true");}else{pushVStack("false");}}
+                | STRING_LITERAL  {  assign_str($1, assign_index); pushVStack($1);}
+                | CONSTANT { int i = lookup($1); check_type(i); pushVStack($1);} 
+                //| SUB EXPRESSION
+                | EXPRESSION PLUS PLUS {pushVStack("+"); pushVStack("1"); CodeGenOp();}
+                | EXPRESSION SUB SUB   {pushVStack("-"); pushVStack("1"); CodeGenOp();}
+                | EXPRESSION PLUS {pushVStack("+");} EXPRESSION  {CodeGenOp();}
+                | EXPRESSION SUB  {pushVStack("-");} EXPRESSION  {CodeGenOp();}
+                | EXPRESSION MUL  {pushVStack("*");} EXPRESSION  {CodeGenOp();}
+                | EXPRESSION DIV  {pushVStack("/");} EXPRESSION  {CodeGenOp();}
+                | EXPRESSION POW  {pushVStack("^");} EXPRESSION  {CodeGenOp();}
                 | COMPARISONSTT
                 | FUNC_CALL {}                                
                 | '(' EXPRESSION ')'
@@ -377,7 +413,7 @@ ERRONOUS_EXPRESSION:
                 //| EXPRESSION DIV
                 //| EXPRESSION POW
                 error PLUS EXPRESSION           
-                | error SUB EXPRESSION          
+                //| error SUB EXPRESSION          
                 | error MUL EXPRESSION          
                 | error DIV EXPRESSION          
                 | error POW EXPRESSION          
@@ -387,14 +423,14 @@ ERRONOUS_EXPRESSION:
 
 
 COMPARISONSTT:
-                EXPRESSION GT EXPRESSION
-                | EXPRESSION LT EXPRESSION
-                | EXPRESSION LT EQ EXPRESSION
-                | EXPRESSION GT EQ EXPRESSION
-                | EXPRESSION EQUALITY EXPRESSION
-                | EXPRESSION NEG_EQUALITY EXPRESSION
-                | EXPRESSION LOGIC_AND EXPRESSION
-                | EXPRESSION LOGIC_OR EXPRESSION
+                EXPRESSION GT EXPRESSION                {pushVStack(">"); CodeGenLogical();}
+                | EXPRESSION LT EXPRESSION              {pushVStack("<"); CodeGenLogical();}
+                | EXPRESSION LT EQ EXPRESSION           {pushVStack("<="); CodeGenLogical();}
+                | EXPRESSION GT EQ EXPRESSION           {pushVStack(">="); CodeGenLogical();}
+                | EXPRESSION EQUALITY EXPRESSION        {pushVStack("="); CodeGenLogical();}
+                | EXPRESSION NEG_EQUALITY EXPRESSION    {pushVStack("!="); CodeGenLogical();}
+                | EXPRESSION LOGIC_AND EXPRESSION       {pushVStack("and"); CodeGenLogical();}
+                | EXPRESSION LOGIC_OR EXPRESSION        {pushVStack("or"); CodeGenLogical();}
                 | LOGIC_NOT EXPRESSION
                 | ERRONOUS_COMPARISONSTT
                 ;
@@ -636,9 +672,181 @@ void arg_count_check( int i) {
     else if ( arg_count < symbolTable[i].argCount )
     {printf("\n !!!!!!!!!!!! Error at line %d : too few arguments for function call expected %d got %d !!!!!!!!!!!\n", line_number, symbolTable[i].argCount, arg_count); }
 }
+
+
+// ____________________________________________________________________________ CODE GEN _______________________________________________________________________
+
+void pushVStack(char* var)
+{   
+    VirtualSP++;
+    VirtualStack[VirtualSP] = strdup(var);
+    /*printf("\nPUSHED %s\n", var);
+    for (int i = VirtualSP ; i >=0; i--)
+    {
+        printf("\nDEBUG: %s", VirtualStack[i]);
+    }*/
+};
+
+char* popVStack ()
+{
+    char* returner =  VirtualStack[VirtualSP];
+    VirtualSP--;
+    //printf("\nPOPED %s\n", returner);
+    return returner;
+};
+
+
+char* newTemp()
+{
+    char* tempVar;
+    strcpy(tempVar, "t");
+    char numtostring[10];
+    itoa(tempNumber, numtostring, 10);
+    strcat(tempVar, numtostring);
+    tempNumber++;
+    return tempVar;
+};
+
+void CodeGenAss()
+{
+    if(codeGen){
+    //printf("DEBUG %s", VirtualStack[VirtualSP]);
+    FILE *llfile = fopen("LLVM.txt", "a");
+    if(llfile == NULL) {
+        printf("can't open LLVM.txt file!\n");
+        exit(1);
+    }
+    char* value = popVStack();
+    char* carrier = popVStack();
+    fprintf(llfile, "%s = %s\n", carrier, value);
+    fclose (llfile);
+    //printf("DEBUG %s", VirtualStack[VirtualSP]);
+    }
+};
+
+void CodeGenOp()
+{
+    if(codeGen){
+    char* second_operand = popVStack();
+    char* operation = popVStack();
+    char* first_operand = popVStack();
+    char dumstr[10];
+    itoa(tempNumber, dumstr, 10);
+    strcat(temp_var, dumstr);
+    tempNumber++;
+    pushVStack(temp_var);
+    FILE *llvfile = fopen("LLVM.txt", "a");
+    if(llvfile == NULL) {
+        printf("can't open LLVM.txt file!\n");
+        exit(1);
+    }
+    fprintf(llvfile, "%s = %s %s %s\n", temp_var, first_operand, operation, second_operand);
+    fclose (llvfile);
+    temp_var[strlen(temp_var)-1] = '\0';
+    }
+};
+
+char* makeLabel()
+{
+    char dumstr[10];
+    itoa(labelNumber, dumstr, 10);
+    strcat(temp_label, dumstr);
+    return temp_label;
+};
+
+void resetTempLabel()
+{
+    temp_label[strlen(temp_label)-1] = '\0';
+    labelNumber++;
+};
+
+char* makeEndLabel()
+{
+    char dumstr[10];
+    itoa(endlabelNumber, dumstr, 10);
+    strcat(temp_endlabel, dumstr);
+    return temp_endlabel;
+};
+
+void CodeGenLogical()
+{
+    if(codeGen)
+    {
+        char* equality_OP = popVStack();
+        char* second_operand = popVStack();
+        char* first_operand = popVStack();
+        makeEndLabel();
+        makeLabel();
+        FILE *llvfile = fopen("LLVM.txt", "a");
+        if(llvfile == NULL) {printf("can't open LLVM.txt file!\n");exit(1);}
+        fprintf(llvfile, "%s %s %s goto %s\ngoto %s\n%s : \n", first_operand, equality_OP, second_operand, temp_label, temp_endlabel, temp_label); fclose (llvfile);
+    }
+    resetTempLabel();
+};
+
+void printIF(){
+    if(codeGen){
+    FILE *llvfile = fopen("LLVM.txt", "a");
+    if(llvfile == NULL) {printf("can't open LLVM.txt file!\n");exit(1);}
+    fprintf(llvfile, "IF "); fclose (llvfile);   }
+};
+
+void printLLVM(char* s)
+{
+    if(codeGen){
+        FILE *llvfile = fopen("LLVM.txt", "a");
+        if(llvfile == NULL) {printf("can't open LLVM.txt file!\n");exit(1);}
+        fprintf(llvfile, s); fclose (llvfile);
+    }
+};
+
+void printWHILE()
+{
+    if(codeGen)
+    {
+        printLLVM(makeLabel());
+        resetTempLabel();
+        printLLVM(":\n");
+        printIF();
+    }
+};
+
+void controlTerminator(int isWhile)
+{
+    if(codeGen)
+    {
+        if(isWhile)
+        {
+            labelNumber-=2;
+            printLLVM("goto ");
+            printLLVM(makeLabel());
+            labelNumber+=2;
+            printLLVM("\n");
+            resetTempLabel();
+        }
+
+        printLLVM(strdup(temp_endlabel));
+        printLLVM(":\n");
+        temp_endlabel[strlen(temp_endlabel)-1] = '\0';
+        endlabelNumber++;
+    }
+};
+//==============================================================================================================================================================
+
+
+
+
+
 //------------------------------------------- MAIN -------------------------------
 int main(int argc, char *argv[])
 { 
+
+    yy_flex_debug = 1;
+    int ret = remove("LLVM.txt");
+
+    if(ret != 0){
+        printf("\nCreating Intermediate Code File ...\n");
+    }
     yyin = fopen(argv[1], "r");
     yyparse();
     st_print();

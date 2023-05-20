@@ -35,7 +35,7 @@
 "<"                             {printf("LT:%s | ", yytext);             nword++; nchar+=yyleng;                                return LT;}
 "="                             {printf("EQ:%s | ", yytext);             nword++; nchar+=yyleng;                                return EQ;}         
 ";"                             {printf("SEMICOLON:%s | ", yytext);      nword++; nchar+=yyleng;                                return SEMICOLON;}
-"+"                             {printf("PLUS:%s | ", yytext);           nword++; nchar+=yyleng;                                return PLUS;}
+"+"                             {printf("PLUS:%s | ", yytext);           nword++; nchar+=yyleng;  yylval.str = strdup(yytext);                              return PLUS;}
 "-"                             {printf("SUB:%s | ", yytext);            nword++; nchar+=yyleng;                                return SUB;}
 "*"                             {printf("MUL:%s | ", yytext);            nword++; nchar+=yyleng;                                return MUL;}
 "/"                             {printf("DIV:%s | ", yytext);            nword++; nchar+=yyleng;                                return DIV;}
@@ -48,10 +48,10 @@
 [0-9]+                          {printf("DIGIT:%s | ", yytext);  nword++; nchar+=yyleng;  yylval.num = atoi(yytext);     return DIGIT;}
 [0-9]+\.[0-9]+                  {printf("FLOAT_DIGIT:%s | ", yytext);  nword++; nchar+=yyleng;  yylval.float_val= atof(yytext);   return FLOAT_DIGIT;}
 
-[ \t]                           //ignore
- 
-.                               {printf("UNK: %s | ", yytext);     nchar++;    return *yytext;}
+[ \t]+                           //ignore
 \n                              {nchar++;line_number++;}
+.                               {printf("UNK: %s | ", yytext);     nchar++;    return *yytext;}
+
 
 %%
 
