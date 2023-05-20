@@ -2821,11 +2821,9 @@ void arg_count_check( int i) {
 
 // ____________________________________________________________________________ CODE GEN _______________________________________________________________________
 void pushVStack(char* var)
-{   //printf("DEBUG %s", VirtualStack[VirtualSP]);
+{   
     VirtualSP++;
     VirtualStack[VirtualSP] = var;
-    //strcpy(VirtualStack[VirtualSP++], var);
-    //printf("DEBUG %s", VirtualStack[VirtualSP]);
 };
 
 char* popVStack ()
@@ -2835,7 +2833,7 @@ char* popVStack ()
     //char* returner = VirtualStack[VirtualSP--];
     //strcpy(returner, VirtualStack[VirtualSP--]);
     //VirtualSP--;
-    char* returner =VirtualStack[VirtualSP];
+    char* returner =  VirtualStack[VirtualSP];
     VirtualSP--;
     return returner;
 };
@@ -2844,11 +2842,13 @@ char* popVStack ()
 char* newTemp()
 {
     char* tempVar;
-    char numtostring[5];
-    itoa(tempNumber, numtostring, 10);
     strcpy(tempVar, "t");
+    char numtostring[10];
+    itoa(tempNumber, numtostring, 10);
+    
     strcat(tempVar, numtostring);
     tempNumber++;
+    
     return tempVar;
 };
 
@@ -2876,11 +2876,24 @@ void CodeGenAss()
 
 void CodeGenOp()
 {
+
+
+    
+
     char* second_operand = popVStack();
     char* operation = popVStack();
     char* first_operand = popVStack();
-    char* temp_var = newTemp();
     
+    
+    char* temp_var;
+    //strcpy(temp_var, newTemp());
+    strcpy(temp_var, "t");
+    char numtostring[10];
+    itoa(tempNumber, numtostring, 10);
+    strcat(temp_var, numtostring);
+    
+    tempNumber++;
+
     
 
     FILE *fp = fopen("LLVM.txt", "a");
@@ -2889,9 +2902,7 @@ void CodeGenOp()
         exit(1);
     }
     
-    fprintf(fp, "%s = %s %s %s\n", temp_var,first_operand, operation, second_operand);
-    printf("\n\n\n%s\n",first_operand);
-    printf("\n\n\n%s = %s %s %s\n", temp_var,first_operand, operation, second_operand);
+    fprintf(fp, "%s = %s %s %s\n", temp_var, first_operand, operation, second_operand);
     fclose (fp);
 
     pushVStack(temp_var);
