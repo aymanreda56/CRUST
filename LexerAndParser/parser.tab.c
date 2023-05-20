@@ -2915,28 +2915,23 @@ void arg_count_check( int i) {
 
 
 // ____________________________________________________________________________ CODE GEN _______________________________________________________________________
+
 void pushVStack(char* var)
 {   
     VirtualSP++;
     VirtualStack[VirtualSP] = strdup(var);
-    printf("\nPUSHED %s\n", var);
+    /*printf("\nPUSHED %s\n", var);
     for (int i = VirtualSP ; i >=0; i--)
     {
         printf("\nDEBUG: %s", VirtualStack[i]);
-    }
-    
+    }*/
 };
 
 char* popVStack ()
 {
-    //printf("DEBUG %s", VirtualStack[VirtualSP]);
-    //char* returner = VirtualStack[VirtualSP];
-    //char* returner = VirtualStack[VirtualSP--];
-    //strcpy(returner, VirtualStack[VirtualSP--]);
-    //VirtualSP--;
     char* returner =  VirtualStack[VirtualSP];
     VirtualSP--;
-    printf("\nPOPED %s\n", returner);
+    //printf("\nPOPED %s\n", returner);
     return returner;
 };
 
@@ -2947,10 +2942,8 @@ char* newTemp()
     strcpy(tempVar, "t");
     char numtostring[10];
     itoa(tempNumber, numtostring, 10);
-    
     strcat(tempVar, numtostring);
     tempNumber++;
-    
     return tempVar;
 };
 
@@ -2959,57 +2952,36 @@ void CodeGenAss()
     if(codeGen){
     //printf("DEBUG %s", VirtualStack[VirtualSP]);
     FILE *llfile = fopen("LLVM.txt", "a");
-    
     if(llfile == NULL) {
         printf("can't open LLVM.txt file!\n");
         exit(1);
     }
-
-    //char* value = popVStack();
-    //char* carrier = popVStack();
     char* value = popVStack();
     char* carrier = popVStack();
-    //strcpy(value, popVStack());
-    //strcpy(carrier, popVStack());
     fprintf(llfile, "%s = %s\n", carrier, value);
     fclose (llfile);
-
     //printf("DEBUG %s", VirtualStack[VirtualSP]);
     }
 };
 
 void CodeGenOp()
 {
-
     if(codeGen){
     char* second_operand = popVStack();
     char* operation = popVStack();
     char* first_operand = popVStack();
-    
-    
-    
-    //strcpy(temp_var, newTemp());
-    
     char dumstr[10];
     itoa(tempNumber, dumstr, 10);
     strcat(temp_var, dumstr);
-    
     tempNumber++;
-
     pushVStack(temp_var);
-
-
-    
-
     FILE *llvfile = fopen("LLVM.txt", "a");
     if(llvfile == NULL) {
         printf("can't open LLVM.txt file!\n");
         exit(1);
     }
-    
     fprintf(llvfile, "%s = %s %s %s\n", temp_var, first_operand, operation, second_operand);
     fclose (llvfile);
-
     temp_var[strlen(temp_var)-1] = '\0';
     }
 };
@@ -3040,25 +3012,15 @@ void CodeGenLogical()
 {
     if(codeGen)
     {
-char* equality_OP = popVStack();
-char* second_operand = popVStack();
-char* first_operand = popVStack();
-printf("loloooooooooooooooooo%s", first_operand);
-
-
-
-makeEndLabel();
-makeLabel();
-
-
-//char* inlineLabel = makeLabel();
-//char* secondLabel = makeEndLabel();
-printf("loloooooooooooooooooo%s", first_operand);
-   FILE *llvfile = fopen("LLVM.txt", "a");
-    if(llvfile == NULL) {printf("can't open LLVM.txt file!\n");exit(1);}
-    fprintf(llvfile, "%s %s %s goto %s\ngoto %s\n%s : \n", first_operand, equality_OP, second_operand, temp_label, temp_endlabel, temp_label); fclose (llvfile);   }
-
-
+        char* equality_OP = popVStack();
+        char* second_operand = popVStack();
+        char* first_operand = popVStack();
+        makeEndLabel();
+        makeLabel();
+        FILE *llvfile = fopen("LLVM.txt", "a");
+        if(llvfile == NULL) {printf("can't open LLVM.txt file!\n");exit(1);}
+        fprintf(llvfile, "%s %s %s goto %s\ngoto %s\n%s : \n", first_operand, equality_OP, second_operand, temp_label, temp_endlabel, temp_label); fclose (llvfile);
+    }
     resetTempLabel();
 };
 
@@ -3068,41 +3030,46 @@ void printIF(){
     if(llvfile == NULL) {printf("can't open LLVM.txt file!\n");exit(1);}
     fprintf(llvfile, "IF "); fclose (llvfile);   }
 };
+
 void printLLVM(char* s)
 {
     if(codeGen){
-    FILE *llvfile = fopen("LLVM.txt", "a");
-    if(llvfile == NULL) {printf("can't open LLVM.txt file!\n");exit(1);}
-    fprintf(llvfile, s); fclose (llvfile);   }
+        FILE *llvfile = fopen("LLVM.txt", "a");
+        if(llvfile == NULL) {printf("can't open LLVM.txt file!\n");exit(1);}
+        fprintf(llvfile, s); fclose (llvfile);
+    }
 };
-
 
 void printWHILE()
 {
-    printLLVM(makeLabel());
-    resetTempLabel();
-    printLLVM(":\n");
-    printIF();
+    if(codeGen)
+    {
+        printLLVM(makeLabel());
+        resetTempLabel();
+        printLLVM(":\n");
+        printIF();
+    }
 };
 
 void controlTerminator(int isWhile)
 {
-    
-    if(isWhile)
+    if(codeGen)
     {
-        labelNumber-=2;
-        printLLVM("goto ");
-        printLLVM(makeLabel());
-        labelNumber+=2;
-        printLLVM("\n");
-        resetTempLabel();
+        if(isWhile)
+        {
+            labelNumber-=2;
+            printLLVM("goto ");
+            printLLVM(makeLabel());
+            labelNumber+=2;
+            printLLVM("\n");
+            resetTempLabel();
+        }
+
+        printLLVM(strdup(temp_endlabel));
+        printLLVM(":\n");
+        temp_endlabel[strlen(temp_endlabel)-1] = '\0';
+        endlabelNumber++;
     }
-
-    printLLVM(strdup(temp_endlabel));
-    printLLVM(":\n");
-    temp_endlabel[strlen(temp_endlabel)-1] = '\0';
-    endlabelNumber++;
-
 };
 //==============================================================================================================================================================
 
