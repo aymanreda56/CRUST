@@ -2,6 +2,7 @@ int a;
 int b = 5;
 int c = 5 + 4;
 string aymon = "12a3_";
+#alo#
 int d = a;
 
 a = b;

@@ -11,6 +11,7 @@
     extern FILE *yyin;
     extern FILE *yyout;
     extern int line_number;
+    extern int yy_flex_debug;
     //TODO  add float and int error DONE
     //TODO if you have 2 x in diffrent scopes and both are in valid scopes take the closet (DONE)
     //TODO unused variables (DONE)
@@ -181,7 +182,7 @@ DECLARATION_TAIL:
                 | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); } ')'
                 | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); } RES_WORD
                 //|                                                                     {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);} '}'
-                | error RES_WORD                                                           {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);} 
+                //| error RES_WORD                                                           {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);} 
                 ;
 
 
@@ -755,6 +756,8 @@ void CodeGenOp()
 //------------------------------------------- MAIN -------------------------------
 int main(int argc, char *argv[])
 { 
+
+    yy_flex_debug = 1;
     int ret = remove("LLVM.txt");
 
     if(ret != 0){
