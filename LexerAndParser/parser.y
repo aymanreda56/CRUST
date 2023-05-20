@@ -160,6 +160,7 @@ STATEMENT:
                 | DO_WHILE_STT                              {printf("#[Parsed_DO_WHILE_LOOP]# ");}
                 | SWITCH_STT                                {printf("#[Parsed_SWITCH_STT]# ");}
                 | ENUM_DECLARATION_STT                      {printf("#[Parsed_Enum_Declaration]# ");}
+                | ENUM_CALL_STT                             {printf("#[Parsed_Enum_USAGE]# ");}
                 | BLOCK
                 | error SEMICOLON                           {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);}//Error handler using ; as a delimiter
                 | error '}'                                 {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);}//Error handler using ; as a delimiter
@@ -199,7 +200,10 @@ DECLARATION_TAIL:
                 ;
 
 
-
+ENUM_CALL_STT:
+                IDENTIFIER IDENTIFIER EQ IDENTIFIER SEMICOLON
+                | IDENTIFIER IDENTIFIER SEMICOLON
+                ;
 
 
 SWITCH_STT:
