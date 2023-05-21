@@ -373,7 +373,7 @@ ERRONOUS_FOR_LOOP:
 
 //TODO hl m7taga a7ot call lel lookup t7t? i think yes bs kda kda da error so no need to store assign index 
 //AYMON : SOLVED the conflicts
-helperAssignmentRule:
+helperAssignmentRule: 
                 IDENTIFIER  EQ  {pushVStack($1); assign_index = lookup($1);}
                 ;
 
@@ -520,10 +520,10 @@ int lookup(char* name) {
     // If the symbol exists, it returns its index in the table.
     // loop on the table from down to up to take the variable from the closest scope as closet one will
     // be with higher index in the table
-     if ( is_enum == 1)
-    { 
-        return -1;
-    }
+     if ( is_enum == 1) { return -1;} 
+     if ( symbolTable[assign_index].type == "var_enum")
+     {  
+        assign_enum (assign_index, symbolTable[assign_index].dataType, name);}
     for (int i = st_index-1 ; i >= 0; i--){
         if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].outOfScope == 0 ){
             if (symbolTable[i].isInit == 0 && strcmp(symbolTable[i].type, "var") == 0 && symbolTable[i].isArg == 0 ) 
@@ -643,6 +643,8 @@ void assign_enum (int i, char* enum_name, char* key) {
                         return;
                     }
                 }
+                printf("\n !!!!!!!!!!!! Error at line %d: %s not exist as key for %s enum  !!!!!!!!!!!\n", line_number, key ,enum_name );
+                return;
             }
         }
     }
