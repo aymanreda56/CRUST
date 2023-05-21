@@ -191,6 +191,7 @@ STATEMENT:
                 | FOR_STT                                   {printf("#[Parsed_For_LOOP]# ");}
                 | DO_WHILE_STT                              {printf("#[Parsed_DO_WHILE_LOOP]# ");}
                 | SWITCH_STT                                {printf("#[Parsed_SWITCH_STT]# ");}
+                | SWITCH_STT                                {printf("#[Parsed_SWITCH_STT]# ");}
                 | ENUM_DECLARATION_STT                      {printf("#[Parsed_Enum_Declaration]# ");}
                 | ENUM_CALL_STT                             {printf("#[Parsed_Enum_USAGE]# ");}
                 | BLOCK
@@ -792,45 +793,6 @@ void check_type( int i) {
         else if ( strcmp(symbolTable[i].dataType, "string")==0){symbolTable[assign_index].strValue= symbolTable[i].strValue ;}
         else if (symbolTable[i].dataType == "bool"){symbolTable[assign_index].boolValue= symbolTable[i].boolValue ;}
     }
-}
-
-//----------------------------------------------- PRINT SYMBOL TABLE ----------------------------------------------------
-void st_print() {
-    //----- write symbol table to file
-    FILE *fp = fopen("symbol_table.txt", "w");
-    //----- check if file is opened
-    if(fp == NULL) {
-        printf("can't open symbol_table.txt file!\n");
-        exit(1);
-    }
-    //----- write symbol table header
-    fprintf(fp, "ID\t|Name\t|Type\t|DataType\t|Line\t|Scope\tisInit\t|Value\t\t|Args\n");
-    fprintf(fp, "-------------------------------------------------------------------------------------------\n");
-    //----- write symbol table entries
-    for(int i=0; i< st_index; i++) {
-        struct Entry *entry = &symbolTable[i];
-        fprintf(fp, "%d\t|%s\t|%s\t|%s\t\t|%d\t|%d\t|%d\t|", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope,entry->isInit);
-        //---- store value of entry
-        if (entry->isInit == 1) {
-        if (strcmp(entry->dataType,"int")==0) {fprintf(fp, "%d\t\t|", entry->intValue);}
-        else if (strcmp(entry->dataType,"float")==0) {fp, fprintf(fp, "%f\t\t|", entry->floatValue);}
-        else if (strcmp(entry->dataType,"bool")==0) {fprintf(fp,"%s\t\t|", entry->boolValue ? "true" : "false");}
-        else if (strcmp(entry->dataType,"string")==0) {fprintf(fp, "%s\t\t|", entry->strValue);}
-        }
-        else {fprintf(fp, "-\t\t|");}
-        //---- print arguments of functions
-        if (strcmp(entry->type, "func") == 0)
-        {
-            for (int j = 0; j < entry->argCount; j++)
-            {
-            fprintf(fp, "%d,", entry->argList[j]);
-            }
-        }
-        else {fprintf(fp, "-");}
-       
-        fprintf(fp, "\n");
-    }
-    fclose(fp);
 }
 //--------------------------------------------------- HANDLE SCOPE ---------------------------------------------------
 
