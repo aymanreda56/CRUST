@@ -85,7 +85,7 @@
     char temp_var[50] = "t";
     void pushVStack(char* s);
     void CodeGenAss();
-    void CodeGenOp();
+    void CodeGenOp(char* operator);
     void printIF();
     void printLLVM(char* s);
     char* makeLabel();
@@ -93,6 +93,18 @@
     void printWHILE();
     void controlTerminator(int isWhile);
     void CodeGenLogical();
+    void StAssPush(char* s);
+    void StAssPrint(char* s, int ind);
+    int SMLabel = 0;
+    int SMLabel_Else = 0;
+    int SMLabel_End = 0;
+    void StAssJmp(char* jmp, char* jmpName,int* num, int inc);
+    void StAssPrintLBL(int isLBL, int inc);
+    void StAssForHeader();
+    void StAssForMiddle();
+    int ForHeaderLabel = 0;
+    int ForHelperLabel = 0;
+    char IdentifierHolder[10];
 //================================================================
 
 %}
@@ -179,8 +191,8 @@ TYPE:
                 ;
 
 DECLARATION_STT:                                                            
-                TYPE IDENTIFIER {st_insert($1, $2,"var",0); assign_index= st_index-1; }   DECLARATION_TAIL            {printf("#[Parsed_Declaration]# "); }
-                | TYPE CONSTANT {st_insert($1, $2,"const",0);  assign_index= st_index-1;}  DECLARATION_TAIL            {printf("#[Parsed_CONST_Declaration]# "); }
+                TYPE IDENTIFIER {st_insert($1, $2,"var",0); assign_index= st_index-1; strcpy(IdentifierHolder, $2);}   DECLARATION_TAIL            {printf("#[Parsed_Declaration]# "); }
+                | TYPE CONSTANT {st_insert($1, $2,"const",0);  assign_index= st_index-1; strcpy(IdentifierHolder, $2);}  DECLARATION_TAIL            {printf("#[Parsed_CONST_Declaration]# "); }
                 | error IDENTIFIER    SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING variable type at line %d\n\n", yylineno);}//Error handler
                 | error CONSTANT      SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING constant type at line %d\n\n", yylineno);}//Error handler
                 | TYPE IDENTIFIER IDENTIFIER SEMICOLON                                      {printf("\n\n=====ERROR====\n unexpected identifier %s at line %d\n\n",$3, yylineno);}
@@ -188,7 +200,7 @@ DECLARATION_STT:
 
 
 DECLARATION_TAIL:
-                EQ EXPRESSION  SEMICOLON 
+                EQ EXPRESSION  SEMICOLON {StAssPush(strdup(IdentifierHolder)); StAssPrint("OVER", 1); StAssPrint("STORE", 1); StAssPrint("DROP", 1);}
                 | error EXPRESSION   SEMICOLON                                              {printf("\n\n=====ERROR====\n MISSING '=' at line %d\n\n", yylineno);}//Error handler
                 | EQ error SEMICOLON                                                        {printf("\n\n=====ERROR====\n unexpected '=' without second operand at line %d\n\n", yylineno);}//Error handler
                 | SEMICOLON 
@@ -303,15 +315,15 @@ ERRONOUS_ENUM_DECLARATION_STT:
 
 
 IF_STT_HELPER:
-                IF {printIF();}EXPRESSION
+                IF {printIF();}EXPRESSION {StAssJmp("JNZ", "LBL",&SMLabel_Else, 0);}
                 ;
 IF_STT_HELPER1:
-                ':' BLOCK {controlTerminator(0);}
+                ':' BLOCK {controlTerminator(0);  StAssJmp("JMP", "END",&SMLabel_End, 0); StAssPrintLBL(1, 1);}
                 ;
 
 IF_STT:
-                IF_STT_HELPER IF_STT_HELPER1
-                | IF_STT_HELPER IF_STT_HELPER1 ELSE BLOCK
+                IF_STT_HELPER IF_STT_HELPER1 {StAssJmp("JMP", "END",&SMLabel_End, 1); StAssPrintLBL(0, 1);}
+                | IF_STT_HELPER IF_STT_HELPER1 ELSE BLOCK {StAssJmp("JMP", "END",&SMLabel_End, 1); StAssPrintLBL(0, 1);}
                 | IF_STT_HELPER IF_STT_HELPER1 ELSE error '}'      {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}
                 | IF_STT_HELPER                               {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);}        BLOCK{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
                 | IF       ':'                                {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} BLOCK{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
@@ -322,9 +334,9 @@ IF_STT:
 
 
 
-// AYMON : ana masa7t el Error handling bta3 elWhile Loop 3shan fadelly taka we aksar elLaptop da fo2 dma2 elli katabo Bayzoooon >:(((
+// AYMON : ana masa7t el Error handling bta3 elWhile Loop 3shan fadelly taka we aksar elLaptop da fo2 dma8 elli katabo Bayzoooon >:(((
 WHILE_STT:
-                WHILE {printWHILE();} EXPRESSION ':' BLOCK {controlTerminator(1);}
+                WHILE {printWHILE(); StAssPrintLBL(1, 0);} EXPRESSION {StAssJmp("JNZ", "END",&SMLabel_End, 0);} ':' BLOCK {StAssJmp("JMP", "LBL",&SMLabel_Else, 1); StAssPrintLBL(0, 1);}
                 //| WHILE {printWHILE();} error ':'                    {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);}  BLOCK {controlTerminator(1);}
                 //| WHILE {printWHILE();} EXPRESSION                   {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);}         BLOCK {controlTerminator(1);}
                 //| WHILE {printWHILE();} EXPRESSION ':' error '}'     {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);}
@@ -348,7 +360,7 @@ ERRONOUS_DO_WHILE:
 
 
 FOR_STT:
-                FOR '(' {in_loop = 1;} STATEMENT STATEMENT STATEMENT ')'{in_loop = 0;} BLOCK 
+                FOR '(' {in_loop = 1;} STATEMENT {StAssForHeader();} STATEMENT {StAssForMiddle();} STATEMENT ')'{StAssPrintLBL(1,1); in_loop = 0;} BLOCK  {StAssPrintLBL(0,1);}
                 | ERRONOUS_FOR_LOOP
                 ;
 ERRONOUS_FOR_LOOP:
@@ -361,13 +373,13 @@ ERRONOUS_FOR_LOOP:
 //TODO hl m7taga a7ot call lel lookup t7t? i think yes bs kda kda da error so no need to store assign index 
 //AYMON : SOLVED the conflicts
 helperAssignmentRule:
-                IDENTIFIER  EQ  {pushVStack($1); assign_index = lookup($1);}
+                IDENTIFIER  EQ  {pushVStack($1); StAssPush($1); assign_index = lookup($1);}
                 ;
 
 assignmentSTT:
                 helperAssignmentRule SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
-                | helperAssignmentRule EXPRESSION SEMICOLON          {CodeGenAss();printf("#[Parsed_Assignment]# ");}
-                | IDENTIFIER  error{pushVStack($1); assign_index = lookup($1);} EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
+                | helperAssignmentRule EXPRESSION SEMICOLON          {StAssPrint("STORE", 1); CodeGenAss();printf("#[Parsed_Assignment]# ");}
+                | IDENTIFIER  error{pushVStack($1); assign_index = lookup($1); StAssPush($1);} EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
                 ;
 
 
@@ -394,20 +406,22 @@ USED_ARGS:
 
 EXPRESSION:
                 
-                IDENTIFIER  { int i = lookup($1); check_type(i); pushVStack($1);}
-                | DIGIT { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring);}
-                | FLOAT_DIGIT { assign_float($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring);}
-                | BOOL_LITERAL  { assign_bool($1, assign_index); if($1==true){pushVStack("true");}else{pushVStack("false");}}
-                | STRING_LITERAL  {  assign_str($1, assign_index); pushVStack($1);}
-                | CONSTANT { int i = lookup($1); check_type(i); pushVStack($1);} 
+                IDENTIFIER  { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);}
+                | DIGIT { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring); char dum[10]="$"; StAssPush(strcat(dum,numtostring));}
+                | FLOAT_DIGIT { assign_float($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring); char dum[10]="$"; StAssPush(strcat(dum,floattostring));}
+                | BOOL_LITERAL  { assign_bool($1, assign_index); if($1==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
+                | STRING_LITERAL  {  assign_str($1, assign_index); pushVStack($1);StAssPush(strcat("$",strdup($1)));}
+                | CONSTANT { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);} 
                 //| SUB EXPRESSION
-                | EXPRESSION PLUS PLUS {pushVStack("+"); pushVStack("1"); CodeGenOp();}
-                | EXPRESSION SUB SUB   {pushVStack("-"); pushVStack("1"); CodeGenOp();}
-                | EXPRESSION PLUS {pushVStack("+");} EXPRESSION  {CodeGenOp();}
-                | EXPRESSION SUB  {pushVStack("-");} EXPRESSION  {CodeGenOp();}
-                | EXPRESSION MUL  {pushVStack("*");} EXPRESSION  {CodeGenOp();}
-                | EXPRESSION DIV  {pushVStack("/");} EXPRESSION  {CodeGenOp();}
-                | EXPRESSION POW  {pushVStack("^");} EXPRESSION  {CodeGenOp();}
+                | EXPRESSION PLUS PLUS {pushVStack("+"); pushVStack("1"); CodeGenOp("ADD"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("ADD", 1); StAssPrint("STORE", 1);}
+                | EXPRESSION SUB SUB   {pushVStack("-"); pushVStack("1"); CodeGenOp("SUB"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("SUB", 1); StAssPrint("STORE", 1);}
+                | EXPRESSION PLUS {pushVStack("+");} EXPRESSION  {CodeGenOp("ADD"); StAssPrint("ADD", 1);}
+                | EXPRESSION SUB  {pushVStack("-");} EXPRESSION  {CodeGenOp("SUB"); StAssPrint("SUB", 1);}
+                | EXPRESSION MUL  {pushVStack("*");} EXPRESSION  {CodeGenOp("MUL"); StAssPrint("MUL", 1);}
+                | EXPRESSION DIV  {pushVStack("/");} EXPRESSION  {CodeGenOp("DIV"); StAssPrint("DIV", 1);}
+
+// TODO : IMPLEMENT THE POWER STATEMENT IN STACK MACHINE CODE (maybe as a macro?)
+                | EXPRESSION POW  {pushVStack("^");} EXPRESSION  {CodeGenOp("POW");}
                 | COMPARISONSTT
                 | FUNC_CALL {}                                
                 | '(' EXPRESSION ')'
@@ -431,14 +445,14 @@ ERRONOUS_EXPRESSION:
 
 
 COMPARISONSTT:
-                EXPRESSION GT EXPRESSION                {pushVStack(">"); CodeGenLogical();}
-                | EXPRESSION LT EXPRESSION              {pushVStack("<"); CodeGenLogical();}
-                | EXPRESSION LT EQ EXPRESSION           {pushVStack("<="); CodeGenLogical();}
-                | EXPRESSION GT EQ EXPRESSION           {pushVStack(">="); CodeGenLogical();}
-                | EXPRESSION EQUALITY EXPRESSION        {pushVStack("="); CodeGenLogical();}
-                | EXPRESSION NEG_EQUALITY EXPRESSION    {pushVStack("!="); CodeGenLogical();}
-                | EXPRESSION LOGIC_AND EXPRESSION       {pushVStack("and"); CodeGenLogical();}
-                | EXPRESSION LOGIC_OR EXPRESSION        {pushVStack("or"); CodeGenLogical();}
+                EXPRESSION GT EXPRESSION                {pushVStack(">"); CodeGenLogical(); StAssPrint("GT", 1);}
+                | EXPRESSION LT EXPRESSION              {pushVStack("<"); CodeGenLogical(); StAssPrint("LT", 1);}
+                | EXPRESSION LT EQ EXPRESSION           {pushVStack("<="); CodeGenLogical(); StAssPrint("LE", 1);}
+                | EXPRESSION GT EQ EXPRESSION           {pushVStack(">="); CodeGenLogical(); StAssPrint("GE", 1);}
+                | EXPRESSION EQUALITY EXPRESSION        {pushVStack("="); CodeGenLogical(); StAssPrint("EQ", 1);}
+                | EXPRESSION NEG_EQUALITY EXPRESSION    {pushVStack("!="); CodeGenLogical(); StAssPrint("NE", 1);}
+                | EXPRESSION LOGIC_AND EXPRESSION       {pushVStack("and"); CodeGenLogical(); StAssPrint("AND", 1);}
+                | EXPRESSION LOGIC_OR EXPRESSION        {pushVStack("or"); CodeGenLogical(); StAssPrint("OR", 1);}
                 | LOGIC_NOT EXPRESSION
                 | ERRONOUS_COMPARISONSTT
                 ;
@@ -715,6 +729,115 @@ char* newTemp()
     return tempVar;
 };
 
+
+
+void StAssPush(char* s)
+{
+//////////////////////////////////////////////////////////// STACK ASSEMBLY///////////////////////////////////////////////
+    FILE *assfile = fopen("stackassembly.txt", "a");
+    if(assfile == NULL) {
+        printf("can't open stackassembly.txt file!\n");
+        exit(1);
+    }
+    fprintf(assfile, "\tPUSH \t %s\n", s);
+    fclose (assfile);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+
+void StAssPrint(char* s, int ind)
+{
+//////////////////////////////////////////////////////////// STACK ASSEMBLY///////////////////////////////////////////////
+    FILE *assfile = fopen("stackassembly.txt", "a");
+    if(assfile == NULL) {
+        printf("can't open stackassembly.txt file!\n");
+        exit(1);
+    }
+    if(ind){fprintf(assfile, "\t%s\n", s);}
+    else{fprintf(assfile, "%s\n", s);}
+    fclose (assfile);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+};
+
+void StAssJmp(char* jmp, char* jmpName, int* num, int inc)
+{
+    FILE *assfile = fopen("stackassembly.txt", "a");
+    if(assfile == NULL) {
+        printf("can't open stackassembly.txt file!\n");
+        exit(1);
+    }
+
+    fprintf(assfile, "\t%s \t %s%d\n", jmp, jmpName,*num);
+    fclose (assfile);
+    if(inc == 1){*num = *num + 1;}
+};
+
+void StAssPrintLBL(int isLBL, int inc)
+{
+    char buf[10];
+    char numtostring[10];
+    if(isLBL){
+        strcpy(buf , "LBL");
+        
+        if(inc)
+        {
+            itoa(SMLabel_Else++, numtostring, 10);
+        }
+        else
+        {
+            itoa(SMLabel_Else, numtostring, 10);
+        }
+
+        } else {
+        strcpy(buf, "END");
+        if(inc)
+        {
+            itoa(SMLabel_End++, numtostring, 10);
+        }
+        else
+        {
+            itoa(SMLabel_End, numtostring, 10);
+        }
+    }
+    strcat(buf, numtostring);strcat(buf, ":"); StAssPrint(buf,0);
+};
+
+
+void StAssForHeader()
+{
+    StAssPush("dum");
+    StAssPush("$0");
+    StAssPrint("STORE", 1);
+    char buf[10];
+    char numtostring[10];
+    itoa(ForHeaderLabel, numtostring, 10);
+    strcpy(buf, "Label");
+    strcat(buf, numtostring);
+    strcat(buf, ":");
+    StAssPrint(buf, 0);
+    StAssPush("dum");
+    StAssPush("$1");
+    StAssPrint("EQ", 1);
+    StAssJmp("JZ", "HELPER", &ForHelperLabel, 0);
+
+};
+
+void StAssForMiddle()
+{
+    StAssJmp("JNZ", "END", &SMLabel_End, 0);
+    StAssPush("dum");
+    StAssPush("$1");
+    StAssPrint("STORE", 1);
+    StAssJmp("JMP", "LBL", &SMLabel_Else, 0);
+    char buf[10];
+    char numtostring[10];
+    itoa(ForHelperLabel, numtostring, 10);
+    strcpy(buf, "HELPER");
+    strcat(buf, numtostring);
+    strcat(buf, ":");
+    StAssPrint(buf, 0);
+    ForHelperLabel++;
+};
+
 void CodeGenAss()
 {
     if(codeGen){
@@ -730,23 +853,10 @@ void CodeGenAss()
     fclose (llfile);
     //printf("DEBUG %s", VirtualStack[VirtualSP]);
 
-
-    FILE *assfile = fopen("stackassembly.txt", "a");
-    if(assfile == NULL) {
-        printf("can't open stackassembly.txt file!\n");
-        exit(1);
-    }
-    fprintf(assfile, "PUSH \t %s\nSTORE \t %s\n", value, carrier);
-    fclose (assfile);
-    //printf("DEBUG %s", VirtualStack[VirtualSP]);
-
-
-
-
     }
 };
 
-void CodeGenOp()
+void CodeGenOp(char* operator)
 {
     if(codeGen){
     char* second_operand = popVStack();
@@ -765,6 +875,7 @@ void CodeGenOp()
     fprintf(llvfile, "%s = %s %s %s\n", temp_var, first_operand, operation, second_operand);
     fclose (llvfile);
     temp_var[strlen(temp_var)-1] = '\0';
+    
     }
 };
 
@@ -869,7 +980,7 @@ int main(int argc, char *argv[])
 
     if(ret != 0 && ret2 !=0){
         printf("\nCreating Intermediate Code File ...\n");
-        printf("\nCreating Intermediate Code File ...\n");
+        printf("Creating Stack Machine Assembly File ...\n");
     }
     yyin = fopen(argv[1], "r");
     yyparse();
