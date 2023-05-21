@@ -70,7 +70,7 @@
 
 
 
-//_____________________________ CODE GEN _________________________
+//____________________________________________________________ CODE GEN ____________________________________________________________________
     #include <fcntl.h>             //for creating file
     #include <errno.h>             //for checking for file
     int codeGen = 1;
@@ -110,7 +110,7 @@
     void popArgs();
     int enumCNT = 1;
     void prepend(char* s, const char* t)    {size_t len = strlen(t);memmove(s + len, s, strlen(s) + 1);memcpy(s, t, len);}
-//================================================================
+//==================================================================================================================================================
 
 %}
 
@@ -190,23 +190,23 @@ STATEMENT:
 */
 
 TYPE:
-                INT { $$ = "int"; }
-                | FLOAT { $$ = "float"; }
-                | BOOL  { $$ = "bool"; }
-                | STRING { $$ = "string"; }
+                INT         { $$ = "int";   }
+                | FLOAT     { $$ = "float"; }
+                | BOOL      { $$ = "bool";  }
+                | STRING    { $$ = "string";}
                 ;
 
 DECLARATION_STT:                                                            
-                TYPE IDENTIFIER {st_insert($1, $2,"var",0); assign_index= st_index-1; strcpy(IdentifierHolder, $2);}   DECLARATION_TAIL            {printf("#[Parsed_Declaration]# "); }
-                | TYPE CONSTANT {st_insert($1, $2,"const",0);  assign_index= st_index-1; strcpy(IdentifierHolder, $2);}  DECLARATION_TAIL            {printf("#[Parsed_CONST_Declaration]# "); }
+                TYPE    IDENTIFIER  {st_insert($1, $2,"var",0);   assign_index= st_index-1; strcpy(IdentifierHolder, $2);}   DECLARATION_TAIL            {printf("#[Parsed_Declaration]# "); }
+                | TYPE  CONSTANT    {st_insert($1, $2,"const",0); assign_index= st_index-1; strcpy(IdentifierHolder, $2);}   DECLARATION_TAIL            {printf("#[Parsed_CONST_Declaration]# "); }
                 | error IDENTIFIER    SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING variable type at line %d\n\n", yylineno);}//Error handler
                 | error CONSTANT      SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING constant type at line %d\n\n", yylineno);}//Error handler
-                | TYPE IDENTIFIER IDENTIFIER SEMICOLON                                      {printf("\n\n=====ERROR====\n unexpected identifier %s at line %d\n\n",$3, yylineno);}
+                | TYPE  IDENTIFIER    IDENTIFIER SEMICOLON                                  {printf("\n\n=====ERROR====\n unexpected identifier %s at line %d\n\n",$3, yylineno);}
                 ;
 
 
 DECLARATION_TAIL:
-                EQ EXPRESSION  SEMICOLON {StAssPush(strdup(IdentifierHolder)); StAssPrint("OVER", 1); StAssPrint("STORE", 1); StAssPrint("DROP", 1);}
+                EQ EXPRESSION  SEMICOLON                                                    {StAssPush(strdup(IdentifierHolder)); StAssPrint("OVER", 1); StAssPrint("STORE", 1); StAssPrint("DROP", 1);}
                 | error EXPRESSION   SEMICOLON                                              {printf("\n\n=====ERROR====\n MISSING '=' at line %d\n\n", yylineno);}//Error handler
                 | EQ error SEMICOLON                                                        {printf("\n\n=====ERROR====\n unexpected '=' without second operand at line %d\n\n", yylineno);}//Error handler
                 | SEMICOLON 
@@ -225,7 +225,7 @@ RETURN_STT:
 
 
 ENUM_CALL_STT:
-                IDENTIFIER IDENTIFIER EQ IDENTIFIER SEMICOLON {StAssPush($2);StAssPush($4);StAssPrint("STORE",1);}
+                IDENTIFIER   IDENTIFIER EQ          IDENTIFIER SEMICOLON {StAssPush($2);StAssPush($4);StAssPrint("STORE",1);}
                 | IDENTIFIER IDENTIFIER SEMICOLON
                 ;
 
@@ -249,7 +249,7 @@ ERRONOUS_CASES:
 
 ERRONOUS_SWITCH_STT:
                 SWITCH error                    {printf("\n\n=====ERROR====\n MISSING identifier for switch statement at line %d\n\n", yylineno);}                            ':' '{' CASES '}'      
-                | SWITCH IDENTIFIER error       {printf("\n\n=====ERROR====\n unexpected identifier '%s' at switch statement at line %d\n\n",yylval, yylineno); }               ':'  '{' CASES '}'  
+                | SWITCH IDENTIFIER error       {printf("\n\n=====ERROR====\n unexpected identifier '%s' at switch statement at line %d\n\n",yylval, yylineno); }             ':'  '{' CASES '}'  
                 | SWITCH IDENTIFIER error       {printf("\n\n=====ERROR====\n MISSING colon ':' for switch statement (switchs must have a colon) at line %d\n\n", yylineno);} '{' CASES '}'
                 | SWITCH IDENTIFIER ':' error   {printf("\n\n=====ERROR====\n MISSING '{' for switch statement at line %d\n\n", yylineno);}                                   CASES '}'   
                 //| SWITCH IDENTIFIER ':' '{' CASES error {printf("\n\n=====ERROR====\n unclosed '}' for switch statement at line %d\n\n", yylineno);}    
@@ -266,9 +266,9 @@ ERRONOUS_SWITCH_STT:
 FUNC_DECLARATION_STT:
                 ERRONOUS_FUNC_DECLARATION_STT                                       BLOCK
                 | TYPE IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);} ARGS ')'   {st_insert($1, $2,"func",0); popArgs();}      BLOCK                                   
-                | VOID IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}ARGS ')'   {st_insert("void", $2,"func",0); popArgs();}  BLOCK 
-                | TYPE IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}')'        {st_insert($1, $2,"func",0);}      BLOCK                                   
-                | VOID IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}')'        {st_insert("void", $2,"func",0);}  BLOCK 
+                | VOID IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}ARGS ')'    {st_insert("void", $2,"func",0); popArgs();}  BLOCK 
+                | TYPE IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}')'         {st_insert($1, $2,"func",0);}                 BLOCK                                   
+                | VOID IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}')'         {st_insert("void", $2,"func",0);}             BLOCK 
                 ;
 
 // AYMOOON  UNCOMMENT THOSE ERROR HANDLERS AND IGNORE THE RED/RED CONFLICTS, they impose zero harm whatsoever.
@@ -306,12 +306,12 @@ ENUM_DECLARATION_STT:
                 ;
 ENUM_HELPER     : ENUM_ARGS | ENUM_DEFINED_ARGS;
 ENUM_ARGS:
-                IDENTIFIER {StAssPush($1);char buf[10]; itoa(enumCNT++,buf,10); prepend(buf, "$"); StAssPush(buf);StAssPrint("STORE",1);} ',' ENUM_ARGS
-                | IDENTIFIER {StAssPush($1);char buf[10]; itoa(enumCNT++,buf,10);prepend(buf, "$"); StAssPush(buf);StAssPrint("STORE",1);}
+                IDENTIFIER   {StAssPush($1);char buf[10]; itoa(enumCNT++,buf,10); prepend(buf, "$"); StAssPush(buf);StAssPrint("STORE",1);} ',' ENUM_ARGS
+                | IDENTIFIER {StAssPush($1);char buf[10]; itoa(enumCNT++,buf,10); prepend(buf, "$"); StAssPush(buf);StAssPrint("STORE",1);}
                 ;
 ENUM_DEFINED_ARGS:
-                IDENTIFIER EQ DIGIT {StAssPush($1);char buf[10]; itoa($3,buf,10);prepend(buf, "$");StAssPush(buf);StAssPrint("STORE",1);} ',' ENUM_DEFINED_ARGS
-                | IDENTIFIER EQ DIGIT{StAssPush($1);char buf[10]; itoa($3,buf,10);prepend(buf, "$");StAssPush(buf);StAssPrint("STORE",1);}
+                IDENTIFIER EQ DIGIT         {StAssPush($1);char buf[10]; itoa($3,buf,10);prepend(buf, "$");StAssPush(buf);StAssPrint("STORE",1);} ',' ENUM_DEFINED_ARGS
+                | IDENTIFIER EQ DIGIT       {StAssPush($1);char buf[10]; itoa($3,buf,10);prepend(buf, "$");StAssPush(buf);StAssPrint("STORE",1);}
                 | IDENTIFIER EQ error ','                   {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
                 | IDENTIFIER EQ FLOAT_DIGIT                 {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
                 | IDENTIFIER EQ STRING_LITERAL              {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
@@ -326,16 +326,16 @@ ERRONOUS_ENUM_DECLARATION_STT:
 
 
 IF_STT_HELPER:
-                IF {printIF();}EXPRESSION {StAssJmp("JNZ", "LBL",&SMLabel_Else, 0,0);}
+                IF {printIF();} EXPRESSION {StAssJmp("JNZ", "LBL",&SMLabel_Else, 0,0);}
                 ;
 IF_STT_HELPER1:
-                ':' BLOCK {controlTerminator(0);  StAssJmp("JMP", "END",&SMLabel_End, 0,0); StAssPrintLBL(1, 1);}
+                ':' BLOCK                                   {controlTerminator(0);  StAssJmp("JMP", "END",&SMLabel_End, 0,0); StAssPrintLBL(1, 1);}
                 ;
 
 IF_STT:
-                IF_STT_HELPER IF_STT_HELPER1 {StAssJmp("JMP", "END",&SMLabel_End, 1,0); StAssPrintLBL(0, 1);}
-                | IF_STT_HELPER IF_STT_HELPER1 ELSE BLOCK {StAssJmp("JMP", "END",&SMLabel_End, 1,0); StAssPrintLBL(0, 1);}
-                | IF_STT_HELPER IF_STT_HELPER1 ELSE error '}'      {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}
+                IF_STT_HELPER IF_STT_HELPER1                  {StAssJmp("JMP", "END",&SMLabel_End, 1,0); StAssPrintLBL(0, 1);}
+                | IF_STT_HELPER IF_STT_HELPER1 ELSE BLOCK     {StAssJmp("JMP", "END",&SMLabel_End, 1,0); StAssPrintLBL(0, 1);}
+                | IF_STT_HELPER IF_STT_HELPER1 ELSE error '}' {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}
                 | IF_STT_HELPER                               {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);}        BLOCK{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
                 | IF       ':'                                {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} BLOCK{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
                 | IF_STT_HELPER ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the IF statement at line %d\n\n", yylineno);}
@@ -377,25 +377,25 @@ FOR_STT:
 ERRONOUS_FOR_LOOP:
                 //FOR '(' STATEMENT ')'  {printf("\n\n=====ERROR====\n Missing a third statement inside the FOR loop at line %d\n\n", yylineno);}  BLOCK
                 FOR error STATEMENT STATEMENT STATEMENT ')'            {printf("\n\n=====ERROR====\n Missing opening braces '(' in the FOR loop at line %d\n\n", yylineno);}  BLOCK
-                | FOR '(' ';' STATEMENT STATEMENT STATEMENT ')'  {printf("\n\n=====ERROR====\n unexpected semicolon in the FOR loop at line %d\n\n", yylineno);}  BLOCK
+                | FOR '(' ';' STATEMENT STATEMENT STATEMENT ')'        {printf("\n\n=====ERROR====\n unexpected semicolon in the FOR loop at line %d\n\n", yylineno);}        BLOCK
                 //TODO 7agat keteeer, ana ma5noooo2   >:(
                 ;
 
 //TODO hl m7taga a7ot call lel lookup t7t? i think yes bs kda kda da error so no need to store assign index 
 //AYMON : SOLVED the conflicts
 helperAssignmentRule:
-                IDENTIFIER  EQ  {pushVStack($1); StAssPush($1); assign_index = lookup($1);}
+                IDENTIFIER  EQ                                   {pushVStack($1); StAssPush($1); assign_index = lookup($1);}
                 ;
 
 assignmentSTT:
                 helperAssignmentRule SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
-                | helperAssignmentRule EXPRESSION SEMICOLON          {StAssPrint("STORE", 1); CodeGenAss();printf("#[Parsed_Assignment]# ");}
-                | IDENTIFIER  error{pushVStack($1); assign_index = lookup($1); StAssPush($1);} EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
+                | helperAssignmentRule EXPRESSION SEMICOLON      {StAssPrint("STORE", 1); CodeGenAss();printf("#[Parsed_Assignment]# ");}
+                | IDENTIFIER  error                              {pushVStack($1); assign_index = lookup($1); StAssPush($1);}                                            EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
                 ;
 
 
 BLOCK:
-                '{' {scope_start();} PROGRAM '}' {scope_end();}                     {printf("#[Parsed_Block]# ");}
+                '{' {scope_start();} PROGRAM '}'                              {scope_end(); printf("#[Parsed_Block]# ");}
                 //| '{' PROGRAM error                                         {printf("\n=====ERROR====\n Missing closing parenthesis '{' at line %d\n", yylineno);}//Error handler
                 //TODO handle opened curly braces but not closed
                 ;
@@ -409,7 +409,7 @@ FUNC_CALL:
                 ;
 USED_ARGS:      
                 EXPRESSION { arg_count++; }  ',' USED_ARGS 
-                | error ',' USED_ARGS                   {printf("\n\n=====ERROR====\n Missing first argument in function's argument list or erronous ',' at line %d\n\n", yylineno);}//Error handler
+                | error ',' USED_ARGS                       {printf("\n\n=====ERROR====\n Missing first argument in function's argument list or erronous ',' at line %d\n\n", yylineno);}//Error handler
                 | EXPRESSION {arg_count++ ;}
                 |
                 ;
@@ -417,24 +417,24 @@ USED_ARGS:
 
 EXPRESSION:
                 
-                IDENTIFIER  { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);}
-                | DIGIT { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring); char dum[10]="$"; StAssPush(strcat(dum,numtostring));}
-                | FLOAT_DIGIT { assign_float($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring); char dum[10]="$"; StAssPush(strcat(dum,floattostring));}
-                | BOOL_LITERAL  { assign_bool($1, assign_index); if($1==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
-                | STRING_LITERAL  {  assign_str($1, assign_index); pushVStack($1);StAssPush(strcat("$",strdup($1)));}
-                | CONSTANT { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);} 
-                //| SUB EXPRESSION
-                | EXPRESSION PLUS PLUS {pushVStack("+"); pushVStack("1"); CodeGenOp("ADD"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("ADD", 1); StAssPrint("STORE", 1);}
-                | EXPRESSION SUB SUB   {pushVStack("-"); pushVStack("1"); CodeGenOp("SUB"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("SUB", 1); StAssPrint("STORE", 1);}
-                | EXPRESSION PLUS {pushVStack("+");} EXPRESSION  {CodeGenOp("ADD"); StAssPrint("ADD", 1);}
-                | EXPRESSION SUB  {pushVStack("-");} EXPRESSION  {CodeGenOp("SUB"); StAssPrint("SUB", 1);}
-                | EXPRESSION MUL  {pushVStack("*");} EXPRESSION  {CodeGenOp("MUL"); StAssPrint("MUL", 1);}
-                | EXPRESSION DIV  {pushVStack("/");} EXPRESSION  {CodeGenOp("DIV"); StAssPrint("DIV", 1);}
+                IDENTIFIER                      { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);}
+                | DIGIT                         { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring); char dum[10]="$"; StAssPush(strcat(dum,numtostring));}
+                | FLOAT_DIGIT                   { assign_float($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring); char dum[10]="$"; StAssPush(strcat(dum,floattostring));}
+                | BOOL_LITERAL                  { assign_bool($1, assign_index); if($1==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
+                | STRING_LITERAL                {  assign_str($1, assign_index); pushVStack($1);StAssPush(strcat("$",strdup($1)));}
+                | CONSTANT                      { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);} 
+                //| SUB EXPRESSION         // TODO El NEGATIVE yaaa AYMAAAAN ya mota5azel
+                | EXPRESSION PLUS PLUS          { pushVStack("+"); pushVStack("1"); CodeGenOp("ADD"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("ADD", 1); StAssPrint("STORE", 1);}
+                | EXPRESSION SUB SUB            { pushVStack("-"); pushVStack("1"); CodeGenOp("SUB"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("SUB", 1); StAssPrint("STORE", 1);}
+                | EXPRESSION PLUS               { pushVStack("+");}  EXPRESSION  {CodeGenOp("ADD"); StAssPrint("ADD", 1);}
+                | EXPRESSION SUB                { pushVStack("-");}  EXPRESSION  {CodeGenOp("SUB"); StAssPrint("SUB", 1);}
+                | EXPRESSION MUL                { pushVStack("*");}  EXPRESSION  {CodeGenOp("MUL"); StAssPrint("MUL", 1);}
+                | EXPRESSION DIV                { pushVStack("/");}  EXPRESSION  {CodeGenOp("DIV"); StAssPrint("DIV", 1);}
 
 // TODO : IMPLEMENT THE POWER STATEMENT IN STACK MACHINE CODE (maybe as a macro?)
-                | EXPRESSION POW  {pushVStack("^");} EXPRESSION  {CodeGenOp("POW");}
+                | EXPRESSION POW                {pushVStack("^");} EXPRESSION  {CodeGenOp("POW");}
                 | COMPARISONSTT
-                | FUNC_CALL {}                                
+                | FUNC_CALL                                
                 | '(' EXPRESSION ')'
                 | ERRONOUS_EXPRESSION           {printf("\n\n=====ERROR====\n Expression error at line %d\n\n", yylineno);}
                 ;
@@ -707,6 +707,20 @@ void arg_count_check( int i) {
 }
 
 
+/*
+                                                                                |\/\  ,.
+                                                                                /   `' |,-,
+                                                                            /         /_
+                                                                            _/            /
+                                                                            (.-,--.       /
+                                                                            /o/  o \     /
+                                                                            \_\    /   _/
+                                                                            (__`--'    _)
+                                                                            /         |
+                                                                            (_____,'    \  BART :)
+                                                                            \_       _\
+                                                                                `._..-'
+*/
 // ____________________________________________________________________________ CODE GEN _______________________________________________________________________
 
 void pushVStack(char* var)
