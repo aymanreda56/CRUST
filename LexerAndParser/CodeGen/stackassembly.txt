@@ -3,6 +3,28 @@
 	PUSH 	 $2
 	ADD
 	STORE
+	PUSH 	 $1
+	PUSH 	 l
+	OVER
+	STORE
+	DROP
+print:
+	POP	g
+	POP	q
+	PUSH 	 $0
+	PUSH 	 z
+	OVER
+	STORE
+	DROP
+	PUSH 	 z
+	OVER
+	POP	PC
+	DNEXT
+	JMP 	 PC
+	PUSH 	 PC
+	PUSH 	 x
+	PUSH 	 l
+	JMP 	 print0
 	PUSH 	 $0
 	PUSH 	 i
 	OVER
@@ -36,6 +58,7 @@ LBL0:
 	OVER
 	STORE
 	DROP
+	JMP 	 Label0
 END0:
 LBL1:
 	PUSH 	 x

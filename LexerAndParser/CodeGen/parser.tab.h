@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 120 "parser.y"
+#line 123 "parser.y"
 
 #include<stdbool.h>
 
@@ -83,16 +83,17 @@ extern int yydebug;
     ELSE = 278,                    /* ELSE  */
     DO = 279,                      /* DO  */
     ENUM = 280,                    /* ENUM  */
-    EQUALITY = 281,                /* EQUALITY  */
-    NEG_EQUALITY = 282,            /* NEG_EQUALITY  */
-    SWITCH = 283,                  /* SWITCH  */
-    CASE = 284,                    /* CASE  */
-    LOGIC_AND = 285,               /* LOGIC_AND  */
-    LOGIC_OR = 286,                /* LOGIC_OR  */
-    LOGIC_NOT = 287,               /* LOGIC_NOT  */
-    DIGIT = 288,                   /* DIGIT  */
-    IDENTIFIER = 289,              /* IDENTIFIER  */
-    FLOAT_DIGIT = 290              /* FLOAT_DIGIT  */
+    RETURN = 281,                  /* RETURN  */
+    EQUALITY = 282,                /* EQUALITY  */
+    NEG_EQUALITY = 283,            /* NEG_EQUALITY  */
+    SWITCH = 284,                  /* SWITCH  */
+    CASE = 285,                    /* CASE  */
+    LOGIC_AND = 286,               /* LOGIC_AND  */
+    LOGIC_OR = 287,                /* LOGIC_OR  */
+    LOGIC_NOT = 288,               /* LOGIC_NOT  */
+    DIGIT = 289,                   /* DIGIT  */
+    IDENTIFIER = 290,              /* IDENTIFIER  */
+    FLOAT_DIGIT = 291              /* FLOAT_DIGIT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -101,14 +102,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 112 "parser.y"
+#line 115 "parser.y"
  
  int num; /* integer value */ 
  char* str; 
  float float_val;
  bool bool_val;
 
-#line 112 "parser.tab.h"
+#line 113 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

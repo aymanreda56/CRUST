@@ -2,6 +2,14 @@ int x;
 
 x = 1 + 2;
 
+int l = 1;
+void print(int q, int g)
+{
+int z = 0;
+return z;
+}
+
+print(x, l);
 
 for(int i = 0 ; i < 3 ; i ++;)
 {

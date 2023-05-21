@@ -98,13 +98,16 @@
     int SMLabel = 0;
     int SMLabel_Else = 0;
     int SMLabel_End = 0;
-    void StAssJmp(char* jmp, char* jmpName,int* num, int inc);
+    void StAssJmp(char* jmp, char* jmpName,int* num, int inc, int noNum);
     void StAssPrintLBL(int isLBL, int inc);
     void StAssForHeader();
     void StAssForMiddle();
     int ForHeaderLabel = 0;
     int ForHelperLabel = 0;
     char IdentifierHolder[10];
+    char* argumentList[20];
+    int argPointer = 0;
+    void popArgs();
 //================================================================
 
 %}
@@ -121,7 +124,7 @@
 #include<stdbool.h>
 }
 
-%token INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM 
+%token INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM RETURN
 %token EQUALITY NEG_EQUALITY
 %token SWITCH CASE
 %token LOGIC_AND LOGIC_OR LOGIC_NOT
@@ -174,6 +177,7 @@ STATEMENT:
                 | ENUM_DECLARATION_STT                      {printf("#[Parsed_Enum_Declaration]# ");}
                 | ENUM_CALL_STT                             {printf("#[Parsed_Enum_USAGE]# ");}
                 | BLOCK
+                | RETURN_STT SEMICOLON
                 | error SEMICOLON                           {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);}//Error handler using ; as a delimiter
                 | error '}'                                 {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);}//Error handler using ; as a delimiter
                 | error ')'                                 {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);}//Error handler using ; as a delimiter
@@ -209,6 +213,12 @@ DECLARATION_TAIL:
                 | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); } RES_WORD
                 //|                                                                     {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);} '}'
                 //| error RES_WORD                                                           {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);} 
+                ;
+
+
+RETURN_STT:
+                RETURN                          {int dum = 0;StAssPrint("POP\tPC",1);StAssJmp("JMP", "PC", &dum,0,1);}
+                | RETURN EXPRESSION             {StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
                 ;
 
 
@@ -251,24 +261,23 @@ ERRONOUS_SWITCH_STT:
 
 
 
-
-
 FUNC_DECLARATION_STT:
                 ERRONOUS_FUNC_DECLARATION_STT                                       BLOCK
-                | TYPE IDENTIFIER '(' ARGS ')'   {st_insert($1, $2,"func",0);}      BLOCK                                   
-                | VOID IDENTIFIER '(' ARGS ')'   {st_insert("void", $2,"func",0);}  BLOCK 
-                | TYPE IDENTIFIER '(' ')'        {st_insert($1, $2,"func",0);}      BLOCK                                   
-                | VOID IDENTIFIER '(' ')'        {st_insert("void", $2,"func",0);}  BLOCK 
+                | TYPE IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);} ARGS ')'   {st_insert($1, $2,"func",0); popArgs();}      BLOCK                                   
+                | VOID IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}ARGS ')'   {st_insert("void", $2,"func",0); popArgs();}  BLOCK 
+                | TYPE IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}')'        {st_insert($1, $2,"func",0);}      BLOCK                                   
+                | VOID IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}')'        {st_insert("void", $2,"func",0);}  BLOCK 
                 ;
 
+// AYMOOON  UNCOMMENT THOSE ERROR HANDLERS AND IGNORE THE RED/RED CONFLICTS, they impose zero harm whatsoever.
 ERRONOUS_FUNC_DECLARATION_STT:
                 TYPE IDENTIFIER                     {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d for function %s\n\n", yylineno, $2);}                    ARGS ')'       {st_insert($1, $2,"func",0);} 
-                | TYPE IDENTIFIER '(' ARGS  '{'     {printf("\n\n=====ERROR====\n unclosed function parenthesis at line %d for function %s\n\n", yylineno, $2); yyclearin;                          st_insert($1, $2,"func",0);} 
-                | VOID IDENTIFIER                   {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d for function %s\n\n", yylineno, $2);}                    ARGS ')'       {st_insert($1, $2,"func",0);} 
-                | VOID IDENTIFIER '(' ARGS  '{'     {printf("\n\n=====ERROR====\n unclosed function parenthesis at line %d for function %s\n\n", yylineno, $2); yyclearin;                          st_insert($1, $2,"func",0);} 
-                | TYPE IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
-                | VOID IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
-                | TYPE IDENTIFIER '(' ARGS error    {printf("\n\n=====ERROR====\n unexpected token '%s' in argument list of function declaration at line %d\n\n", yylval, yylineno);}')'            {st_insert($1, $2,"func",0);}      
+                //| TYPE IDENTIFIER '(' ARGS  '{'     {printf("\n\n=====ERROR====\n unclosed function parenthesis at line %d for function %s\n\n", yylineno, $2); yyclearin;                          st_insert($1, $2,"func",0);} 
+                //| VOID IDENTIFIER                   {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d for function %s\n\n", yylineno, $2);}                    ARGS ')'       {st_insert($1, $2,"func",0);} 
+                //| VOID IDENTIFIER '(' ARGS  '{'     {printf("\n\n=====ERROR====\n unclosed function parenthesis at line %d for function %s\n\n", yylineno, $2); yyclearin;                          st_insert($1, $2,"func",0);} 
+                //| TYPE IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
+                //| VOID IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
+                //| TYPE IDENTIFIER '(' ARGS error    {printf("\n\n=====ERROR====\n unexpected token '%s' in argument list of function declaration at line %d\n\n", yylval, yylineno);}')'            {st_insert($1, $2,"func",0);}      
                 ;
 
 ARGS:
@@ -280,7 +289,7 @@ ERRONOUS_ARGS:
                 ',' ARGS                   {printf("\n\n=====ERROR====\n unexpected ',' in argument list of function declaration at line %d\n\n", yylineno);}
                 ;
 ARG_DECL:
-                TYPE IDENTIFIER                             {st_insert($1, $2,"var",1);}
+                TYPE IDENTIFIER                             {st_insert($1, $2,"var",1); char* buf=$2; argumentList[argPointer]=buf;argPointer++;}
                 //| error IDENTIFIER              {printf("\n\n=====ERROR====\n erronous argument declaration in function declaration at line %d\n\n", yylineno);}
                 ;
 
@@ -315,15 +324,15 @@ ERRONOUS_ENUM_DECLARATION_STT:
 
 
 IF_STT_HELPER:
-                IF {printIF();}EXPRESSION {StAssJmp("JNZ", "LBL",&SMLabel_Else, 0);}
+                IF {printIF();}EXPRESSION {StAssJmp("JNZ", "LBL",&SMLabel_Else, 0,0);}
                 ;
 IF_STT_HELPER1:
-                ':' BLOCK {controlTerminator(0);  StAssJmp("JMP", "END",&SMLabel_End, 0); StAssPrintLBL(1, 1);}
+                ':' BLOCK {controlTerminator(0);  StAssJmp("JMP", "END",&SMLabel_End, 0,0); StAssPrintLBL(1, 1);}
                 ;
 
 IF_STT:
-                IF_STT_HELPER IF_STT_HELPER1 {StAssJmp("JMP", "END",&SMLabel_End, 1); StAssPrintLBL(0, 1);}
-                | IF_STT_HELPER IF_STT_HELPER1 ELSE BLOCK {StAssJmp("JMP", "END",&SMLabel_End, 1); StAssPrintLBL(0, 1);}
+                IF_STT_HELPER IF_STT_HELPER1 {StAssJmp("JMP", "END",&SMLabel_End, 1,0); StAssPrintLBL(0, 1);}
+                | IF_STT_HELPER IF_STT_HELPER1 ELSE BLOCK {StAssJmp("JMP", "END",&SMLabel_End, 1,0); StAssPrintLBL(0, 1);}
                 | IF_STT_HELPER IF_STT_HELPER1 ELSE error '}'      {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}
                 | IF_STT_HELPER                               {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);}        BLOCK{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
                 | IF       ':'                                {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} BLOCK{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
@@ -336,7 +345,7 @@ IF_STT:
 
 // AYMON : ana masa7t el Error handling bta3 elWhile Loop 3shan fadelly taka we aksar elLaptop da fo2 dma8 elli katabo Bayzoooon >:(((
 WHILE_STT:
-                WHILE {printWHILE(); StAssPrintLBL(1, 0);} EXPRESSION {StAssJmp("JNZ", "END",&SMLabel_End, 0);} ':' BLOCK {StAssJmp("JMP", "LBL",&SMLabel_Else, 1); StAssPrintLBL(0, 1);}
+                WHILE {printWHILE(); StAssPrintLBL(1, 0);} EXPRESSION {StAssJmp("JNZ", "END",&SMLabel_End, 0,0);} ':' BLOCK {StAssJmp("JMP", "LBL",&SMLabel_Else, 1,0); StAssPrintLBL(0, 1);}
                 //| WHILE {printWHILE();} error ':'                    {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);}  BLOCK {controlTerminator(1);}
                 //| WHILE {printWHILE();} EXPRESSION                   {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);}         BLOCK {controlTerminator(1);}
                 //| WHILE {printWHILE();} EXPRESSION ':' error '}'     {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);}
@@ -360,7 +369,7 @@ ERRONOUS_DO_WHILE:
 
 
 FOR_STT:
-                FOR '(' {in_loop = 1;} STATEMENT {StAssForHeader();} STATEMENT {StAssForMiddle();} STATEMENT ')'{StAssPrintLBL(1,1); in_loop = 0;} BLOCK  {StAssPrintLBL(0,1);}
+                FOR '(' {in_loop = 1;} STATEMENT {StAssForHeader();} STATEMENT {StAssForMiddle();} STATEMENT ')'{StAssPrintLBL(1,1); in_loop = 0;} BLOCK  {StAssJmp("JMP", "Label", &ForHeaderLabel,1,0); StAssPrintLBL(0,1);}
                 | ERRONOUS_FOR_LOOP
                 ;
 ERRONOUS_FOR_LOOP:
@@ -392,7 +401,7 @@ BLOCK:
 
 
 FUNC_CALL:
-                IDENTIFIER {called_func_index = lookup($1); check_type(called_func_index); } '(' { is_param =1;}  USED_ARGS { is_param =0; arg_count_check(called_func_index); arg_count=0;}   ')' { printf("#[Parsed_Func_Call]# ");}
+                IDENTIFIER {called_func_index = lookup($1); check_type(called_func_index); StAssPush("PC");} '(' { is_param =1;}  USED_ARGS { is_param =0; arg_count_check(called_func_index); arg_count=0; int dum=0; StAssJmp("JMP", $1,&dum, 0,0);}   ')' { printf("#[Parsed_Func_Call]# ");}
                 | IDENTIFIER error ')'                  {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);}//Error handler
                 //| IDENTIFIER '(' USED_ARGS error        {printf("\n=====ERROR====\n unclosed function parenthesis 'case' at line %d\n", yylineno);}//Error handler
                 ;
@@ -758,15 +767,19 @@ void StAssPrint(char* s, int ind)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 };
 
-void StAssJmp(char* jmp, char* jmpName, int* num, int inc)
+void StAssJmp(char* jmp, char* jmpName, int* num, int inc, int noNum)
 {
     FILE *assfile = fopen("stackassembly.txt", "a");
     if(assfile == NULL) {
         printf("can't open stackassembly.txt file!\n");
         exit(1);
     }
-
-    fprintf(assfile, "\t%s \t %s%d\n", jmp, jmpName,*num);
+    if(noNum)
+    {
+        fprintf(assfile, "\t%s \t %s\n", jmp, jmpName);
+    }
+    else{fprintf(assfile, "\t%s \t %s%d\n", jmp, jmpName,*num);}
+    
     fclose (assfile);
     if(inc == 1){*num = *num + 1;}
 };
@@ -817,17 +830,17 @@ void StAssForHeader()
     StAssPush("dum");
     StAssPush("$1");
     StAssPrint("EQ", 1);
-    StAssJmp("JZ", "HELPER", &ForHelperLabel, 0);
+    StAssJmp("JZ", "HELPER", &ForHelperLabel, 0,0);
 
 };
 
 void StAssForMiddle()
 {
-    StAssJmp("JNZ", "END", &SMLabel_End, 0);
+    StAssJmp("JNZ", "END", &SMLabel_End, 0,0);
     StAssPush("dum");
     StAssPush("$1");
     StAssPrint("STORE", 1);
-    StAssJmp("JMP", "LBL", &SMLabel_Else, 0);
+    StAssJmp("JMP", "LBL", &SMLabel_Else, 0,0);
     char buf[10];
     char numtostring[10];
     itoa(ForHelperLabel, numtostring, 10);
@@ -836,6 +849,20 @@ void StAssForMiddle()
     strcat(buf, ":");
     StAssPrint(buf, 0);
     ForHelperLabel++;
+};
+
+void popArgs()
+{
+    argPointer--;
+    for (int i = argPointer; i>= 0;i--)
+    {
+        char buf[20];
+        strcpy(buf, "POP\t");
+        strcat(buf, argumentList[i]);
+        StAssPrint(buf,1);
+        argPointer--;
+    }
+    argPointer = 0;
 };
 
 void CodeGenAss()
