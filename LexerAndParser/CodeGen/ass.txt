@@ -1,0 +1,38 @@
+int x;
+
+x = 1 + 2;
+
+
+for(int i = 0 ; i < 3 ; i ++;)
+{
+bool F = false;
+}
+
+
+while x == 3:
+{
+int k;
+k = 2;
+}
+
+if x > 3:
+{ int z;
+z = 0;
+}
+
+if x < 3 :
+{
+int m;
+m = 1;
+}
+else
+{
+int n;
+n = 8;
+}
+x=3;
+bool y;
+y = true;
+
+x = x + x;
+x = 3 * x;
