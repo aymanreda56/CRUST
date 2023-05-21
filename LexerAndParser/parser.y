@@ -75,6 +75,7 @@
     void assign_str( char* s , int i);
     void assign_bool( bool b , int i);
     void assign_float( float f , int i);
+    void assign_enum (int i, char* enum_name, char* key);
     void arg_count_check( int i);
 
 
@@ -310,7 +311,7 @@ ERRONOUS_ENUM_DECLARATION_STT:
                 ;
 
 ENUM_CALL_STT:
-                IDENTIFIER IDENTIFIER EQ IDENTIFIER SEMICOLON { st_insert($1 , $2, "var_enum" , 0); }
+                IDENTIFIER IDENTIFIER EQ IDENTIFIER SEMICOLON { st_insert($1 , $2, "var_enum" , 0); assign_enum(st_index-1, $1,$4); }
                 | IDENTIFIER IDENTIFIER SEMICOLON  { st_insert($1 , $2, "var_enum" , 0);}
                 ;
 
@@ -598,23 +599,13 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
             enum_values[i] = 0;
         }
         // printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[0]);
-        //  printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[1]);
-        //   printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[2]);
-        //    printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[3]);
-        //     printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[0]);
-        //                 printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[1]);
-
-        //     printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[2]);
-
-        //     printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[3]);
-
-           
-
-
-        // // insert enum entry to enum table
-
-        // symbolTable[st_index].enumValue= enum_values[enum_arg_count];
-        // enum_arg_count++;
+        // printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[1]);
+        // printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[2]);
+        // printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[3]);
+        // printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[0]);
+        // printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[1]);
+        // printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[2]);
+        // printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[3]);
     }
     st_index++; // increment symbol table index
 }
@@ -645,6 +636,34 @@ void assign_bool( bool b , int i) {
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+}
+void assign_enum (int i, char* enum_name, char* key) {
+    if (i == -1) {return;}
+    printf("\nHHHHHHHHHHH %s",enum_name);
+    printf("\nHHHHHHHHHHH %s",key);
+    printf("\nHHHHHHHHHHH %d",i);
+    symbolTable[i].isInit= 1 ;
+    if (symbolTable[i].type == "var_enum")
+    {
+        for (int k=0; k < st_index; k++)
+        {
+            if (strcmp(symbolTable[k].name, enum_name) == 0)
+            {
+                for (int j = 0; j < 100; j++)
+                {
+                    if (strcmp(symbolTable[k].enumValue.keys[j], key) == 0)
+                    {
+                        printf("\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXX %d",k);
+                         printf("\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXX %d",symbolTable[k].enumValue.values[j]);
+                        symbolTable[i].intValue = symbolTable[k].enumValue.values[j];
+                        return;
+                    }
+                }
+                printf("\n !!!!!!!!!!!! Error at line %d: enum key %s doesn't exist !!!!!!!!!!!\n", line_number,key );
+            }
+        }
+    }
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned enum value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
 }
 // void check_param_type (int i) {
 
@@ -693,7 +712,7 @@ void st_print() {
         fprintf(fp, "%d\t|%s\t|%s\t|%s\t\t|%d\t|%d\t|%d\t|", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope,entry->isInit);
         //---- store value of entry
         if (entry->isInit == 1) {
-        if (strcmp(entry->dataType,"int")==0) {fprintf(fp, "%d\t\t|", entry->intValue);}
+        if (strcmp(entry->dataType,"int")==0 || strcmp(entry->type,"var_enum")==0) {fprintf(fp, "%d\t\t|", entry->intValue);}
         else if (strcmp(entry->dataType,"float")==0) {fp, fprintf(fp, "%f\t\t|", entry->floatValue);}
         else if (strcmp(entry->dataType,"bool")==0) {fprintf(fp,"%s\t\t|", entry->boolValue ? "true" : "false");}
         else if (strcmp(entry->dataType,"string")==0) {fprintf(fp, "%s\t\t|", entry->strValue);}
