@@ -522,8 +522,12 @@ int lookup(char* name) {
     // be with higher index in the table
      if ( is_enum == 1) { return -1;} 
      if ( symbolTable[assign_index].type == "var_enum")
-     {  
-        assign_enum (assign_index, symbolTable[assign_index].dataType, name);}
+     {  printf("\nGGGGGGGGGGGGGGGGGGGGGGG %s", symbolTable[assign_index].dataType);
+      printf("\nGGGGGGGGGGGGGGGGGGGGGGG %s", name);
+       printf("\nGGGGGGGGGGGGGGGGGGGGGGG %d", assign_index);
+        assign_enum (assign_index, symbolTable[assign_index].dataType, name);
+        return -1;
+    }
     for (int i = st_index-1 ; i >= 0; i--){
         if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].outOfScope == 0 ){
             if (symbolTable[i].isInit == 0 && strcmp(symbolTable[i].type, "var") == 0 && symbolTable[i].isArg == 0 ) 
