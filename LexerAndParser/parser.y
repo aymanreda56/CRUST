@@ -62,6 +62,8 @@
     //-- symbol table functions:  st_functionName()
     void st_insert(char* data_type, char* name, char* type, int is_arg);
     void st_print();
+    void st_log();
+    void clear_logs();
     int is_exist(char* name);
     int lookup(char* name);
     //--- handle scope
@@ -607,6 +609,87 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     }
     st_index++; // increment symbol table index
 }
+//----------------------------------------------- PRINT SYMBOL TABLE ----------------------------------------------------
+void st_log() {
+    //----- write symbol table to file
+    FILE *log_fp= fopen("symbol_table_logs.log", "a");
+    //----- check if file is opened
+    if(log_fp == NULL) {
+        printf("can't open symbol_table_logs.log file!\n");
+        exit(1);
+    }
+    //----- write symbol table header
+    fprintf(log_fp, "ID, Name, Type, DataType, Line, Scope, isInit, Value, Args\n");
+    //----- write symbol table entries
+    for(int i=0; i< st_index; i++) {
+        struct Entry *entry = &symbolTable[i];
+        fprintf(log_fp, "%d, %s, %s, %s, %d, %d, %d, ", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope,entry->isInit);
+        //---- store value of entry
+        if (entry->isInit == 1) {
+        if (strcmp(entry->dataType,"int")==0 || strcmp(entry->type,"var_enum")==0) {fprintf(log_fp, "%d, ", entry->intValue);}
+        else if (strcmp(entry->dataType,"float")==0) {fprintf(log_fp, "%f, ", entry->floatValue);}
+        else if (strcmp(entry->dataType,"bool")==0) {fprintf(log_fp,"%s, ", entry->boolValue ? "true" : "false");}
+        else if (strcmp(entry->dataType,"string")==0) {fprintf(log_fp, "%s, ", entry->strValue);}
+        }
+        else {fprintf(log_fp, "-, ");}
+        //---- print arguments of functions
+        if (strcmp(entry->type, "func") == 0)
+        {
+            for (int j = 0; j < entry->argCount; j++)
+            {
+            fprintf(log_fp, "%d,", entry->argList[j]);
+            }
+        }
+        else {fprintf(log_fp, "-");}
+       
+        fprintf(log_fp, "\n");
+
+    }
+    fprintf(log_fp, "=============\n");
+    fclose(log_fp);
+}
+void clear_logs()
+{
+   FILE *fp= fopen("symbol_table_logs.log", "w");
+   fclose(fp);
+}
+void st_print() {
+    //----- write symbol table to file
+    FILE *fp = fopen("symbol_table.txt", "w");
+    //----- check if file is opened
+    if(fp == NULL) {
+        printf("can't open symbol_table.txt file!\n");
+        exit(1);
+    }
+    //----- write symbol table header
+    fprintf(fp, "ID\t|Name\t|Type\t|DataType\t|Line\t|Scope\tisInit\t|Value\t\t|Args\n");
+    fprintf(fp, "-------------------------------------------------------------------------------------------\n");
+    //----- write symbol table entries
+    for(int i=0; i< st_index; i++) {
+        struct Entry *entry = &symbolTable[i];
+        fprintf(fp, "%d\t|%s\t|%s\t|%s\t\t|%d\t|%d\t|%d\t|", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope,entry->isInit);
+        //---- store value of entry
+        if (entry->isInit == 1) {
+        if (strcmp(entry->dataType,"int")==0 || strcmp(entry->type,"var_enum")==0) {fprintf(fp, "%d\t\t|", entry->intValue);}
+        else if (strcmp(entry->dataType,"float")==0) {fp, fprintf(fp, "%f\t\t|", entry->floatValue);}
+        else if (strcmp(entry->dataType,"bool")==0) {fprintf(fp,"%s\t\t|", entry->boolValue ? "true" : "false");}
+        else if (strcmp(entry->dataType,"string")==0) {fprintf(fp, "%s\t\t|", entry->strValue);}
+        }
+        else {fprintf(fp, "-\t\t|");}
+        //---- print arguments of functions
+        if (strcmp(entry->type, "func") == 0)
+        {
+            for (int j = 0; j < entry->argCount; j++)
+            {
+            fprintf(fp, "%d,", entry->argList[j]);
+            }
+        }
+        else {fprintf(fp, "-");}
+       
+        fprintf(fp, "\n");
+    }
+    fclose(fp);
+}
 //---------------------------------- HANDLE TYPE MISMATCH ERRORS ------------------------------------------------------------------
 
 // for declaration statments take the st_index -1 3shan lesa m3molo insert but for assignment 3ady take assign_index coming from lookup function
@@ -616,24 +699,28 @@ void assign_int (int d , int i) {
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "int") {symbolTable[i].intValue= d ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );}
+    st_log();
 }
 void assign_float( float f, int i) {
     if (i == -1) {return;}
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= f ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+    st_log();
 }
 void assign_str( char* s , int i) {
     if (i == -1) {return;}
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "string"){symbolTable[i].strValue= s ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned string value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+    st_log();
 }
 void assign_bool( bool b , int i) {
     if (i == -1) {return;}
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+    st_log();
 }
 void assign_enum (int i, char* enum_name, char* key) {
     if (i == -1) {return;}
@@ -644,6 +731,7 @@ void assign_enum (int i, char* enum_name, char* key) {
                     if (strcmp(symbolTable[k].enumValue.keys[j], key) == 0) {
                         symbolTable[i].intValue = symbolTable[k].enumValue.values[j];
                         symbolTable[i].isInit= 1 ; // set isInit to 1
+                        st_log();
                         return;
                     }
                 }
@@ -682,45 +770,7 @@ void check_type( int i) {
         else if (symbolTable[i].dataType == "bool"){symbolTable[assign_index].boolValue= symbolTable[i].boolValue ;}
     }
 }
-//----------------------------------------------- PRINT SYMBOL TABLE ----------------------------------------------------
-void st_print() {
-    //----- write symbol table to file
-    FILE *fp = fopen("symbol_table.txt", "w");
-    //----- check if file is opened
-    if(fp == NULL) {
-        printf("can't open symbol_table.txt file!\n");
-        exit(1);
-    }
-    //----- write symbol table header
-    fprintf(fp, "ID\t|Name\t|Type\t|DataType\t|Line\t|Scope\tisInit\t|Value\t\t|Args\n");
-    fprintf(fp, "-------------------------------------------------------------------------------------------\n");
-    //----- write symbol table entries
-    for(int i=0; i< st_index; i++) {
-        struct Entry *entry = &symbolTable[i];
-        fprintf(fp, "%d\t|%s\t|%s\t|%s\t\t|%d\t|%d\t|%d\t|", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope,entry->isInit);
-        //---- store value of entry
-        if (entry->isInit == 1) {
-        if (strcmp(entry->dataType,"int")==0 || strcmp(entry->type,"var_enum")==0) {fprintf(fp, "%d\t\t|", entry->intValue);}
-        else if (strcmp(entry->dataType,"float")==0) {fp, fprintf(fp, "%f\t\t|", entry->floatValue);}
-        else if (strcmp(entry->dataType,"bool")==0) {fprintf(fp,"%s\t\t|", entry->boolValue ? "true" : "false");}
-        else if (strcmp(entry->dataType,"string")==0) {fprintf(fp, "%s\t\t|", entry->strValue);}
-        }
-        else {fprintf(fp, "-\t\t|");}
-        //---- print arguments of functions
-        if (strcmp(entry->type, "func") == 0)
-        {
-            for (int j = 0; j < entry->argCount; j++)
-            {
-            fprintf(fp, "%d,", entry->argList[j]);
-            }
-        }
-        else {fprintf(fp, "-");}
-       
-        fprintf(fp, "\n");
-    }
-    fclose(fp);
-}
-//--------------------------------------------------- HANDLE SCOPE ---------------------------------------------------
+//------------------------------------------------------------- HANDLE SCOPE ---------------------------------------------------
 void scope_start(){
     //----- increment block number and scope index
     block_number++;
@@ -919,7 +969,7 @@ void controlTerminator(int isWhile)
 //------------------------------------------- MAIN -------------------------------
 int main(int argc, char *argv[])
 { 
-
+    clear_logs();
     yy_flex_debug = 1;
     int ret = remove("LLVM.txt");
 
