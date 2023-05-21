@@ -39,7 +39,7 @@
         bool boolValue;
         char* strValue; 
         struct enumEntry enumValue;
-        char* type; // var,const, func
+        char* type; // var,const, func, enum_arg, var_enum
         char* dataType; // int, float, bool, string (for func: return type)
         // list of arguments stored as IDs of them symbol table
         int argList[100];
@@ -313,8 +313,8 @@ ERRONOUS_ENUM_DECLARATION_STT:
                 ;
 
 ENUM_CALL_STT:
-                IDENTIFIER IDENTIFIER EQ IDENTIFIER SEMICOLON { st_insert($1 , $2, "var_enum" , 0); assign_enum(st_index-1, $1,$4); }
-                | IDENTIFIER IDENTIFIER SEMICOLON  { st_insert($1 , $2, "var_enum" , 0);}
+                IDENTIFIER  IDENTIFIER EQ IDENTIFIER SEMICOLON { st_insert($1 , $2, "var_enum" , 0); assign_enum(st_index-1, $1,$4); int i= lookup($1); symbolTable[i].isUsed=1; }
+                | IDENTIFIER IDENTIFIER SEMICOLON  { st_insert($1 , $2, "var_enum" , 0); int i= lookup($1); symbolTable[i].isUsed=1;}
                 ;
 
 IF_STT_HELPER:
@@ -524,9 +524,7 @@ int lookup(char* name) {
     // be with higher index in the table
      if ( is_enum == 1) { return -1;} 
      if ( symbolTable[assign_index].type == "var_enum")
-     {  printf("\nGGGGGGGGGGGGGGGGGGGGGGG %s", symbolTable[assign_index].dataType);
-      printf("\nGGGGGGGGGGGGGGGGGGGGGGG %s", name);
-       printf("\nGGGGGGGGGGGGGGGGGGGGGGG %d", assign_index);
+     {  
         assign_enum (assign_index, symbolTable[assign_index].dataType, name);
         return -1;
     }
@@ -740,7 +738,7 @@ void scope_end(){
 }
 void unused_print() {
     for(int i=0; i< st_index; i++) {
-        if ( symbolTable[i].isUsed == 0) {
+        if ( symbolTable[i].isUsed == 0 && strcmp( symbolTable[i].type, "enum_arg") != 0) {
         if (strcmp(symbolTable[i].type,"func") == 0){printf("\n !!!!!!!!!!!! Function %s Declared at line %d but never called !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
         else if ( symbolTable[i].isArg == 1){printf("\n !!!!!!!!!!!! Unused Argument %s Declared in Function at line %d !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
         else {printf("\n !!!!!!!!!!!! Unused Identifier %s Declared at line %d !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
