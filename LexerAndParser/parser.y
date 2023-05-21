@@ -27,12 +27,17 @@
     //  function return type checking+ feh return wla la2 aslan ,function
     //   argument type checking (count), function argument count checking (count), function argument order checking '''
     //--------------------- Symbol Table -----------------
+    struct enumEntry{
+        char* keys[100];
+        int values [100];
+    };
     struct Entry {
         int id,intValue,scope;
         char* name , value;
         float floatValue;
         bool boolValue;
         char* strValue; 
+        struct enumEntry enumValue;
         char* type; // var,const, func
         char* dataType; // int, float, bool, string (for func: return type)
         // list of arguments stored as IDs of them symbol table
@@ -284,13 +289,13 @@ ENUM_DECLARATION_STT:
                 ;
 ENUM_HELPER     : ENUM_ARGS | ENUM_DEFINED_ARGS;
 ENUM_ARGS:
-                IDENTIFIER ',' ENUM_ARGS  { enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = enum_arg_count; enum_arg_count++; }
+                IDENTIFIER { enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = enum_arg_count; enum_arg_count++; } ',' ENUM_ARGS  
                 | IDENTIFIER  { enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = enum_arg_count; enum_arg_count++; }
                 ;
             
 ENUM_DEFINED_ARGS:
-                IDENTIFIER EQ DIGIT ',' ENUM_DEFINED_ARGS
-                | IDENTIFIER EQ DIGIT
+                IDENTIFIER EQ DIGIT  { enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = $3; enum_arg_count++; } ',' ENUM_DEFINED_ARGS 
+                | IDENTIFIER EQ DIGIT   { enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = $3; enum_arg_count++; }
                 | IDENTIFIER EQ error ','                   {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
                 | IDENTIFIER EQ FLOAT_DIGIT                 {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
                 | IDENTIFIER EQ STRING_LITERAL              {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
@@ -305,7 +310,7 @@ ERRONOUS_ENUM_DECLARATION_STT:
                 ;
 
 ENUM_CALL_STT:
-                IDENTIFIER IDENTIFIER EQ IDENTIFIER SEMICOLON { st_insert($1 , $2, "var_enum" , 0);}
+                IDENTIFIER IDENTIFIER EQ IDENTIFIER SEMICOLON { st_insert($1 , $2, "var_enum" , 0); }
                 | IDENTIFIER IDENTIFIER SEMICOLON  { st_insert($1 , $2, "var_enum" , 0);}
                 ;
 
@@ -569,11 +574,47 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     //------ insert new entry to symbol table
     symbolTable[st_index] = newEntry;
     // 
-    if (is_enum ==1)
+    if (strcmp( data_type, "enum") == 0 )
     {
+        // printf("\nTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT %d %s\n" , enum_arg_count, name);
+        // printf("\nHHHHHHHHHHH %s", enum_keys[ 0]);
+        // printf("\nHHHHHHHHHHH %d", enum_values[0]);
+        
+        
         symbolTable[st_index].isInit=1;
-        symbolTable[st_index].intValue= enum_values[enum_arg_count];
-        enum_arg_count++;
+        // // create enum entry 
+        struct enumEntry newEnumEntry ;
+        for (int i = 0; i < enum_arg_count; i++)
+        {
+            newEnumEntry.keys[i] = enum_keys[i];
+            newEnumEntry.values[i] = enum_values[i];
+        }
+        symbolTable[st_index].enumValue = newEnumEntry;
+        enum_arg_count=0;
+        // clear enum keys and values
+        for (int i = 0; i < 100; i++)
+        {
+            enum_keys[i] = "";
+            enum_values[i] = 0;
+        }
+        // printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[0]);
+        //  printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[1]);
+        //   printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[2]);
+        //    printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[3]);
+        //     printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[0]);
+        //                 printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[1]);
+
+        //     printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[2]);
+
+        //     printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[3]);
+
+           
+
+
+        // // insert enum entry to enum table
+
+        // symbolTable[st_index].enumValue= enum_values[enum_arg_count];
+        // enum_arg_count++;
     }
     st_index++; // increment symbol table index
 }
