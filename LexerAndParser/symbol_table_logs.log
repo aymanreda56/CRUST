@@ -1,0 +1,19 @@
+ID, Line, Scope, Name, Type, DataType, isInit, Value, Args
+0, 1, 0, x, var, int, 0, -, -
+1, 2, 0, y, var, int, 1, 6, -
+=============
+ID, Line, Scope, Name, Type, DataType, isInit, Value, Args
+0, 1, 0, x, var, int, 0, -, -
+1, 2, 0, y, var, int, 1, 6, -
+2, 3, 0, hh, var, string, 1, "Gg", -
+=============
+ID, Line, Scope, Name, Type, DataType, isInit, Value, Args
+0, 1, 0, x, var, int, 1, 8, -
+1, 2, 0, y, var, int, 1, 6, -
+2, 3, 0, hh, var, string, 1, "Gg", -
+=============
+ID, Line, Scope, Name, Type, DataType, isInit, Value, Args
+0, 1, 0, x, var, int, 1, 8, -
+1, 2, 0, y, var, int, 1, 6, -
+2, 3, 0, hh, var, string, 1, "hello", -
+=============
