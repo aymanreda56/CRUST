@@ -12,6 +12,7 @@
     extern FILE *yyout;
     extern int line_number;
     extern int yy_flex_debug;
+    // TODO make data type of enum int and store its enum name  (try it with switc case)
     //TODO  add float and int error DONE
     //TODO if you have 2 x in diffrent scopes and both are in valid scopes take the closet (DONE)
     //TODO unused variables (DONE)
@@ -42,6 +43,7 @@
         char* dataType; // int, float, bool, string (for func: return type)
         // list of arguments stored as IDs of them symbol table
         int argList[100];
+        int argEnum[100]; // store indexes of the enum args in the symbol table
         int argCount;
         int declareLine;
         int isConst, isArg, isUsed, isInit, outOfScope;
@@ -290,13 +292,13 @@ ENUM_DECLARATION_STT:
                 ;
 ENUM_HELPER     : ENUM_ARGS | ENUM_DEFINED_ARGS;
 ENUM_ARGS:
-                IDENTIFIER { enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = enum_arg_count; enum_arg_count++; } ',' ENUM_ARGS  
-                | IDENTIFIER  { enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = enum_arg_count; enum_arg_count++; }
+                IDENTIFIER { enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = enum_arg_count; enum_arg_count++;  st_insert("int" , $1, "enum_arg" , 0); assign_int(  enum_arg_count-1,st_index-1); } ',' ENUM_ARGS  
+                | IDENTIFIER  { enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = enum_arg_count; enum_arg_count++; st_insert("int" , $1, "enum_arg" , 0); assign_int( enum_arg_count-1,st_index-1);  }
                 ;
             
 ENUM_DEFINED_ARGS:
-                IDENTIFIER EQ DIGIT  { enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = $3; enum_arg_count++; } ',' ENUM_DEFINED_ARGS 
-                | IDENTIFIER EQ DIGIT   { enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = $3; enum_arg_count++; }
+                IDENTIFIER EQ DIGIT  { enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = $3; enum_arg_count++ ; st_insert("int" , $1, "enum_arg" , 0); assign_int(  $3,st_index-1); } ',' ENUM_DEFINED_ARGS 
+                | IDENTIFIER EQ DIGIT   { enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = $3; enum_arg_count++;  st_insert("int" , $1, "enum_arg" , 0); assign_int(  $3,st_index-1); }
                 | IDENTIFIER EQ error ','                   {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
                 | IDENTIFIER EQ FLOAT_DIGIT                 {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
                 | IDENTIFIER EQ STRING_LITERAL              {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
@@ -612,7 +614,7 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
 // for declaration statments take the st_index -1 3shan lesa m3molo insert but for assignment 3ady take assign_index coming from lookup function
 void assign_int (int d , int i) {
     if (i == -1) {return;}
-    if (is_enum == 1) {return;}
+    // if (is_enum == 1) {return;}
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "int") {symbolTable[i].intValue= d ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );}
