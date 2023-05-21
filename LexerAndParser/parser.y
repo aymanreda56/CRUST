@@ -287,8 +287,12 @@ ENUM_ARGS:
                 | IDENTIFIER
                 ;
 ENUM_DEFINED_ARGS:
-                IDENTIFIER EQ EXPRESSION ',' ENUM_DEFINED_ARGS
-                | IDENTIFIER EQ EXPRESSION
+                IDENTIFIER EQ DIGIT ',' ENUM_DEFINED_ARGS
+                | IDENTIFIER EQ DIGIT
+                | IDENTIFIER EQ error ','                   {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
+                | IDENTIFIER EQ FLOAT_DIGIT                 {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
+                | IDENTIFIER EQ STRING_LITERAL              {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
+                | IDENTIFIER EQ BOOL_LITERAL                {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
                 ;
 ERRONOUS_ENUM_DECLARATION_STT:
                 ENUM error '{' ENUM_HELPER '}'              {printf("\n\n=====ERROR====\n missing identifier for ENUM statement at line %d\n\n", yylineno);}
