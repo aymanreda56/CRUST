@@ -1,0 +1,22 @@
+int x;
+x = 1;
+while x== 3:
+{
+int y;
+y = 2;
+}
+
+int a;
+a = 1 + 2;
+
+if x > 3 :
+{
+int z;
+z =2;
+}
+else
+{
+int b;
+x = 2;
+}
+x = 1;

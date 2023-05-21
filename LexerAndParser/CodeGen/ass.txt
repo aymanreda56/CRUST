@@ -1,0 +1,47 @@
+int x;
+
+x = 1 + 2;
+enum aym {ayman=3, mariem=1, abeer=5, marim=10};
+aym aymon = ayman;
+int l = 1;
+void print(int q, int g)
+{
+int z = 0;
+return z;
+}
+
+print(x, l);
+
+for(int i = 0 ; i < 3 ; i ++;)
+{
+bool F = false;
+}
+
+
+while x == 3:
+{
+int k;
+k = 2;
+}
+
+if x > 3:
+{ int z;
+z = 0;
+}
+
+if x < 3 :
+{
+int m;
+m = 1;
+}
+else
+{
+int n;
+n = 8;
+}
+x=3;
+bool y;
+y = true;
+
+x = x + x;
+x = 3 * x;
