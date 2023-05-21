@@ -608,6 +608,7 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
         }
     }
     st_index++; // increment symbol table index
+    st_log(); // log symbol table
 }
 //----------------------------------------------- PRINT SYMBOL TABLE ----------------------------------------------------
 void st_log() {
@@ -619,11 +620,11 @@ void st_log() {
         exit(1);
     }
     //----- write symbol table header
-    fprintf(log_fp, "ID, Name, Type, DataType, Line, Scope, isInit, Value, Args\n");
+    fprintf(log_fp, "ID, Line, Scope, Name, Type, DataType, isInit, Value, Args\n");
     //----- write symbol table entries
     for(int i=0; i< st_index; i++) {
         struct Entry *entry = &symbolTable[i];
-        fprintf(log_fp, "%d, %s, %s, %s, %d, %d, %d, ", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope,entry->isInit);
+        fprintf(log_fp, "%d, %d, %d, %s, %s, %s, %d, ", entry->id, entry->declareLine, entry->scope, entry->name,entry->type, entry->dataType,entry->isInit);
         //---- store value of entry
         if (entry->isInit == 1) {
         if (strcmp(entry->dataType,"int")==0 || strcmp(entry->type,"var_enum")==0) {fprintf(log_fp, "%d, ", entry->intValue);}
