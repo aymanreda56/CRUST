@@ -577,14 +577,16 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     // 
     if (strcmp( data_type, "enum") == 0 )
     {
-        // printf("\nTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT %d %s\n" , enum_arg_count, name);
-        // printf("\nHHHHHHHHHHH %s", enum_keys[ 0]);
-        // printf("\nHHHHHHHHHHH %d", enum_values[0]);
-        
-        
         symbolTable[st_index].isInit=1;
         // // create enum entry 
         struct enumEntry newEnumEntry ;
+        // initialize enum keys and values
+         for (int i = 0; i < 100; i++)
+        {
+            newEnumEntry.keys[i]  = "";
+            newEnumEntry.values[i]  = 0;
+        }
+        // fill enum keys and values
         for (int i = 0; i < enum_arg_count; i++)
         {
             newEnumEntry.keys[i] = enum_keys[i];
@@ -598,14 +600,6 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
             enum_keys[i] = "";
             enum_values[i] = 0;
         }
-        // printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[0]);
-        // printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[1]);
-        // printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[2]);
-        // printf("\nHHHHHHHHHHH %s", symbolTable[st_index].enumValue.keys[3]);
-        // printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[0]);
-        // printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[1]);
-        // printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[2]);
-        // printf("\nHHHHHHHHHHH %d", symbolTable[st_index].enumValue.values[3]);
     }
     st_index++; // increment symbol table index
 }
@@ -639,27 +633,16 @@ void assign_bool( bool b , int i) {
 }
 void assign_enum (int i, char* enum_name, char* key) {
     if (i == -1) {return;}
-    printf("\nHHHHHHHHHHH %s",enum_name);
-    printf("\nHHHHHHHHHHH %s",key);
-    printf("\nHHHHHHHHHHH %d",i);
-    symbolTable[i].isInit= 1 ;
-    if (symbolTable[i].type == "var_enum")
-    {
-        for (int k=0; k < st_index; k++)
-        {
-            if (strcmp(symbolTable[k].name, enum_name) == 0)
-            {
-                for (int j = 0; j < 100; j++)
-                {
-                    if (strcmp(symbolTable[k].enumValue.keys[j], key) == 0)
-                    {
-                        printf("\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXX %d",k);
-                         printf("\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXX %d",symbolTable[k].enumValue.values[j]);
+    if (symbolTable[i].type == "var_enum") {
+        for (int k=0; k < st_index; k++) { // loop on symbol table to find the enum declaration
+            if (strcmp(symbolTable[k].name, enum_name) == 0) { // if found the enum declaration
+                for (int j = 0; j < 100; j++) { // loop on enum keys to find the enum value
+                    if (strcmp(symbolTable[k].enumValue.keys[j], key) == 0) {
                         symbolTable[i].intValue = symbolTable[k].enumValue.values[j];
+                        symbolTable[i].isInit= 1 ; // set isInit to 1
                         return;
                     }
                 }
-                printf("\n !!!!!!!!!!!! Error at line %d: enum key %s doesn't exist !!!!!!!!!!!\n", line_number,key );
             }
         }
     }
@@ -670,11 +653,10 @@ void assign_enum (int i, char* enum_name, char* key) {
 // }
 void check_type( int i) {
     // this functio check type matching between 2 identifiers before assign the value
-    if ( is_param == 1) { 
-        assign_index = arg_count;
-        printf("\nparammmmmmmmmmmmmmm %s\n", symbolTable[i].name);
-        printf("\nparammmmmmmmmmmmmmm %d\n", arg_count);        
-        }
+    if ( is_param == 1) 
+    { assign_index = arg_count;}
+     if ( i == -1) 
+    { return;}
 
 
     if (i != -1 && symbolTable[i].dataType != symbolTable[assign_index].dataType)
