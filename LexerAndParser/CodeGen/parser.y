@@ -108,6 +108,8 @@
     char* argumentList[20];
     int argPointer = 0;
     void popArgs();
+    int enumCNT = 1;
+    void prepend(char* s, const char* t)    {size_t len = strlen(t);memmove(s + len, s, strlen(s) + 1);memcpy(s, t, len);}
 //================================================================
 
 %}
@@ -223,7 +225,7 @@ RETURN_STT:
 
 
 ENUM_CALL_STT:
-                IDENTIFIER IDENTIFIER EQ IDENTIFIER SEMICOLON
+                IDENTIFIER IDENTIFIER EQ IDENTIFIER SEMICOLON {StAssPush($2);StAssPush($4);StAssPrint("STORE",1);}
                 | IDENTIFIER IDENTIFIER SEMICOLON
                 ;
 
@@ -299,17 +301,17 @@ ARG_DECL:
 
 
 ENUM_DECLARATION_STT:
-                ENUM IDENTIFIER  '{' ENUM_HELPER '}'          { st_insert("enum" , $2, "var" , 0); }
+                ENUM IDENTIFIER  '{' ENUM_HELPER '}'          { st_insert("enum" , $2, "var" , 0); enumCNT=1;}
                 | ERRONOUS_ENUM_DECLARATION_STT
                 ;
 ENUM_HELPER     : ENUM_ARGS | ENUM_DEFINED_ARGS;
 ENUM_ARGS:
-                IDENTIFIER ',' ENUM_ARGS
-                | IDENTIFIER
+                IDENTIFIER {StAssPush($1);char buf[10]; itoa(enumCNT++,buf,10); prepend(buf, "$"); StAssPush(buf);StAssPrint("STORE",1);} ',' ENUM_ARGS
+                | IDENTIFIER {StAssPush($1);char buf[10]; itoa(enumCNT++,buf,10);prepend(buf, "$"); StAssPush(buf);StAssPrint("STORE",1);}
                 ;
 ENUM_DEFINED_ARGS:
-                IDENTIFIER EQ DIGIT ',' ENUM_DEFINED_ARGS
-                | IDENTIFIER EQ DIGIT
+                IDENTIFIER EQ DIGIT {StAssPush($1);char buf[10]; itoa($3,buf,10);prepend(buf, "$");StAssPush(buf);StAssPrint("STORE",1);} ',' ENUM_DEFINED_ARGS
+                | IDENTIFIER EQ DIGIT{StAssPush($1);char buf[10]; itoa($3,buf,10);prepend(buf, "$");StAssPush(buf);StAssPrint("STORE",1);}
                 | IDENTIFIER EQ error ','                   {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
                 | IDENTIFIER EQ FLOAT_DIGIT                 {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
                 | IDENTIFIER EQ STRING_LITERAL              {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}

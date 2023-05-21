@@ -3,6 +3,21 @@
 	PUSH 	 $2
 	ADD
 	STORE
+	PUSH 	 ayman
+	PUSH 	 $3
+	STORE
+	PUSH 	 mariem
+	PUSH 	 $1
+	STORE
+	PUSH 	 abeer
+	PUSH 	 $5
+	STORE
+	PUSH 	 marim
+	PUSH 	 $10
+	STORE
+	PUSH 	 aymon
+	PUSH 	 ayman
+	STORE
 	PUSH 	 $1
 	PUSH 	 l
 	OVER
