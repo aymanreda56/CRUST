@@ -60,6 +60,7 @@
     char* enum_keys[100];
     int enum_values [100];
     int enum_arg_count=0;
+    int is_changed=1; // default is 1,
     //-- symbol table functions:  st_functionName()
     void st_insert(char* data_type, char* name, char* type, int is_arg);
     void st_print();
@@ -578,6 +579,7 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     int L=is_exist(name) ;
     if (L != -1){
         printf("\n !!!!!!!!!!!! Error at line %d: %s is already declared in this scope at line %d !!!!!!!!!!!\n",line_number, name, L); 
+        is_changed=0;
         return;
         }
     //------ set new entry values
@@ -727,28 +729,28 @@ void assign_int (int d , int i) {
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "int") {symbolTable[i].intValue= d ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );}
-    st_log();
+    if(is_changed == 1) {st_log();} // 
 }
 void assign_float( float f, int i) {
     if (i == -1) {return;}
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= f ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
-    st_log();
+   if(is_changed == 1) {st_log();}
 }
 void assign_str( char* s , int i) {
     if (i == -1) {return;}
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "string"){symbolTable[i].strValue= s ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned string value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
-    st_log();
+    if(is_changed == 1) {st_log();}
 }
 void assign_bool( bool b , int i) {
     if (i == -1) {return;}
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
-    st_log();
+    if(is_changed == 1) {st_log();}
 }
 
 void assign_enum (int i, char* enum_name, char* key) {
