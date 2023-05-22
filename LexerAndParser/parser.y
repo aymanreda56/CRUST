@@ -539,8 +539,8 @@ int yywrap()
 int is_exist(char* name){
     for (int i = 0; i < st_index; i++){
         //TODO SCOPE CHECK
-        if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].scope == block_number){
-            printf("\n===================== %d %s\n", scope_index, symbolTable[i].name);
+        if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].scope == block_number && symbolTable[i].outOfScope == 0){
+            printf("\n===================== %d %s %d\n", scope_index, symbolTable[i].name,symbolTable[i].scope);
             return symbolTable[i].declareLine;
         }
     }
