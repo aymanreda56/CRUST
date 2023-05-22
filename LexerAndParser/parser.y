@@ -1038,6 +1038,52 @@ void StAssForMiddle()
 };
 
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void prependFile(char* filename, char* text) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error opening file\n");
+        exit(1);
+    }
+
+    fseek(file, 0, SEEK_END);
+    long fsize = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    char *buffer = malloc(fsize + 1);
+    fread(buffer, 1, fsize, file);
+    fclose(file);
+
+    file = fopen(filename, "w");
+    if (file == NULL) {
+        printf("Error opening file\n");
+        exit(1);
+    }
+
+    fprintf(file, "%s", text);
+    fwrite(buffer, 1, fsize, file);
+    fclose(file);
+
+    free(buffer);
+}
+
+
+void printDataSegment()
+{
+    char* DS;
+    strcpy(DS, "");
+    for (int i = 0 ; i < st_index ; i++)
+    {
+        strcat(DS, "VAR\t");
+        strcat(DS, symbolTable[i].name);
+        strcat(DS, "\n");
+    }
+    prependFile("stackassembly.txt", DS);
+}
+
 void pErr(int lineNUMM)
 {
     FILE *assfile = fopen("ParsingErrors.txt", "a");
