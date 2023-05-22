@@ -1,0 +1,42 @@
+/*
+
+RETURN errors handling
+cast int to bool and vice versa
+cast int to float and vice versa
+cast float to bool and vice versa
+
+
+test eman test cases
+testing
+
+if statement always false
+assign index must be -1
+void error msgs 
+multiple return statements check
+*/
+
+
+//-------------------------------------- handle this x is uninitialized
+int x;
+int function1 ( int y)
+{
+    if x == 8: {
+        return 0;
+    }
+
+    if x > 5: {
+        return 8;
+    }
+    return -1;
+}
+int hello ( int y)
+{
+    if x == 8 : {
+        return 0;
+    }
+
+    if x > 5 :{
+        return 8;
+    }
+    return -1;
+}

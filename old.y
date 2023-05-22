@@ -69,7 +69,7 @@
     void st_log();
     void clear_logs();
     int is_exist(char* name);
-    int lookup(char* name, int is_assignment);
+    int lookup(char* name);
     //--- handle scope
     int scope_index=0;
     int block_number=0;
@@ -81,8 +81,8 @@
     void unused_print() ;
     void assign_int( int d , int i);
     void assign_str( char* s , int i);
-    // void assign_bool( bool b , int i);
-    // void assign_float( float f , int i);
+    void assign_bool( bool b , int i);
+    void assign_float( float f , int i);
     void assign_enum (int i, char* enum_name, char* key);
     void arg_count_check( int i);
 
@@ -128,9 +128,6 @@
     void popArgs();
     int enumCNT = 1;
     void prepend(char* s, const char* t)    {size_t len = strlen(t);memmove(s + len, s, strlen(s) + 1);memcpy(s, t, len);}
-    char switcher[50];
-    void pErr(int num);
-    void sErr(int num);
 //==================================================================================================================================================
 
 %}
@@ -147,7 +144,7 @@
 #include<stdbool.h>
 }
 
-%token INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM RETURN DEFAULT
+%token INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM RETURN
 %token EQUALITY NEG_EQUALITY
 %token SWITCH CASE
 %token LOGIC_AND LOGIC_OR LOGIC_NOT
@@ -197,13 +194,14 @@ STATEMENT:
                 | FOR_STT                                   {printf("#[Parsed_For_LOOP]# ");}
                 | DO_WHILE_STT                              {printf("#[Parsed_DO_WHILE_LOOP]# ");}
                 | SWITCH_STT                                {printf("#[Parsed_SWITCH_STT]# ");}
+                | SWITCH_STT                                {printf("#[Parsed_SWITCH_STT]# ");}
                 | ENUM_DECLARATION_STT                      {printf("#[Parsed_Enum_Declaration]# ");}
                 | ENUM_CALL_STT                             {printf("#[Parsed_Enum_USAGE]# ");}
                 | BLOCK
                 | RETURN_STT SEMICOLON
-                | error SEMICOLON                           {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);pErr(yylineno);}//Error handler using ; as a delimiter
-                | error '}'                                 {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);pErr(yylineno);}//Error handler using ; as a delimiter
-                | error ')'                                 {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);pErr(yylineno);}//Error handler using ; as a delimiter
+                | error SEMICOLON                           {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);}//Error handler using ; as a delimiter
+                | error '}'                                 {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);}//Error handler using ; as a delimiter
+                | error ')'                                 {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);}//Error handler using ; as a delimiter
                 ;
 
 /*
@@ -220,22 +218,22 @@ TYPE:
 DECLARATION_STT:                                                            
                 TYPE    IDENTIFIER  {st_insert($1, $2,"var",0);   assign_index= st_index-1; strcpy(IdentifierHolder, $2);}   DECLARATION_TAIL            {printf("#[Parsed_Declaration]# "); }
                 | TYPE  CONSTANT    {st_insert($1, $2,"const",0); assign_index= st_index-1; strcpy(IdentifierHolder, $2);}   DECLARATION_TAIL            {printf("#[Parsed_CONST_Declaration]# "); }
-                | error IDENTIFIER    SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING variable type at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
-                | error CONSTANT      SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING constant type at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
-                | TYPE  IDENTIFIER    IDENTIFIER SEMICOLON                                  {printf("\n\n=====ERROR====\n unexpected identifier %s at line %d\n\n",$3, yylineno);pErr(yylineno);}
+                | error IDENTIFIER    SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING variable type at line %d\n\n", yylineno);}//Error handler
+                | error CONSTANT      SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING constant type at line %d\n\n", yylineno);}//Error handler
+                | TYPE  IDENTIFIER    IDENTIFIER SEMICOLON                                  {printf("\n\n=====ERROR====\n unexpected identifier %s at line %d\n\n",$3, yylineno);}
                 ;
 
 
 DECLARATION_TAIL:
                 EQ EXPRESSION  SEMICOLON                                                    {StAssPush(strdup(IdentifierHolder)); StAssPrint("OVER", 1); StAssPrint("STORE", 1); StAssPrint("DROP", 1);}
-                | error EXPRESSION   SEMICOLON                                              {printf("\n\n=====ERROR====\n MISSING '=' at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
-                | EQ error SEMICOLON                                                        {printf("\n\n=====ERROR====\n unexpected '=' without second operand at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
+                | error EXPRESSION   SEMICOLON                                              {printf("\n\n=====ERROR====\n MISSING '=' at line %d\n\n", yylineno);}//Error handler
+                | EQ error SEMICOLON                                                        {printf("\n\n=====ERROR====\n unexpected '=' without second operand at line %d\n\n", yylineno);}//Error handler
                 | SEMICOLON 
-                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); pErr(yylineno);} '}'
-                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); pErr(yylineno);} ')'
-                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); pErr(yylineno);} RES_WORD
-                //|                                                                     {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);pErr(yylineno);} '}'
-                //| error RES_WORD                                                           {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);pErr(yylineno);} 
+                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); } '}'
+                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); } ')'
+                | EQ EXPRESSION                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); } RES_WORD
+                //|                                                                     {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);} '}'
+                //| error RES_WORD                                                           {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);} 
                 ;
 
 
@@ -243,37 +241,30 @@ RETURN_STT:
                 RETURN                          {int dum = 0;StAssPrint("POP\tPC",1);StAssJmp("JMP", "PC", &dum,0,1);}
                 | RETURN {assign_index =func_index;} EXPRESSION             { return_exist = 1; StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
                 ;
-helperSWITCH:   SWITCH IDENTIFIER ':' '{' {strcpy(switcher, $2);}
-                ;
+
 SWITCH_STT:
-                helperSWITCH CASES  '}' {StAssPrintLBL(0,1);}
+                SWITCH IDENTIFIER ':' '{' CASES '}'
                 | ERRONOUS_SWITCH_STT
                 //todo, handle unclose parenthesis for switch stt
                 ;
-DEFAULTCASE:
-                DEFAULT ':' BLOCK {StAssJmp("JMP", "END",&SMLabel_End, 0,0); }
-                | DEFAULT BLOCK {printf("\n\n=====ERROR====\n missing colon ':' at DEFAULT CASE of switch, error at line %d\n\n", yylineno); pErr(yylineno);}
-                ;
+
 CASES:
-                CASE {StAssPush(switcher);} EXPRESSION {StAssPrint("EQ", 1); StAssJmp("JNZ", "LBL",&SMLabel_Else, 0,0);} ':' BLOCK {StAssJmp("JMP", "END",&SMLabel_End, 0,0); StAssPrintLBL(1, 1);} CASES
-                | DEFAULTCASE {printf("\n\n=====ERROR====\n DEFAULT CASE must be written at the end of the switch statement, error at line %d\n\n", yylineno); pErr(yylineno);} CASE EXPRESSION BLOCK             
-                | DEFAULTCASE DEFAULTCASE                       {printf("\n\n=====ERROR====\n only 1 DEFAULT CASE is allowed in the switch statement error, at line %d\n\n", yylineno); pErr(yylineno);}
-                | DEFAULTCASE
-                //| ERRONOUS_CASES
+                CASE EXPRESSION ':' BLOCK CASES
+                | ERRONOUS_CASES
                 |
                 ;
-/* AYMAAN 7awel tesala7 DE
+
 ERRONOUS_CASES:
-                error EXPRESSION                 {printf("\n\n=====ERROR====\n MISSING 'case' at line %d\n\n", yylineno);pErr(yylineno);} ':' BLOCK CASES     
-                | CASE EXPRESSION ':' error      {printf("\n\n=====ERROR====\n MISSING case block at line %d\n\n", yylineno);pErr(yylineno);} CASES         
+                error EXPRESSION                 {printf("\n\n=====ERROR====\n MISSING 'case' at line %d\n\n", yylineno);} ':' BLOCK CASES     
+                | CASE EXPRESSION ':' error      {printf("\n\n=====ERROR====\n MISSING case block at line %d\n\n", yylineno);} CASES         
                 ;
-*/
+
 ERRONOUS_SWITCH_STT:
-                SWITCH error                    {printf("\n\n=====ERROR====\n MISSING identifier for switch statement at line %d\n\n", yylineno);pErr(yylineno);}                            ':' '{' CASES '}'      
-                | SWITCH IDENTIFIER error       {printf("\n\n=====ERROR====\n unexpected identifier '%s' at switch statement at line %d\n\n",yylval, yylineno); pErr(yylineno);}             ':'  '{' CASES '}'  
-                | SWITCH IDENTIFIER error       {printf("\n\n=====ERROR====\n MISSING colon ':' for switch statement (switchs must have a colon) at line %d\n\n", yylineno);pErr(yylineno);} '{' CASES '}'
-                | SWITCH IDENTIFIER ':' error   {printf("\n\n=====ERROR====\n MISSING '{' for switch statement at line %d\n\n", yylineno);pErr(yylineno);}                                   CASES '}'   
-                | helperSWITCH CASES error {printf("\n\n=====ERROR====\n unclosed '}' for switch statement at line %d\n\n", yylineno);pErr(yylineno);}    
+                SWITCH error                    {printf("\n\n=====ERROR====\n MISSING identifier for switch statement at line %d\n\n", yylineno);}                            ':' '{' CASES '}'      
+                | SWITCH IDENTIFIER error       {printf("\n\n=====ERROR====\n unexpected identifier '%s' at switch statement at line %d\n\n",yylval, yylineno); }             ':'  '{' CASES '}'  
+                | SWITCH IDENTIFIER error       {printf("\n\n=====ERROR====\n MISSING colon ':' for switch statement (switchs must have a colon) at line %d\n\n", yylineno);} '{' CASES '}'
+                | SWITCH IDENTIFIER ':' error   {printf("\n\n=====ERROR====\n MISSING '{' for switch statement at line %d\n\n", yylineno);}                                   CASES '}'   
+                //| SWITCH IDENTIFIER ':' '{' CASES error {printf("\n\n=====ERROR====\n unclosed '}' for switch statement at line %d\n\n", yylineno);}    
                 ;
 
 
@@ -294,13 +285,13 @@ FUNC_DECLARATION_STT:
 
 // AYMOOON  UNCOMMENT THOSE ERROR HANDLERS AND IGNORE THE RED/RED CONFLICTS, they impose zero harm whatsoever.
 ERRONOUS_FUNC_DECLARATION_STT:
-                TYPE IDENTIFIER                     {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d for function %s\n\n", yylineno, $2);pErr(yylineno);}                    ARGS ')'       {st_insert($1, $2,"func",0);} 
-                //| TYPE IDENTIFIER '(' ARGS  '{'     {printf("\n\n=====ERROR====\n unclosed function parenthesis at line %d for function %s\n\n", yylineno, $2); yyclearin;pErr(yylineno);                          st_insert($1, $2,"func",0);} 
-                //| VOID IDENTIFIER                   {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d for function %s\n\n", yylineno, $2);pErr(yylineno);}                    ARGS ')'       {st_insert($1, $2,"func",0);} 
-                //| VOID IDENTIFIER '(' ARGS  '{'     {printf("\n\n=====ERROR====\n unclosed function parenthesis at line %d for function %s\n\n", yylineno, $2); yyclearin; pErr(yylineno);                         st_insert($1, $2,"func",0);} 
-                //| TYPE IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;pErr(yylineno);}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
-                //| VOID IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;pErr(yylineno);}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
-                //| TYPE IDENTIFIER '(' ARGS error    {printf("\n\n=====ERROR====\n unexpected token '%s' in argument list of function declaration at line %d\n\n", yylval, yylineno);pErr(yylineno);}')'            {st_insert($1, $2,"func",0);}      
+                TYPE IDENTIFIER                     {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d for function %s\n\n", yylineno, $2);}                    ARGS ')'       {st_insert($1, $2,"func",0);} 
+                //| TYPE IDENTIFIER '(' ARGS  '{'     {printf("\n\n=====ERROR====\n unclosed function parenthesis at line %d for function %s\n\n", yylineno, $2); yyclearin;                          st_insert($1, $2,"func",0);} 
+                //| VOID IDENTIFIER                   {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d for function %s\n\n", yylineno, $2);}                    ARGS ')'       {st_insert($1, $2,"func",0);} 
+                //| VOID IDENTIFIER '(' ARGS  '{'     {printf("\n\n=====ERROR====\n unclosed function parenthesis at line %d for function %s\n\n", yylineno, $2); yyclearin;                          st_insert($1, $2,"func",0);} 
+                //| TYPE IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
+                //| VOID IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
+                //| TYPE IDENTIFIER '(' ARGS error    {printf("\n\n=====ERROR====\n unexpected token '%s' in argument list of function declaration at line %d\n\n", yylval, yylineno);}')'            {st_insert($1, $2,"func",0);}      
                 ;
 
 ARGS:
@@ -309,17 +300,17 @@ ARGS:
                 | ERRONOUS_ARGS
                 ;
 ERRONOUS_ARGS:
-                ',' ARGS                   {printf("\n\n=====ERROR====\n unexpected ',' in argument list of function declaration at line %d\n\n", yylineno);pErr(yylineno);}
+                ',' ARGS                   {printf("\n\n=====ERROR====\n unexpected ',' in argument list of function declaration at line %d\n\n", yylineno);}
                 ;
 ARG_DECL:
                 TYPE IDENTIFIER                             {st_insert($1, $2,"var",1); char* buf=$2; argumentList[argPointer]=buf;argPointer++;}
-                //| error IDENTIFIER              {printf("\n\n=====ERROR====\n erronous argument declaration in function declaration at line %d\n\n", yylineno);pErr(yylineno);}
+                //| error IDENTIFIER              {printf("\n\n=====ERROR====\n erronous argument declaration in function declaration at line %d\n\n", yylineno);}
                 ;
 
 
 
 ENUM_DECLARATION_STT:
-                ENUM IDENTIFIER  '{'  { is_enum =1;} ENUM_HELPER '}'          { st_insert("enum" , $2, "var" , 0); is_enum=0; enumCNT=1;}
+                ENUM IDENTIFIER  '{'  { is_enum =1;} ENUM_HELPER '}'          { st_insert("enum" , $2, "var" , 0); is_enum=0;}
                 | ERRONOUS_ENUM_DECLARATION_STT
                 ;
 ENUM_HELPER     : ENUM_ARGS | ENUM_DEFINED_ARGS;
@@ -334,23 +325,21 @@ ENUM_DEFINED_ARGS:
 
                 IDENTIFIER EQ DIGIT     { StAssPush($1);char buf[10]; itoa($3,buf,10);prepend(buf, "$");StAssPush(buf);StAssPrint("STORE",1); enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = $3; enum_arg_count++ ; st_insert("int" , $1, "enum_arg" , 0); assign_int(  $3,st_index-1); } ',' ENUM_DEFINED_ARGS 
                 | IDENTIFIER EQ DIGIT   { StAssPush($1);char buf[10]; itoa($3,buf,10);prepend(buf, "$");StAssPush(buf);StAssPrint("STORE",1); enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = $3; enum_arg_count++;  st_insert("int" , $1, "enum_arg" , 0); assign_int(  $3,st_index-1); }
-                | IDENTIFIER EQ error ','                   {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);pErr(yylineno);}
-                | IDENTIFIER EQ FLOAT_DIGIT                 {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);pErr(yylineno);}
-                | IDENTIFIER EQ STRING_LITERAL              {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);pErr(yylineno);}
-                | IDENTIFIER EQ BOOL_LITERAL                {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);pErr(yylineno);}
+                | IDENTIFIER EQ error ','                   {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
+                | IDENTIFIER EQ FLOAT_DIGIT                 {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
+                | IDENTIFIER EQ STRING_LITERAL              {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
+                | IDENTIFIER EQ BOOL_LITERAL                {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
                 ;
 
 ERRONOUS_ENUM_DECLARATION_STT:
-                ENUM error '{' ENUM_HELPER '}'              {printf("\n\n=====ERROR====\n missing identifier for ENUM statement at line %d\n\n", yylineno);pErr(yylineno);}
-                | ENUM IDENTIFIER ENUM_HELPER '}'           {printf("\n\n=====ERROR====\n missing opening curly braces for ENUM statement at line %d\n\n", yylineno);pErr(yylineno);}
+                ENUM error '{' ENUM_HELPER '}'              {printf("\n\n=====ERROR====\n missing identifier for ENUM statement at line %d\n\n", yylineno);}
+                | ENUM IDENTIFIER ENUM_HELPER '}'           {printf("\n\n=====ERROR====\n missing opening curly braces for ENUM statement at line %d\n\n", yylineno);}
                 //TODO unclosed parenthesis
-                | ENUM IDENTIFIER '{' error '}'             {printf("\n\n=====ERROR====\n missing arguments in the ENUM statement at line %d\n\n", yylineno);pErr(yylineno);}
-                | ENUM IDENTIFIER error '{' ENUM_HELPER '}' {printf("\n\n=====ERROR====\n UnExpected IDENTIFIER in the ENUM statement at line %d\n\n", yylineno);pErr(yylineno);}
-                ;
+                | ENUM IDENTIFIER '{' error '}'             {printf("\n\n=====ERROR====\n missing arguments in the ENUM statement at line %d\n\n", yylineno);}
 
 ENUM_CALL_STT:
-                IDENTIFIER  IDENTIFIER EQ IDENTIFIER SEMICOLON { StAssPush($2);StAssPush($4);StAssPrint("STORE",1); st_insert($1 , $2, "var_enum" , 0); assign_enum(st_index-1, $1,$4); int i= lookup($1, 0); symbolTable[i].isUsed=1; }
-                | IDENTIFIER IDENTIFIER SEMICOLON  { st_insert($1 , $2, "var_enum" , 0); int i= lookup($1,0); symbolTable[i].isUsed=1;}
+                IDENTIFIER  IDENTIFIER EQ IDENTIFIER SEMICOLON { StAssPush($2);StAssPush($4);StAssPrint("STORE",1); st_insert($1 , $2, "var_enum" , 0); assign_enum(st_index-1, $1,$4); int i= lookup($1); symbolTable[i].isUsed=1; }
+                | IDENTIFIER IDENTIFIER SEMICOLON  { st_insert($1 , $2, "var_enum" , 0); int i= lookup($1); symbolTable[i].isUsed=1;}
                 ;
 
 IF_STT_HELPER:
@@ -363,10 +352,10 @@ IF_STT_HELPER1:
 IF_STT:
                 IF_STT_HELPER IF_STT_HELPER1                  {StAssJmp("JMP", "END",&SMLabel_End, 1,0); StAssPrintLBL(0, 1);}
                 | IF_STT_HELPER IF_STT_HELPER1 ELSE BLOCK     {StAssJmp("JMP", "END",&SMLabel_End, 1,0); StAssPrintLBL(0, 1);}
-                | IF_STT_HELPER IF_STT_HELPER1 ELSE error '}' {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);pErr(yylineno);}
-                | IF_STT_HELPER                               {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);pErr(yylineno);}        BLOCK//{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
-                | IF       ':'                                {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);pErr(yylineno);} BLOCK//{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
-                | IF_STT_HELPER ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the IF statement at line %d\n\n", yylineno);pErr(yylineno);}
+                | IF_STT_HELPER IF_STT_HELPER1 ELSE error '}' {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}
+                | IF_STT_HELPER                               {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);}        BLOCK{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
+                | IF       ':'                                {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} BLOCK{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
+                | IF_STT_HELPER ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the IF statement at line %d\n\n", yylineno);}
                 
                 //TODO handle opened parenthesis but not closed
                 ;
@@ -376,9 +365,9 @@ IF_STT:
 // AYMON : ana masa7t el Error handling bta3 elWhile Loop 3shan fadelly taka we aksar elLaptop da fo2 dma8 elli katabo Bayzoooon >:(((
 WHILE_STT:
                 WHILE {printWHILE(); StAssPrintLBL(1, 0);} EXPRESSION {StAssJmp("JNZ", "END",&SMLabel_End, 0,0);} ':' BLOCK {StAssJmp("JMP", "LBL",&SMLabel_Else, 1,0); StAssPrintLBL(0, 1);}
-                //| WHILE {printWHILE();} error ':'                    {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}  BLOCK {controlTerminator(1);}
-                //| WHILE {printWHILE();} EXPRESSION                   {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}         BLOCK {controlTerminator(1);}
-                //| WHILE {printWHILE();} EXPRESSION ':' error '}'     {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}
+                //| WHILE {printWHILE();} error ':'                    {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);}  BLOCK {controlTerminator(1);}
+                //| WHILE {printWHILE();} EXPRESSION                   {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);}         BLOCK {controlTerminator(1);}
+                //| WHILE {printWHILE();} EXPRESSION ':' error '}'     {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);}
                 //TODO handle unclosed curly braces 
                 ;
 
@@ -388,11 +377,11 @@ DO_WHILE_STT:
                 | ERRONOUS_DO_WHILE
                 ;
 ERRONOUS_DO_WHILE:
-                DO   error                          {printf("\n\n=====ERROR====\n Missing DO-Block for the DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}                              WHILE '(' EXPRESSION ')'
-                | DO BLOCK WHILE error              {printf("\n\n=====ERROR====\n Missing opening parenthesis '(' for the DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}               EXPRESSION ')'
-                | DO BLOCK error                    {printf("\n\n=====ERROR====\n Missing WHILE DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}                                         '(' EXPRESSION ')'
-                | DO error                          {printf("\n\n=====ERROR====\n Missing opening curly braces '{' for the DO-Block for DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);} '}' WHILE '(' EXPRESSION ')'
-                | DO BLOCK WHILE '{' EXPRESSION '}' {printf("\n\n=====ERROR====\n DO-WHILE loop accepts braces () not curly braces {} at line %d\n\n", yylineno);pErr(yylineno);}
+                DO   error                          {printf("\n\n=====ERROR====\n Missing DO-Block for the DO-WHILE loop at line %d\n\n", yylineno);}                              WHILE '(' EXPRESSION ')'
+                | DO BLOCK WHILE error              {printf("\n\n=====ERROR====\n Missing opening parenthesis '(' for the DO-WHILE loop at line %d\n\n", yylineno);}               EXPRESSION ')'
+                | DO BLOCK error                    {printf("\n\n=====ERROR====\n Missing WHILE DO-WHILE loop at line %d\n\n", yylineno);}                                         '(' EXPRESSION ')'
+                | DO error                          {printf("\n\n=====ERROR====\n Missing opening curly braces '{' for the DO-Block for DO-WHILE loop at line %d\n\n", yylineno);} '}' WHILE '(' EXPRESSION ')'
+                | DO BLOCK WHILE '{' EXPRESSION '}' {printf("\n\n=====ERROR====\n DO-WHILE loop accepts braces () not curly braces {} at line %d\n\n", yylineno);}
                 //| DO BLOCK {printf("\n\n=====ERROR====\n Missing While loop for the DO-Block for DO-WHILE loop at line %d\n\n", yylineno);}
                 //TODO handle missing while statement, user only wrote the Do statement (we might agree that it is acceptable)
                 ;
@@ -404,21 +393,21 @@ FOR_STT:
                 ;
 ERRONOUS_FOR_LOOP:
                 //FOR '(' STATEMENT ')'  {printf("\n\n=====ERROR====\n Missing a third statement inside the FOR loop at line %d\n\n", yylineno);}  BLOCK
-                FOR error STATEMENT STATEMENT STATEMENT ')'            {printf("\n\n=====ERROR====\n Missing opening braces '(' in the FOR loop at line %d\n\n", yylineno);pErr(yylineno);}  BLOCK
-                | FOR '(' ';' STATEMENT STATEMENT STATEMENT ')'        {printf("\n\n=====ERROR====\n unexpected semicolon in the FOR loop at line %d\n\n", yylineno);pErr(yylineno);}        BLOCK
+                FOR error STATEMENT STATEMENT STATEMENT ')'            {printf("\n\n=====ERROR====\n Missing opening braces '(' in the FOR loop at line %d\n\n", yylineno);}  BLOCK
+                | FOR '(' ';' STATEMENT STATEMENT STATEMENT ')'        {printf("\n\n=====ERROR====\n unexpected semicolon in the FOR loop at line %d\n\n", yylineno);}        BLOCK
                 //TODO 7agat keteeer, ana ma5noooo2   >:(
                 ;
 
 //TODO hl m7taga a7ot call lel lookup t7t? i think yes bs kda kda da error so no need to store assign index 
 //AYMON : SOLVED the conflicts
 helperAssignmentRule:
-                IDENTIFIER  EQ                                   {pushVStack($1); StAssPush($1); assign_index = lookup($1,1);}
+                IDENTIFIER  EQ                                   {pushVStack($1); StAssPush($1); assign_index = lookup($1);}
                 ;
 
 assignmentSTT:
-                helperAssignmentRule SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);pErr(yylineno);}
+                helperAssignmentRule SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
                 | helperAssignmentRule EXPRESSION SEMICOLON      {StAssPrint("STORE", 1); CodeGenAss();printf("#[Parsed_Assignment]# ");}
-                | IDENTIFIER  error                              {pushVStack($1); assign_index = lookup($1,1); StAssPush($1);} EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);pErr(yylineno);}
+                | IDENTIFIER  error                              {pushVStack($1); assign_index = lookup($1); StAssPush($1);}                                            EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
                 ;
 
 
@@ -431,13 +420,13 @@ BLOCK:
 
 
 FUNC_CALL:
-                IDENTIFIER {called_func_index = lookup($1,0); check_type(called_func_index); StAssPush("PC");} '(' { is_param =1;}  USED_ARGS { is_param =0; arg_count_check(called_func_index); arg_count=0; int dum=0; StAssJmp("JMP", $1,&dum, 0,0);}   ')' { printf("#[Parsed_Func_Call]# ");}
-                | IDENTIFIER error ')'                  {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
+                IDENTIFIER {called_func_index = lookup($1); check_type(called_func_index); StAssPush("PC");} '(' { is_param =1;}  USED_ARGS { is_param =0; arg_count_check(called_func_index); arg_count=0; int dum=0; StAssJmp("JMP", $1,&dum, 0,0);}   ')' { printf("#[Parsed_Func_Call]# ");}
+                | IDENTIFIER error ')'                  {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);}//Error handler
                 //| IDENTIFIER '(' USED_ARGS error        {printf("\n=====ERROR====\n unclosed function parenthesis 'case' at line %d\n", yylineno);}//Error handler
                 ;
 USED_ARGS:      
                 EXPRESSION { arg_count++; }  ',' USED_ARGS 
-                | error ',' USED_ARGS                       {printf("\n\n=====ERROR====\n Missing first argument in function's argument list or erronous ',' at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
+                | error ',' USED_ARGS                       {printf("\n\n=====ERROR====\n Missing first argument in function's argument list or erronous ',' at line %d\n\n", yylineno);}//Error handler
                 | EXPRESSION {arg_count++ ;}
                 |
                 ;
@@ -445,17 +434,17 @@ USED_ARGS:
 
 EXPRESSION:
                 
-                IDENTIFIER                      { int i = lookup($1,0); check_type(i); pushVStack($1); StAssPush($1);}
+                IDENTIFIER                      { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);}
                 | DIGIT                         { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring); char dum[10]="$"; StAssPush(strcat(dum,numtostring));}
-                | FLOAT_DIGIT                   { assign_int($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring); char dum[10]="$"; StAssPush(strcat(dum,floattostring));}
-                | BOOL_LITERAL                  { assign_int($1, assign_index); if($1==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
-                | STRING_LITERAL                { assign_str($1, assign_index); pushVStack($1);char buf[50]; strcpy(buf, "$");strcat(buf, $1); StAssPush(buf);}
-                | CONSTANT                      { int i = lookup($1,0); check_type(i); pushVStack($1); StAssPush($1);}
-                | SUB EXPRESSION                {StAssPrint("neg", 1);}
+                | FLOAT_DIGIT                   { assign_float($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring); char dum[10]="$"; StAssPush(strcat(dum,floattostring));}
+                | BOOL_LITERAL                  { assign_bool($1, assign_index); if($1==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
+                | STRING_LITERAL                {  assign_str($1, assign_index); pushVStack($1);StAssPush(strcat("$",strdup($1)));}
+                | CONSTANT                      { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);} 
+                //| SUB EXPRESSION         // TODO El NEGATIVE yaaa AYMAAAAN ya mota5azel
                 | EXPRESSION PLUS PLUS          { pushVStack("+"); pushVStack("1"); CodeGenOp("ADD"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("ADD", 1); StAssPrint("STORE", 1);}
                 | EXPRESSION SUB SUB            { pushVStack("-"); pushVStack("1"); CodeGenOp("SUB"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("SUB", 1); StAssPrint("STORE", 1);}
                 | EXPRESSION PLUS               { pushVStack("+");}  EXPRESSION  {CodeGenOp("ADD"); StAssPrint("ADD", 1);}
-                //| EXPRESSION SUB                { pushVStack("-");}  EXPRESSION  {CodeGenOp("SUB"); StAssPrint("SUB", 1);}
+                | EXPRESSION SUB                { pushVStack("-");}  EXPRESSION  {CodeGenOp("SUB"); StAssPrint("SUB", 1);}
                 | EXPRESSION MUL                { pushVStack("*");}  EXPRESSION  {CodeGenOp("MUL"); StAssPrint("MUL", 1);}
                 | EXPRESSION DIV                { pushVStack("/");}  EXPRESSION  {CodeGenOp("DIV"); StAssPrint("DIV", 1);}
 
@@ -464,7 +453,7 @@ EXPRESSION:
                 | COMPARISONSTT
                 | FUNC_CALL                                
                 | '(' EXPRESSION ')'
-                | ERRONOUS_EXPRESSION           {printf("\n\n=====ERROR====\n Expression error at line %d\n\n", yylineno);pErr(yylineno);}
+                | ERRONOUS_EXPRESSION           {printf("\n\n=====ERROR====\n Expression error at line %d\n\n", yylineno);}
                 ;
 
 ERRONOUS_EXPRESSION:
@@ -492,28 +481,28 @@ COMPARISONSTT:
                 | EXPRESSION NEG_EQUALITY EXPRESSION    {pushVStack("!="); CodeGenLogical(); StAssPrint("NE", 1);}
                 | EXPRESSION LOGIC_AND EXPRESSION       {pushVStack("and"); CodeGenLogical(); StAssPrint("AND", 1);}
                 | EXPRESSION LOGIC_OR EXPRESSION        {pushVStack("or"); CodeGenLogical(); StAssPrint("OR", 1);}
-                | LOGIC_NOT EXPRESSION                  {StAssPrint("neg", 1);}
+                | LOGIC_NOT EXPRESSION
                 | ERRONOUS_COMPARISONSTT
                 ;
 
 ERRONOUS_COMPARISONSTT:
-                error GT EXPRESSION                                 {printf("\n\n=====ERROR====\n Missing left operand before '>' at line %d\n\n", yylineno);pErr(yylineno);}
-                | EXPRESSION GT error   %prec GT                    {printf("\n\n=====ERROR====\n Missing right operand after '>' at line %d\n\n", yylineno);pErr(yylineno);}
-                | error LT EXPRESSION                               {printf("\n\n=====ERROR====\n Missing left operand before '<' at line %d\n\n", yylineno);pErr(yylineno);}
-                | EXPRESSION LT error   %prec LT                    {printf("\n\n=====ERROR====\n Missing right operand after '<' at line %d\n\n", yylineno);pErr(yylineno);}
-                | error EQUALITY EXPRESSION                         {printf("\n\n=====ERROR====\n Missing left operand before '==' at line %d\n\n", yylineno);pErr(yylineno);}
-                | EXPRESSION EQUALITY error   %prec EQUALITY        {printf("\n\n=====ERROR====\n Missing right operand after '==' at line %d\n\n", yylineno);pErr(yylineno);}
-                | error NEG_EQUALITY EXPRESSION                     {printf("\n\n=====ERROR====\n Missing left operand before '!=' at line %d\n\n", yylineno);pErr(yylineno);}
-                | EXPRESSION NEG_EQUALITY error   %prec NEG_EQUALITY{printf("\n\n=====ERROR====\n Missing right operand after '!=' at line %d\n\n", yylineno);pErr(yylineno);}
-                | LOGIC_NOT error   %prec EQ                        {printf("\n\n=====ERROR====\n Missing right operand after the negating operator '!' at line %d\n\n", yylineno);pErr(yylineno);}
-                | error LOGIC_AND EXPRESSION                        {printf("\n\n=====ERROR====\n Missing left operand before 'and' operator at line %d\n\n", yylineno);pErr(yylineno);}
-                | EXPRESSION LOGIC_AND error   %prec LOGIC_AND      {printf("\n\n=====ERROR====\n Missing right operand after 'and' operator at line %d\n\n", yylineno);pErr(yylineno);}
-                | error LOGIC_OR EXPRESSION                         {printf("\n\n=====ERROR====\n Missing left operand before 'or' operator at line %d\n\n", yylineno);pErr(yylineno);}
-                | EXPRESSION LOGIC_OR error   %prec LOGIC_OR        {printf("\n\n=====ERROR====\n Missing right operand after 'or' operator at line %d\n\n", yylineno);pErr(yylineno);}
-                | error LT EQ EXPRESSION                            {printf("\n\n=====ERROR====\n Missing left operand before '<=' operator at line %d\n\n", yylineno);pErr(yylineno);}
-                | EXPRESSION LT EQ error   %prec LT                 {printf("\n\n=====ERROR====\n Missing right operand after '<=' operator at line %d\n\n", yylineno);pErr(yylineno);}
-                | error GT EQ EXPRESSION                            {printf("\n\n=====ERROR====\n Missing left operand before '>=' operator at line %d\n\n", yylineno);pErr(yylineno);}
-                | EXPRESSION GT EQ error   %prec GT                 {printf("\n\n=====ERROR====\n Missing right operand after '>=' operator at line %d\n\n", yylineno);pErr(yylineno);}
+                error GT EXPRESSION                                 {printf("\n\n=====ERROR====\n Missing left operand before '>' at line %d\n\n", yylineno);}
+                | EXPRESSION GT error   %prec GT                    {printf("\n\n=====ERROR====\n Missing right operand after '>' at line %d\n\n", yylineno);}
+                | error LT EXPRESSION                               {printf("\n\n=====ERROR====\n Missing left operand before '<' at line %d\n\n", yylineno);}
+                | EXPRESSION LT error   %prec LT                    {printf("\n\n=====ERROR====\n Missing right operand after '<' at line %d\n\n", yylineno);}
+                | error EQUALITY EXPRESSION                         {printf("\n\n=====ERROR====\n Missing left operand before '==' at line %d\n\n", yylineno);}
+                | EXPRESSION EQUALITY error   %prec EQUALITY        {printf("\n\n=====ERROR====\n Missing right operand after '==' at line %d\n\n", yylineno);}
+                | error NEG_EQUALITY EXPRESSION                     {printf("\n\n=====ERROR====\n Missing left operand before '!=' at line %d\n\n", yylineno);}
+                | EXPRESSION NEG_EQUALITY error   %prec NEG_EQUALITY{printf("\n\n=====ERROR====\n Missing right operand after '!=' at line %d\n\n", yylineno);}
+                | LOGIC_NOT error   %prec EQ                        {printf("\n\n=====ERROR====\n Missing right operand after the negating operator '!' at line %d\n\n", yylineno);}
+                | error LOGIC_AND EXPRESSION                        {printf("\n\n=====ERROR====\n Missing left operand before 'and' operator at line %d\n\n", yylineno);}
+                | EXPRESSION LOGIC_AND error   %prec LOGIC_AND      {printf("\n\n=====ERROR====\n Missing right operand after 'and' operator at line %d\n\n", yylineno);}
+                | error LOGIC_OR EXPRESSION                         {printf("\n\n=====ERROR====\n Missing left operand before 'or' operator at line %d\n\n", yylineno);}
+                | EXPRESSION LOGIC_OR error   %prec LOGIC_OR        {printf("\n\n=====ERROR====\n Missing right operand after 'or' operator at line %d\n\n", yylineno);}
+                | error LT EQ EXPRESSION                            {printf("\n\n=====ERROR====\n Missing left operand before '<=' operator at line %d\n\n", yylineno);}
+                | EXPRESSION LT EQ error   %prec LT                 {printf("\n\n=====ERROR====\n Missing right operand after '<=' operator at line %d\n\n", yylineno);}
+                | error GT EQ EXPRESSION                            {printf("\n\n=====ERROR====\n Missing left operand before '>=' operator at line %d\n\n", yylineno);}
+                | EXPRESSION GT EQ error   %prec GT                 {printf("\n\n=====ERROR====\n Missing right operand after '>=' operator at line %d\n\n", yylineno);}
                 //| EXPRESSION error EXPRESSION   %prec GT          {printf("\n\n=====ERROR====\n Missing or invalid operator at line %d\n\n", yylineno);}
                 ;
                 
@@ -548,13 +537,15 @@ int yywrap()
 int is_exist(char* name){
     for (int i = 0; i < st_index; i++){
         //TODO SCOPE CHECK
-        if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].scope == block_number && symbolTable[i].outOfScope == 0){
+        if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].scope == scope_index){
+                printf("\n************************** %d %d \n" ,  scope_index, symbolTable[i].scope );
+
             return symbolTable[i].declareLine;
         }
     }
     return -1;
 }
-int lookup(char* name, int is_assignment) {
+int lookup(char* name) {
     // 
     // This method returns -1 if the symbol does not exist in the symbol table. 
     // If the symbol exists, it returns its index in the table.
@@ -572,17 +563,15 @@ int lookup(char* name, int is_assignment) {
            
             if (symbolTable[i].isInit == 0 && strcmp(symbolTable[i].type, "var") == 0 && symbolTable[i].isArg == 0 ) 
             {   
-            // if ( i != assign_index)// 3shan lw kan el var 3la el LHS s3tha 3ady ex: int x=9; int z; z =x;
-            if (is_assignment == 0)
+            if ( i != assign_index)// 3shan lw kan el var 3la el LHS s3tha 3ady ex: int x=9; int z; z =x;
             {
-                printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name); sErr(yylineno);}
+                printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name);}
             }
             symbolTable[i].isUsed=1;
             return i;
         }
     }
     printf("\n !!!!!!!!!!!! Error at line %d: %s undeclared identifier in this scope !!!!!!!!!!!\n", line_number, name);
-    sErr(yylineno);
     return -1;
 }
 //-------------------------------------- INSERT IN SYMBOL TABLE  ----------------------------------I
@@ -594,7 +583,6 @@ int st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     int L=is_exist(name) ;
     if (L != -1){
         printf("\n !!!!!!!!!!!! Error at line %d: %s is already declared in this scope at line %d !!!!!!!!!!!\n",line_number, name, L); 
-        sErr(yylineno);
         is_changed=0;
         return -1;
         }
@@ -741,52 +729,44 @@ void st_print() {
 // for declaration statments take the st_index -1 3shan lesa m3molo insert but for assignment 3ady take assign_index coming from lookup function
 void assign_int (int d , int i) {
     if (i == -1) {return;}
-    if ( symbolTable[i].dataType == "string" && symbolTable[i].type == "func" )
+    if ( symbolTable[i].dataType != "int" && symbolTable[i].type == "func" )
     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned int !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
-    sErr(yylineno);
-     return; }
+     return ;}
     symbolTable[i].isInit= 1 ;
-    if (symbolTable[i].dataType != "string" ) {symbolTable[i].intValue= d ;}
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned wrong value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
-    sErr(yylineno);}
+    if (symbolTable[i].dataType == "int" ) {symbolTable[i].intValue= d ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );}
     if(is_changed == 1) {st_log();} // 
-    assign_index = -1;
 }
-// void assign_float( float f, int i) {
-//     if (i == -1) {return;}
-//      if ( symbolTable[i].dataType != "float" && symbolTable[i].type == "func" )
-//     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned float !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
-//      return ;}
-//     symbolTable[i].isInit= 1 ;
-//     if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= f ;}
-//     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
-//    if(is_changed == 1) {st_log();}
-//    assign_index = -1;
-// }
-void assign_str( char* s , int i) {
+void assign_float( float f, int i) {
+     if ( symbolTable[i].dataType != "float" && symbolTable[i].type == "func" )
+    {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned float !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
+     return ;}
     if (i == -1) {return;}
+    symbolTable[i].isInit= 1 ;
+    if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= f ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+   if(is_changed == 1) {st_log();}
+}
+void assign_str( char* s , int i) {
     if ( symbolTable[i].dataType != "string" && symbolTable[i].type == "func" )
     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned string !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
-     sErr(yylineno);
      return ;} 
+    if (i == -1) {return;}
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "string"){symbolTable[i].strValue= s ;}
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned string value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );
-    sErr(yylineno);}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned string value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
     if(is_changed == 1) {st_log();}
-    assign_index = -1;
 }
-// void assign_bool( bool b , int i) {
-//     if (i == -1) {return;}
-//     if ( symbolTable[i].dataType != "bool" && symbolTable[i].type == "func" )
-//     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned boolean !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
-//      return ;} 
-//     symbolTable[i].isInit= 1 ;
-//     if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
-//     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
-//     if(is_changed == 1) {st_log();}
-//     assign_index = -1;
-// }
+void assign_bool( bool b , int i) {
+    if (i == -1) {return;}
+    if ( symbolTable[i].dataType != "bool" && symbolTable[i].type == "func" )
+    {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned boolean !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
+     return ;} 
+    symbolTable[i].isInit= 1 ;
+    if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+    if(is_changed == 1) {st_log();}
+}
 
 void assign_enum (int i, char* enum_name, char* key) {
     if (i == -1) {return;}
@@ -798,20 +778,15 @@ void assign_enum (int i, char* enum_name, char* key) {
                         symbolTable[i].intValue = symbolTable[k].enumValue.values[j];
                         symbolTable[i].isInit= 1 ; // set isInit to 1
                         st_log();
-                        assign_index = -1;
                         return;
                     }
                 }
                 printf("\n !!!!!!!!!!!! Error at line %d: %s not exist as key for %s enum  !!!!!!!!!!!\n", line_number, key ,enum_name );
-                sErr(yylineno);
-                assign_index = -1;
                 return;
             }
         }
     }
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned enum value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );
-    sErr(yylineno);}
-    assign_index = -1;
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned enum value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
 }
 // void check_param_type (int i) {
 
@@ -820,15 +795,15 @@ void check_type( int i) {
     // this functio check type matching between 2 identifiers before assign the value
     if ( is_param == 1) 
     { assign_index = arg_count;}
-     if ( i == -1 || assign_index == -1) 
+     if ( i == -1) 
     { return;}
-    if (symbolTable[i].dataType != symbolTable[assign_index].dataType && (symbolTable[assign_index].dataType == "string" ||  symbolTable[i].dataType == "string"))
+    if (i != -1 && symbolTable[i].dataType != symbolTable[assign_index].dataType)
     {   /// at calling a function
-        if (strcmp(symbolTable[i].type,"func")== 0){ printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s return %s value  !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType ); sErr(yylineno);}
-        else if (strcmp(symbolTable[assign_index].type,"func")== 0){ printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s return %s value  !!!!!!!!!!!\n", line_number,symbolTable[i].name,symbolTable[i].dataType, symbolTable[assign_index].name,symbolTable[assign_index].dataType ); sErr(yylineno);}
+        if (strcmp(symbolTable[i].type,"func")== 0){ printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s return %s value  !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
+        else if (strcmp(symbolTable[assign_index].type,"func")== 0){ printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s return %s value  !!!!!!!!!!!\n", line_number,symbolTable[i].name,symbolTable[i].dataType, symbolTable[assign_index].name,symbolTable[assign_index].dataType );}
         else if (is_param == 1)
-        {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Incorrect argument type %s is %s variable but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType ); sErr(yylineno);}
-        else {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );sErr(yylineno);}
+        {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Incorrect argument type %s is %s variable but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
+        else {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
     }
     else
     {
@@ -844,13 +819,18 @@ void check_type( int i) {
 
 void scope_start(){
     //----- increment block number and scope index
+
     block_number++;
     scope_index++;
+        printf("\n\n================== Scope start================== %d \n\n", block_number);
+
     scope_stack[scope_index] = block_number;
 }
 void scope_end(){
-    if (func_index != -1 && strcmp(symbolTable[func_index].type, "func") == 0 && return_exist == 0 && strcmp(symbolTable[func_index].dataType, "void") != 0)
-    {printf("\n !!!!!!!!!!!! Error at line %d: Missing return statement in Function %s !!!!!!!!!!!\n", line_number, symbolTable[func_index].name); sErr(yylineno);}
+    // printf("\n\n================== Scope %d Ended ==================\n\n", scope_index);
+    // check if return exist if function
+    // if (strcmp(symbolTable[func_index].type, "func") == 0 && return_exist == 0 && strcmp(symbolTable[func_index].dataType, "void") != 0)
+    // {printf("\n !!!!!!!!!!!! Error at line %d: Function %s return type is %s but no return statement found !!!!!!!!!!!\n", line_number, symbolTable[func_index].name, symbolTable[func_index].dataType );}
     //----- make all symbols in this scope out of scope
     for (int i = 0; i < st_index; i++){
         if (symbolTable[i].scope == scope_stack[scope_index]){
@@ -862,17 +842,17 @@ void scope_end(){
 void unused_print() {
     for(int i=0; i< st_index; i++) {
         if ( symbolTable[i].isUsed == 0 && strcmp( symbolTable[i].type, "enum_arg") != 0) {
-        if (strcmp(symbolTable[i].type,"func") == 0){printf("\n !!!!!!!!!!!! Function %s Declared at line %d but never called !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); sErr(yylineno);}
-        else if ( symbolTable[i].isArg == 1){printf("\n !!!!!!!!!!!! Unused Argument %s Declared in Function at line %d !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); sErr(yylineno);}
-        else {printf("\n !!!!!!!!!!!! Unused Identifier %s Declared at line %d !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); sErr(yylineno);}
+        if (strcmp(symbolTable[i].type,"func") == 0){printf("\n !!!!!!!!!!!! Function %s Declared at line %d but never called !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
+        else if ( symbolTable[i].isArg == 1){printf("\n !!!!!!!!!!!! Unused Argument %s Declared in Function at line %d !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
+        else {printf("\n !!!!!!!!!!!! Unused Identifier %s Declared at line %d !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
         }
     }
 }
 void arg_count_check( int i) {
     if ( arg_count > symbolTable[i].argCount )
-    {printf("\n !!!!!!!!!!!! Error at line %d : too many arguments for function call expected %d got %d !!!!!!!!!!!\n", line_number, symbolTable[i].argCount, arg_count); sErr(yylineno);}
+    {printf("\n !!!!!!!!!!!! Error at line %d : too many arguments for function call expected %d got %d !!!!!!!!!!!\n", line_number, symbolTable[i].argCount, arg_count); }
     else if ( arg_count < symbolTable[i].argCount )
-    {printf("\n !!!!!!!!!!!! Error at line %d : too few arguments for function call expected %d got %d !!!!!!!!!!!\n", line_number, symbolTable[i].argCount, arg_count); sErr(yylineno); }
+    {printf("\n !!!!!!!!!!!! Error at line %d : too few arguments for function call expected %d got %d !!!!!!!!!!!\n", line_number, symbolTable[i].argCount, arg_count); }
 }
 
 
@@ -959,7 +939,7 @@ void StAssJmp(char* jmp, char* jmpName, int* num, int inc, int noNum)
         printf("can't open stackassembly.txt file!\n");
         exit(1);
     }
-    if(noNum == 1)
+    if(noNum)
     {
         fprintf(assfile, "\t%s \t %s\n", jmp, jmpName);
     }
@@ -1034,28 +1014,6 @@ void StAssForMiddle()
     strcat(buf, ":");
     StAssPrint(buf, 0);
     ForHelperLabel++;
-};
-
-
-void pErr(int lineNUMM)
-{
-    FILE *assfile = fopen("ParsingErrors.txt", "a");
-    char buf [50];
-    itoa(lineNUMM, buf,10);
-
-    fprintf(assfile, "%s ", buf);
-    
-    fclose (assfile);
-};
-void sErr(int num)
-{
-    FILE *assfile = fopen("SemanticErrors.txt", "a");
-    char buf [50];
-    itoa(lineNUMM, buf,10);
-
-    fprintf(assfile, "%s ", buf);
-    
-    fclose (assfile);
 };
 
 void popArgs()
@@ -1211,9 +1169,8 @@ int main(int argc, char *argv[])
     yy_flex_debug = 1;
     int ret = remove("LLVM.txt");
     int ret2 = remove("stackassembly.txt");
-    int ret3 = remove("ParsingErrors.txt");
-    int ret4 = remove("SemanticErrors.txt")
-    if(ret != 0 && ret2 !=0 && ret3 !=0 && ret4){
+
+    if(ret != 0 && ret2 !=0){
         printf("\nCreating Intermediate Code File ...\n");
         printf("Creating Stack Machine Assembly File ...\n");
     }

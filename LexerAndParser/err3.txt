@@ -1,0 +1,10 @@
+int func1(int z){
+float g=h;
+
+x=z;
+
+}
+int y=5;
+int x;
+float momyz=9.5;
+y =func1( x,x);
