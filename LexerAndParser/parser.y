@@ -81,8 +81,8 @@
     void unused_print() ;
     void assign_int( int d , int i);
     void assign_str( char* s , int i);
-    void assign_bool( bool b , int i);
-    void assign_float( float f , int i);
+    // void assign_bool( bool b , int i);
+    // void assign_float( float f , int i);
     void assign_enum (int i, char* enum_name, char* key);
     void arg_count_check( int i);
 
@@ -438,8 +438,8 @@ EXPRESSION:
                 
                 IDENTIFIER                      { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);}
                 | DIGIT                         { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring); char dum[10]="$"; StAssPush(strcat(dum,numtostring));}
-                | FLOAT_DIGIT                   { assign_float($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring); char dum[10]="$"; StAssPush(strcat(dum,floattostring));}
-                | BOOL_LITERAL                  { assign_bool($1, assign_index); if($1==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
+                | FLOAT_DIGIT                   { assign_int($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring); char dum[10]="$"; StAssPush(strcat(dum,floattostring));}
+                | BOOL_LITERAL                  { assign_int($1, assign_index); if($1==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
                 | STRING_LITERAL                { assign_str($1, assign_index); pushVStack($1);char* buf; strcpy(buf, "$");strcat(buf, $1); StAssPush(buf);}
                 | CONSTANT                      { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);}
                 | SUB EXPRESSION                {StAssPrint("neg", 1);}
@@ -733,26 +733,26 @@ void st_print() {
 // for declaration statments take the st_index -1 3shan lesa m3molo insert but for assignment 3ady take assign_index coming from lookup function
 void assign_int (int d , int i) {
     if (i == -1) {return;}
-    if ( symbolTable[i].dataType != "int" && symbolTable[i].type == "func" )
+    if ( symbolTable[i].dataType == "string" && symbolTable[i].type == "func" )
     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned int !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
-     return ;}
+     return; }
     symbolTable[i].isInit= 1 ;
-    if (symbolTable[i].dataType == "int" ) {symbolTable[i].intValue= d ;}
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );}
+    if (symbolTable[i].dataType != "string" ) {symbolTable[i].intValue= d ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned wrong value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );}
     if(is_changed == 1) {st_log();} // 
     assign_index = -1;
 }
-void assign_float( float f, int i) {
-    if (i == -1) {return;}
-     if ( symbolTable[i].dataType != "float" && symbolTable[i].type == "func" )
-    {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned float !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
-     return ;}
-    symbolTable[i].isInit= 1 ;
-    if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= f ;}
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
-   if(is_changed == 1) {st_log();}
-   assign_index = -1;
-}
+// void assign_float( float f, int i) {
+//     if (i == -1) {return;}
+//      if ( symbolTable[i].dataType != "float" && symbolTable[i].type == "func" )
+//     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned float !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
+//      return ;}
+//     symbolTable[i].isInit= 1 ;
+//     if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= f ;}
+//     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+//    if(is_changed == 1) {st_log();}
+//    assign_index = -1;
+// }
 void assign_str( char* s , int i) {
     if (i == -1) {return;}
     if ( symbolTable[i].dataType != "string" && symbolTable[i].type == "func" )
@@ -764,17 +764,17 @@ void assign_str( char* s , int i) {
     if(is_changed == 1) {st_log();}
     assign_index = -1;
 }
-void assign_bool( bool b , int i) {
-    if (i == -1) {return;}
-    if ( symbolTable[i].dataType != "bool" && symbolTable[i].type == "func" )
-    {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned boolean !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
-     return ;} 
-    symbolTable[i].isInit= 1 ;
-    if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
-    if(is_changed == 1) {st_log();}
-    assign_index = -1;
-}
+// void assign_bool( bool b , int i) {
+//     if (i == -1) {return;}
+//     if ( symbolTable[i].dataType != "bool" && symbolTable[i].type == "func" )
+//     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned boolean !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
+//      return ;} 
+//     symbolTable[i].isInit= 1 ;
+//     if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
+//     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+//     if(is_changed == 1) {st_log();}
+//     assign_index = -1;
+// }
 
 void assign_enum (int i, char* enum_name, char* key) {
     if (i == -1) {return;}
@@ -808,7 +808,7 @@ void check_type( int i) {
     { assign_index = arg_count;}
      if ( i == -1 || assign_index == -1) 
     { return;}
-    if (i != -1 && symbolTable[i].dataType != symbolTable[assign_index].dataType)
+    if (symbolTable[i].dataType != symbolTable[assign_index].dataType && (symbolTable[assign_index].dataType == "string" ||  symbolTable[i].dataType == "string"))
     {   /// at calling a function
         if (strcmp(symbolTable[i].type,"func")== 0){ printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s return %s value  !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
         else if (strcmp(symbolTable[assign_index].type,"func")== 0){ printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s return %s value  !!!!!!!!!!!\n", line_number,symbolTable[i].name,symbolTable[i].dataType, symbolTable[assign_index].name,symbolTable[assign_index].dataType );}
