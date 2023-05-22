@@ -130,6 +130,7 @@
     void prepend(char* s, const char* t)    {size_t len = strlen(t);memmove(s + len, s, strlen(s) + 1);memcpy(s, t, len);}
     char switcher[50];
     void pErr(int num);
+    void sErr(int num);
 //==================================================================================================================================================
 
 %}
@@ -251,6 +252,8 @@ SWITCH_STT:
                 ;
 DEFAULTCASE:
                 DEFAULT ':' BLOCK {StAssJmp("JMP", "END",&SMLabel_End, 0,0); }
+                | DEFAULT BLOCK {printf("\n\n=====ERROR====\n missing colon ':' at DEFAULT CASE of switch, error at line %d\n\n", yylineno); pErr(yylineno);}
+                ;
 CASES:
                 CASE {StAssPush(switcher);} EXPRESSION {StAssPrint("EQ", 1); StAssJmp("JNZ", "LBL",&SMLabel_Else, 0,0);} ':' BLOCK {StAssJmp("JMP", "END",&SMLabel_End, 0,0); StAssPrintLBL(1, 1);} CASES
                 | DEFAULTCASE {printf("\n\n=====ERROR====\n DEFAULT CASE must be written at the end of the switch statement, error at line %d\n\n", yylineno); pErr(yylineno);} CASE EXPRESSION BLOCK             

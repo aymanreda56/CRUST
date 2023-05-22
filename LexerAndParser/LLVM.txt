@@ -1,17 +1,30 @@
-x = 1
-L0:
-IF x = 3 goto L1
-goto END0
-L1 : 
-y = 2
-goto L0
-END0:
+IF t = 0
+END:
 t0 = 1 + 2
-a = t0
+x = t0
+i < 3 goto L0
+goto EN1
+L0 : 
+t1 = i + 1
+L1:
+IF x = 3 goto L2
+goto EN11
+L2 : 
+k = 2
 IF x > 3 goto L3
-goto END1
+goto EN111
 L3 : 
-z = 2
-END1:
-x = 2
-x = 1
+t = 0
+EN111:
+IF x < 3 goto L4
+goto EN112
+L4 : 
+m = 1
+EN112:
+n = 8
+x = 3
+y = true
+t2 = x + x
+x = t2
+t3 = 3 * x
+x = t3

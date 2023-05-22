@@ -1,8 +1,121 @@
+	PUSH 	 $2
+	PUSH 	 x
+	OVER
+	STORE
+	DROP
+print:
+	POP	g
+	POP	q
+	PUSH 	 $0
+	PUSH 	 z
+	OVER
+	STORE
+	DROP
+	PUSH 	 z
+	OVER
+	POP	PC
+	DNEXT
+	JMP 	 PC
+	PUSH 	 $3
+	JNZ 	 LBL0
+	PUSH 	 t
+	PUSH 	 $0
+	STORE
+	JMP 	 END0
+LBL0:
+	JMP 	 END0
+END1:
+	PUSH 	 x
+	PUSH 	 $1
+	EQ
+	JNZ 	 LBL1
+	PUSH 	 PC
+	PUSH 	 $1
+	PUSH 	 $2
+	JMP 	 print0
+	JMP 	 END2
+LBL1:
+	PUSH 	 x
+	PUSH 	 $3
+	EQ
+	JNZ 	 LBL2
+	PUSH 	 PC
+	PUSH 	 $3
+	PUSH 	 $4
+	JMP 	 print0
+	JMP 	 END2
+LBL2:
+	PUSH 	 PC
+	PUSH 	 $5
+	PUSH 	 $6
+	JMP 	 print0
+	JMP 	 END2
+END2:
+	PUSH 	 x
+	PUSH 	 $2
+	EQ
+	JNZ 	 LBL3
+	PUSH 	 PC
+	PUSH 	 $1
+	PUSH 	 $2
+	JMP 	 print0
+	JMP 	 END3
+LBL3:
+	PUSH 	 x
+	PUSH 	 $6
+	EQ
+	JNZ 	 LBL4
+	PUSH 	 PC
+	PUSH 	 $3
+	PUSH 	 $4
+	JMP 	 print0
+	JMP 	 END3
+LBL4:
+	PUSH 	 PC
+	PUSH 	 $5
+	PUSH 	 $6
+	JMP 	 print0
+	JMP 	 END3
+END3:
+	PUSH 	 $"amoon"
+	PUSH 	 lobs
+	OVER
+	STORE
+	DROP
+	PUSH 	 $1.5
+	PUSH 	 popo
+	OVER
+	STORE
+	DROP
 	PUSH 	 x
 	PUSH 	 $1
 	PUSH 	 $2
 	ADD
 	STORE
+	PUSH 	 ayman
+	PUSH 	 $3
+	STORE
+	PUSH 	 mariem
+	PUSH 	 $1
+	STORE
+	PUSH 	 abeer
+	PUSH 	 $5
+	STORE
+	PUSH 	 marim
+	PUSH 	 $10
+	STORE
+	PUSH 	 aymon
+	PUSH 	 ayman
+	STORE
+	PUSH 	 $1
+	PUSH 	 l
+	OVER
+	STORE
+	DROP
+	PUSH 	 PC
+	PUSH 	 x
+	PUSH 	 l
+	JMP 	 print0
 	PUSH 	 $0
 	PUSH 	 i
 	OVER
@@ -19,59 +132,60 @@ Label0:
 	PUSH 	 i
 	PUSH 	 $3
 	LT
-	JNZ 	 END0
+	JNZ 	 END4
 	PUSH 	 dum
 	PUSH 	 $1
 	STORE
-	JMP 	 LBL0
+	JMP 	 LBL5
 HELPER0:
 	PUSH 	 i
 	DUP
 	PUSH 	 $1
 	ADD
 	STORE
-LBL0:
+LBL5:
 	PUSH 	 $false
 	PUSH 	 F
 	OVER
 	STORE
 	DROP
-END0:
-LBL1:
+	JMP 	 Label0
+END4:
+LBL6:
 	PUSH 	 x
 	PUSH 	 $3
 	EQ
-	JNZ 	 END1
+	JNZ 	 END5
 	PUSH 	 k
 	PUSH 	 $2
 	STORE
-	JMP 	 LBL1
-END1:
+	JMP 	 LBL6
+END5:
 	PUSH 	 x
 	PUSH 	 $3
 	GT
-	JNZ 	 LBL2
-	PUSH 	 z
+	JNZ 	 LBL7
+	PUSH 	 t
 	PUSH 	 $0
 	STORE
-	JMP 	 END2
-LBL2:
-	JMP 	 END2
-END3:
+	JMP 	 END6
+LBL7:
+	JMP 	 END6
+END7:
 	PUSH 	 x
 	PUSH 	 $3
 	LT
-	JNZ 	 LBL3
+	JNZ 	 LBL8
 	PUSH 	 m
 	PUSH 	 $1
 	STORE
-	JMP 	 END4
-LBL3:
+	JMP 	 END8
+LBL8:
 	PUSH 	 n
 	PUSH 	 $8
 	STORE
-	JMP 	 END4
-END5:
+	JMP 	 END8
+END9:
 	PUSH 	 x
 	PUSH 	 $3
 	STORE
