@@ -62,6 +62,7 @@
     int enum_values [100];
     int enum_arg_count=0;
     int is_changed=1; // default is 1,
+    int return_exist=0;
     //-- symbol table functions:  st_functionName()
     int st_insert(char* data_type, char* name, char* type, int is_arg);
     void st_print();
@@ -237,7 +238,7 @@ DECLARATION_TAIL:
 
 RETURN_STT:
                 RETURN                          {int dum = 0;StAssPrint("POP\tPC",1);StAssJmp("JMP", "PC", &dum,0,1);}
-                | RETURN {assign_index =func_index;} EXPRESSION             { StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
+                | RETURN {assign_index =func_index;} EXPRESSION             { return_exist = 1; StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
                 ;
 
 SWITCH_STT:
@@ -821,6 +822,8 @@ void scope_start(){
     scope_stack[scope_index] = block_number;
 }
 void scope_end(){
+    if (strcmp(symbolTable[func_index].type, "func") == 0 && return_exist == 0 && strcmp(symbolTable[func_index].dataType, "void") != 0)
+    {printf("\n !!!!!!!!!!!! Error at line %d: Missing return statement in Function %s !!!!!!!!!!!\n", line_number, symbolTable[func_index].name);}
     //----- make all symbols in this scope out of scope
     for (int i = 0; i < st_index; i++){
         if (symbolTable[i].scope == scope_stack[scope_index]){
