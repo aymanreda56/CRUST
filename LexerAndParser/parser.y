@@ -4,6 +4,8 @@
     #include <string.h>
     #include <stdbool.h>
     #include "parser.tab.h"
+
+    
     void yyerror(char* );
     int yylex();
     void yyerror();
@@ -131,6 +133,8 @@
     char switcher[50];
     void pErr(int num);
     void sErr(int num);
+    void prependFile(char* filename, char* text);
+    void printDataSegment();
     //int* linenoPTR = &yylineno;
 //==================================================================================================================================================
 
@@ -1038,9 +1042,6 @@ void StAssForMiddle()
 };
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 void prependFile(char* filename, char* text) {
     FILE *file = fopen(filename, "r");
@@ -1048,50 +1049,50 @@ void prependFile(char* filename, char* text) {
         printf("Error opening file\n");
         exit(1);
     }
-
     fseek(file, 0, SEEK_END);
     long fsize = ftell(file);
     fseek(file, 0, SEEK_SET);
-
     char *buffer = malloc(fsize + 1);
     fread(buffer, 1, fsize, file);
     fclose(file);
-
     file = fopen(filename, "w");
     if (file == NULL) {
         printf("Error opening file\n");
         exit(1);
     }
-
     fprintf(file, "%s", text);
     fwrite(buffer, 1, fsize, file);
     fclose(file);
-
     free(buffer);
 }
 
 
 void printDataSegment()
 {
-    char* DS;
+    char DS[5000];
     strcpy(DS, "");
-    for (int i = 0 ; i < st_index ; i++)
+    for (int i = 0 ; i < st_index-1 ; i++)
     {
-        strcat(DS, "VAR\t");
-        strcat(DS, symbolTable[i].name);
-        strcat(DS, "\n");
+        if((strcmp(symbolTable[i].type, "func") != 0) && (strcmp(symbolTable[i].dataType , "int")==0 || strcmp(symbolTable[i].dataType , "float")==0 || strcmp(symbolTable[i].dataType ,"bool")==0 || strcmp(symbolTable[i].dataType , "string")==0))
+        {
+            strcat(DS, "VAR\t");
+            char buff [500];
+            strcpy(buff, symbolTable[i].name);
+            strcat(DS, buff);
+            strcat(DS, "\n");
+        }
     }
-    prependFile("stackassembly.txt", DS);
-}
+    strcat(DS, "\n\n");
+    char* filename = "stackassembly.txt";
+    prependFile(filename, DS);
+};
 
 void pErr(int lineNUMM)
 {
     FILE *assfile = fopen("ParsingErrors.txt", "a");
     char buf [50];
     itoa(lineNUMM, buf,10);
-
     fprintf(assfile, "%s ", buf);
-    
     fclose (assfile);
 };
 
@@ -1099,7 +1100,6 @@ void pErr(int lineNUMM)
 
 void sErr(int num)
 {
-    // printf("\n\n\n\n\n %d \n\n\n\n\n\n\n", num);
     FILE *semfile = fopen("SemanticErrors.txt", "a");
      if(semfile == NULL) {
         printf("can't open SemanticErrors.txt file!\n");
@@ -1274,5 +1274,7 @@ int main(int argc, char *argv[])
     yyparse();
     st_print();
     unused_print();
+    printDataSegment();
+
     return 0;
 }
