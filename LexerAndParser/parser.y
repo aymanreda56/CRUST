@@ -745,6 +745,7 @@ void st_print() {
 
 // for declaration statments take the st_index -1 3shan lesa m3molo insert but for assignment 3ady take assign_index coming from lookup function
 void assign_int (int d , int i) {
+    printf("\n\n %d %d %s \n\n", d, i , symbolTable[i].name);
     if (i == -1) {return;}
     if ( symbolTable[i].dataType == "string" && symbolTable[i].type == "func" )
     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned int !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
