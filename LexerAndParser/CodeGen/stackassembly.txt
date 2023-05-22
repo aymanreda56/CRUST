@@ -1,3 +1,8 @@
+	PUSH 	 $2
+	PUSH 	 x
+	OVER
+	STORE
+	DROP
 print:
 	POP	g
 	POP	q
@@ -11,11 +16,6 @@ print:
 	POP	PC
 	DNEXT
 	JMP 	 PC
-	PUSH 	 $2
-	PUSH 	 x
-	OVER
-	STORE
-	DROP
 	PUSH 	 x
 	PUSH 	 $3
 	GT
@@ -27,6 +27,58 @@ print:
 LBL0:
 	JMP 	 END0
 END1:
+	PUSH 	 x
+	PUSH 	 $1
+	EQ
+	JNZ 	 LBL1
+	PUSH 	 PC
+	PUSH 	 $1
+	PUSH 	 $2
+	JMP 	 print0
+	JMP 	 END2
+LBL1:
+	PUSH 	 x
+	PUSH 	 $3
+	EQ
+	JNZ 	 LBL2
+	PUSH 	 PC
+	PUSH 	 $3
+	PUSH 	 $4
+	JMP 	 print0
+	JMP 	 END2
+LBL2:
+	PUSH 	 PC
+	PUSH 	 $5
+	PUSH 	 $6
+	JMP 	 print0
+	JMP 	 END2
+END2:
+	PUSH 	 x
+	PUSH 	 $2
+	EQ
+	JNZ 	 LBL3
+	PUSH 	 PC
+	PUSH 	 $1
+	PUSH 	 $2
+	JMP 	 print0
+	JMP 	 END3
+LBL3:
+	PUSH 	 x
+	PUSH 	 $6
+	EQ
+	JNZ 	 LBL4
+	PUSH 	 PC
+	PUSH 	 $3
+	PUSH 	 $4
+	JMP 	 print0
+	JMP 	 END3
+LBL4:
+	PUSH 	 PC
+	PUSH 	 $5
+	PUSH 	 $6
+	JMP 	 print0
+	JMP 	 END3
+END3:
 	PUSH 	 $"amoon"
 	PUSH 	 lobs
 	OVER
@@ -82,60 +134,60 @@ Label0:
 	PUSH 	 i
 	PUSH 	 $3
 	LT
-	JNZ 	 END2
+	JNZ 	 END4
 	PUSH 	 dum
 	PUSH 	 $1
 	STORE
-	JMP 	 LBL1
+	JMP 	 LBL5
 HELPER0:
 	PUSH 	 i
 	DUP
 	PUSH 	 $1
 	ADD
 	STORE
-LBL1:
+LBL5:
 	PUSH 	 $false
 	PUSH 	 F
 	OVER
 	STORE
 	DROP
 	JMP 	 Label0
-END2:
-LBL2:
+END4:
+LBL6:
 	PUSH 	 x
 	PUSH 	 $3
 	EQ
-	JNZ 	 END3
+	JNZ 	 END5
 	PUSH 	 k
 	PUSH 	 $2
 	STORE
-	JMP 	 LBL2
-END3:
-	PUSH 	 x
-	PUSH 	 $3
-	GT
-	JNZ 	 LBL3
-	PUSH 	 t
-	PUSH 	 $0
-	STORE
-	JMP 	 END4
-LBL3:
-	JMP 	 END4
+	JMP 	 LBL6
 END5:
 	PUSH 	 x
 	PUSH 	 $3
+	GT
+	JNZ 	 LBL7
+	PUSH 	 t
+	PUSH 	 $0
+	STORE
+	JMP 	 END6
+LBL7:
+	JMP 	 END6
+END7:
+	PUSH 	 x
+	PUSH 	 $3
 	LT
-	JNZ 	 LBL4
+	JNZ 	 LBL8
 	PUSH 	 m
 	PUSH 	 $1
 	STORE
-	JMP 	 END6
-LBL4:
+	JMP 	 END8
+LBL8:
 	PUSH 	 n
 	PUSH 	 $8
 	STORE
-	JMP 	 END6
-END7:
+	JMP 	 END8
+END9:
 	PUSH 	 x
 	PUSH 	 $3
 	STORE

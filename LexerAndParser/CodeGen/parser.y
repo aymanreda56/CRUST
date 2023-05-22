@@ -241,31 +241,32 @@ RETURN_STT:
                 RETURN                          {int dum = 0;StAssPrint("POP\tPC",1);StAssJmp("JMP", "PC", &dum,0,1);}
                 | RETURN {assign_index =func_index;} EXPRESSION             { return_exist = 1; StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
                 ;
-
+helperSWITCH:   SWITCH IDENTIFIER ':' '{' {strcpy(switcher, $2);}
+                ;
 SWITCH_STT:
-                SWITCH IDENTIFIER {strcpy(switcher, $2);}':' '{' CASES DEFAULT EXPRESSION ':' BLOCK '}' {StAssJmp("JMP", "END",&SMLabel_End, 0,0); StAssPrintLBL(0,1);}
-                | SWITCH IDENTIFIER ':' '{' CASES '}' {StAssPrintLBL(0,1);}
+                helperSWITCH CASES  '}' {StAssPrintLBL(0,1);}
                 | ERRONOUS_SWITCH_STT
                 //todo, handle unclose parenthesis for switch stt
                 ;
 
 CASES:
                 CASE {StAssPush(switcher);} EXPRESSION {StAssPrint("EQ", 1); StAssJmp("JNZ", "LBL",&SMLabel_Else, 0,0);} ':' BLOCK {StAssJmp("JMP", "END",&SMLabel_End, 0,0); StAssPrintLBL(1, 1);} CASES
-                | ERRONOUS_CASES
+                | DEFAULT ':' BLOCK {StAssJmp("JMP", "END",&SMLabel_End, 0,0); }
+                //| ERRONOUS_CASES
                 |
                 ;
-
+/* AYMAAN 7awel tesala7 DE
 ERRONOUS_CASES:
                 error EXPRESSION                 {printf("\n\n=====ERROR====\n MISSING 'case' at line %d\n\n", yylineno);} ':' BLOCK CASES     
                 | CASE EXPRESSION ':' error      {printf("\n\n=====ERROR====\n MISSING case block at line %d\n\n", yylineno);} CASES         
                 ;
-
+*/
 ERRONOUS_SWITCH_STT:
                 SWITCH error                    {printf("\n\n=====ERROR====\n MISSING identifier for switch statement at line %d\n\n", yylineno);}                            ':' '{' CASES '}'      
                 | SWITCH IDENTIFIER error       {printf("\n\n=====ERROR====\n unexpected identifier '%s' at switch statement at line %d\n\n",yylval, yylineno); }             ':'  '{' CASES '}'  
                 | SWITCH IDENTIFIER error       {printf("\n\n=====ERROR====\n MISSING colon ':' for switch statement (switchs must have a colon) at line %d\n\n", yylineno);} '{' CASES '}'
                 | SWITCH IDENTIFIER ':' error   {printf("\n\n=====ERROR====\n MISSING '{' for switch statement at line %d\n\n", yylineno);}                                   CASES '}'   
-                //| SWITCH IDENTIFIER ':' '{' CASES error {printf("\n\n=====ERROR====\n unclosed '}' for switch statement at line %d\n\n", yylineno);}    
+                | helperSWITCH CASES error {printf("\n\n=====ERROR====\n unclosed '}' for switch statement at line %d\n\n", yylineno);}    
                 ;
 
 
