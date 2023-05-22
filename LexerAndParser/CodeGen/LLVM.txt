@@ -1,24 +1,29 @@
-t0 = 1 + 2
-x = t0
-i < 3 goto L0
+IF x > 3 goto L0
 goto END0
 L0 : 
-t1 = i + 1
-L1:
-IF x = 3 goto L2
-goto END00
-L2 : 
-k = 2
-IF x > 3 goto L3
-goto END000
-L3 : 
 t = 0
-END000:
-IF x < 3 goto L4
-goto END001
+END0:
+t0 = 1 + 2
+x = t0
+i < 3 goto L1
+goto END1
+L1 : 
+t1 = i + 1
+L2:
+IF x = 3 goto L3
+goto END11
+L3 : 
+k = 2
+IF x > 3 goto L4
+goto END111
 L4 : 
+t = 0
+END111:
+IF x < 3 goto L5
+goto END112
+L5 : 
 m = 1
-END001:
+END112:
 n = 8
 x = 3
 y = true
