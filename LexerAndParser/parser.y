@@ -437,7 +437,7 @@ EXPRESSION:
                 | DIGIT                         { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring); char dum[10]="$"; StAssPush(strcat(dum,numtostring));}
                 | FLOAT_DIGIT                   { assign_float($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring); char dum[10]="$"; StAssPush(strcat(dum,floattostring));}
                 | BOOL_LITERAL                  { assign_bool($1, assign_index); if($1==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
-                | STRING_LITERAL                { assign_str($1, assign_index); pushVStack($1);char buf[50]; strcpy(buf, "$");strcat(buf, $1); StAssPush(buf);}
+                | STRING_LITERAL                { assign_str($1, assign_index); pushVStack($1);char* buf; strcpy(buf, "$");strcat(buf, $1); StAssPush(buf);}
                 | CONSTANT                      { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);}
                 | SUB EXPRESSION                {StAssPrint("neg", 1);}
                 | EXPRESSION PLUS PLUS          { pushVStack("+"); pushVStack("1"); CodeGenOp("ADD"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("ADD", 1); StAssPrint("STORE", 1);}
@@ -561,6 +561,9 @@ int lookup(char* name) {
            
             if (symbolTable[i].isInit == 0 && strcmp(symbolTable[i].type, "var") == 0 && symbolTable[i].isArg == 0 ) 
             {   
+            printf("\nGGGGGGGGGGGGGGGGGGGGGGGGGGGGGg %s %d\n, ", symbolTable[i].name, symbolTable[i].isInit);
+            printf("\nGGGGGGGGGGGGGGGGGGGGGGGGGGGGGg %d %d\n, ", i, assign_index);
+
             if ( i != assign_index)// 3shan lw kan el var 3la el LHS s3tha 3ady ex: int x=9; int z; z =x;
             {
                 printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name);}
@@ -829,7 +832,7 @@ void scope_start(){
     scope_stack[scope_index] = block_number;
 }
 void scope_end(){
-    if (strcmp(symbolTable[func_index].type, "func") == 0 && return_exist == 0 && strcmp(symbolTable[func_index].dataType, "void") != 0)
+    if (func_index != -1 && strcmp(symbolTable[func_index].type, "func") == 0 && return_exist == 0 && strcmp(symbolTable[func_index].dataType, "void") != 0)
     {printf("\n !!!!!!!!!!!! Error at line %d: Missing return statement in Function %s !!!!!!!!!!!\n", line_number, symbolTable[func_index].name);}
     //----- make all symbols in this scope out of scope
     for (int i = 0; i < st_index; i++){
