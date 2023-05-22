@@ -1,17 +1,36 @@
-int x;
 
 
-string lobs = "amoon";
+int x = 2;
 
-x = 1 + 2;
-enum aym {ayman=3, mariem=1, abeer=5, marim=10}
-aym aymon = ayman;
-int l = 1;
+
+if x > 3:
+{ int t;
+t = 0;
+}
+
+
+
 int print(int q, int g)
 {
 int z = 0;
 return z;
 }
+
+string lobs = "amoon";
+
+
+
+float popo = 1.5;
+
+x = 1 + 2;
+
+enum aym {ayman=3, mariem=1, abeer=5, marim=10}
+
+aym aymon = ayman;
+
+int l = 1;
+
+
 
 print(x, l);
 
@@ -19,6 +38,7 @@ for(int i = 0 ; i < 3 ; i ++;)
 {
 bool F = false;
 }
+
 
 
 while x == 3:

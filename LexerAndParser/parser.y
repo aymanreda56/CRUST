@@ -128,6 +128,7 @@
     void popArgs();
     int enumCNT = 1;
     void prepend(char* s, const char* t)    {size_t len = strlen(t);memmove(s + len, s, strlen(s) + 1);memcpy(s, t, len);}
+    char switcher[50];
 //==================================================================================================================================================
 
 %}
@@ -144,7 +145,7 @@
 #include<stdbool.h>
 }
 
-%token INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM RETURN
+%token INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM RETURN DEFAULT
 %token EQUALITY NEG_EQUALITY
 %token SWITCH CASE
 %token LOGIC_AND LOGIC_OR LOGIC_NOT
@@ -242,13 +243,14 @@ RETURN_STT:
                 ;
 
 SWITCH_STT:
-                SWITCH IDENTIFIER ':' '{' CASES '}'
+                SWITCH IDENTIFIER {strcpy(switcher, $2);}':' '{' CASES DEFAULT EXPRESSION ':' BLOCK '}' {StAssJmp("JMP", "END",&SMLabel_End, 0,0); StAssPrintLBL(0,1);}
+                | SWITCH IDENTIFIER ':' '{' CASES '}' {StAssPrintLBL(0,1);}
                 | ERRONOUS_SWITCH_STT
                 //todo, handle unclose parenthesis for switch stt
                 ;
 
 CASES:
-                CASE EXPRESSION ':' BLOCK CASES
+                CASE {StAssPush(switcher);} EXPRESSION {StAssPrint("EQ", 1); StAssJmp("JNZ", "LBL",&SMLabel_Else, 0,0);} ':' BLOCK {StAssJmp("JMP", "END",&SMLabel_End, 0,0); StAssPrintLBL(1, 1);} CASES
                 | ERRONOUS_CASES
                 |
                 ;
@@ -352,8 +354,8 @@ IF_STT:
                 IF_STT_HELPER IF_STT_HELPER1                  {StAssJmp("JMP", "END",&SMLabel_End, 1,0); StAssPrintLBL(0, 1);}
                 | IF_STT_HELPER IF_STT_HELPER1 ELSE BLOCK     {StAssJmp("JMP", "END",&SMLabel_End, 1,0); StAssPrintLBL(0, 1);}
                 | IF_STT_HELPER IF_STT_HELPER1 ELSE error '}' {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}
-                | IF_STT_HELPER                               {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);}        BLOCK{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
-                | IF       ':'                                {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} BLOCK{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
+                | IF_STT_HELPER                               {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);}        BLOCK//{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
+                | IF       ':'                                {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);} BLOCK//{char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
                 | IF_STT_HELPER ':' error '}'                 {printf("\n\n=====ERROR====\n Missing '{' for the IF statement at line %d\n\n", yylineno);}
                 
                 //TODO handle opened parenthesis but not closed
@@ -942,7 +944,7 @@ void StAssJmp(char* jmp, char* jmpName, int* num, int inc, int noNum)
         printf("can't open stackassembly.txt file!\n");
         exit(1);
     }
-    if(noNum)
+    if(noNum == 1)
     {
         fprintf(assfile, "\t%s \t %s\n", jmp, jmpName);
     }

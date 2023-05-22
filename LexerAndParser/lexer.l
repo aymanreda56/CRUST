@@ -14,6 +14,7 @@
 "float"                         {printf("FLOAT:%s | ", yytext);          nword++; nchar+=yyleng;                                return FLOAT;}
 "double"                        {printf("FLOAT:%s | ", yytext);          nword++; nchar+=yyleng;                                return FLOAT;}
 "bool"                          {printf("BOOL:%s | ", yytext);           nword++; nchar+=yyleng;                                return BOOL;}
+"default"                       {printf("DEFAULT:%s | ", yytext);        nword++; nchar+=yyleng;                                return DEFAULT;}
 "string"                        {printf("STRING:%s | ", yytext);         nword++; nchar+=yyleng;                                return STRING;}
 "enum"                          {printf("ENUM:%s | ", yytext);           nword++; nchar+=yyleng;                                return ENUM;}
 "switch"                        {printf("SWITCH:%s | ", yytext);         nword++; nchar+=yyleng;                                return SWITCH;}
