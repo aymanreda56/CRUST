@@ -13,7 +13,7 @@ return z;
 }
 
 
-if x > 3:
+if  > 3:
 { int t;
 t = 0;
 }

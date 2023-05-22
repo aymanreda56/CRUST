@@ -16,9 +16,7 @@ print:
 	POP	PC
 	DNEXT
 	JMP 	 PC
-	PUSH 	 x
 	PUSH 	 $3
-	GT
 	JNZ 	 LBL0
 	PUSH 	 t
 	PUSH 	 $0
