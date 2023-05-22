@@ -772,12 +772,12 @@ void assign_str( char* s , int i) {
     if (i == -1) {return;}
     if ( symbolTable[i].dataType != "string" && symbolTable[i].type == "func" )
     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned string !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
-     sErr();
+     sErr(line_number);
      return ;} 
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "string"){symbolTable[i].strValue= s ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned string value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );
-    sErr();}
+    sErr(line_number);}
     if(is_changed == 1) {st_log();}
     assign_index = -1;
 }
