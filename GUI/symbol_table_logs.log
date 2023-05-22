@@ -1,0 +1,17 @@
+ID, Line, Scope, Name, Type, DataType, isInit, Value, Args
+0, 1, 0, x, var, int, 0, -, -
+=============
+ID, Line, Scope, Name, Type, DataType, isInit, Value, Args
+0, 1, 0, x, var, int, 1, 12, -
+=============
+ID, Line, Scope, Name, Type, DataType, isInit, Value, Args
+0, 1, 0, x, var, int, 1, 12, -
+=============
+ID, Line, Scope, Name, Type, DataType, isInit, Value, Args
+0, 1, 0, x, var, int, 1, 12, -
+1, 8, 0, z, var, bool, 0, -, -
+=============
+ID, Line, Scope, Name, Type, DataType, isInit, Value, Args
+0, 1, 0, x, var, int, 1, 12, -
+1, 8, 0, z, var, bool, 1, true, -
+=============

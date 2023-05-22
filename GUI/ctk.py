@@ -6,16 +6,31 @@ import subprocess
 import os
 import customtkinter as ct
 
+def removeFiles():
+    if(os.path.isfile('./ParsingErrors.txt')):
+        os.remove('./ParsingErrors.txt')
+    if(os.path.isfile('./SemanticErrors.txt')):
+        os.remove('./SemanticErrors.txt')
 
+removeFiles()
 
-global opened_file_name,TerminalOutput, Assembly, success
+global opened_file_name,TerminalOutput, Assembly, success, digitsS, digitsP
 opened_file_name = False
 TerminalOutput = False
 Assembly=False
-success = True
-
+success = False
+digitsS = None
+digitsP = None
 
 def lexyacccompile():
+    global digitsS, digitsP
+    removeFiles()
+    if(digitsS):
+        for i in digitsS:
+            text.tag_remove(i, f"{i}.0", "end")
+    if(digitsP):
+        for i in digitsP:
+            text.tag_remove(i, f"{i}.0", "end")
     save_as_file(TempName=True)
     status_bar.configure(text="Compiling... ", font=("Helvetica",16), fg_color="green")
     compiler = ".\out.exe temp.txt"
@@ -45,6 +60,14 @@ def lexyacccompile():
 
 
 def dummy():
+    removeFiles()
+    global digitsS, digitsP
+    if(digitsS):
+        for i in digitsS:
+            text.tag_remove(i, f"{i}.0", "end")
+    if(digitsP):
+        for i in digitsP:
+            text.tag_remove(i, f"{i}.0", "end")
     save_as_file(TempName=True)
     status_bar.configure(text="Compiling... ", font=("Helvetica",16), fg_color="green")
     global TerminalOutput
@@ -86,31 +109,36 @@ def show_assembly():
 
 
 def highLightParseError():
-    digits = []
-    with open('ParsingErrors.txt') as f:
-        contents = f.read()
-        digits = re.findall('\d+', contents)
-    global success
-    if(digits):
+    global digitsP
+    digitsP = None
+    if(os.path.exists('./ParsingErrors.txt')):
+        with open('ParsingErrors.txt') as f:
+            contents = f.read()
+            digitsP = re.findall('\d+', contents)
+    
+    if(digitsP):
+        global success
         success = 1
-    for i in digits:
-        text.tag_add(str(i), f"{i}.5 linestart",f"{i}.5 lineend")
-        text.tag_config(str(i), background= "red", foreground= "#FAF33E")
+        for i in digitsP:
+            text.tag_add(str(i), f"{i}.5 linestart",f"{i}.5 lineend")
+            text.tag_config(str(i), background= "red", foreground= "#FAF33E")
 
 
 def highLightSemanticError():
-    digits = []
-    with open('SemanticErrors.txt') as f:
-        contents = f.read()
-        digits = re.findall('\d+', contents)
+    global digitsS, success
+    digitsS = None
+    if(os.path.exists('./SemanticErrors.txt')):
+        with open('SemanticErrors.txt') as f:
+            contents = f.read()
+            digitsS = re.findall('\d+', contents)
 
-    global success
-    if(digits):
+    
+    if(digitsS):
         if(not success):
             success = 2
-    for i in digits:
-        text.tag_add(str(i), f"{i}.5 linestart",f"{i}.5 lineend")
-        text.tag_config(str(i), background= "yellow", foreground= "#A4243B")
+        for i in digitsS:
+            text.tag_add(str(i), f"{i}.5 linestart",f"{i}.5 lineend")
+            text.tag_config(str(i), background= "yellow", foreground= "#A4243B")
 
 
 
@@ -120,6 +148,15 @@ def highLightSemanticError():
 
 
 def open_file(dummy = False):
+    global digitsS, digitsP, success
+    success = False
+    removeFiles()
+    if(digitsS):
+        for i in digitsS:
+            text.tag_remove(i, f"{i}.0", "end")
+    if(digitsP):
+        for i in digitsP:
+            text.tag_remove(i, f"{i}.0", "end")
     TerminalPanel.pack_forget()
     AssemblyPanel.pack_forget()
     otherFrame.pack_forget()
@@ -138,6 +175,15 @@ def open_file(dummy = False):
 
 
 def new_file(dummy = False):
+    global digitsS, digitsP, success
+    success = False
+    removeFiles()
+    if(digitsS):
+        for i in digitsS:
+            text.tag_remove(i, f"{i}.0", "end")
+    if(digitsP):
+        for i in digitsP:
+            text.tag_remove(i, f"{i}.0", "end")
     TerminalPanel.pack_forget()
     AssemblyPanel.pack_forget()
     otherFrame.pack_forget()
@@ -153,6 +199,15 @@ def new_file(dummy = False):
 
 
 def save_as_file(TempName = False):
+    global digitsS, digitsP, success
+    success = False
+    removeFiles()
+    if(digitsS):
+        for i in digitsS:
+            text.tag_remove(i, f"{i}.0", "end")
+    if(digitsP):
+        for i in digitsP:
+            text.tag_remove(i, f"{i}.0", "end")
     TerminalPanel.pack_forget()
     AssemblyPanel.pack_forget()
     otherFrame.pack_forget()
@@ -180,6 +235,15 @@ def save_as_file(TempName = False):
         status_bar.configure(text=f"File {name} saved !    ")
 
 def save_file(clicked=False):
+    global digitsS, digitsP, success
+    success = False
+    removeFiles()
+    if(digitsS):
+        for i in digitsS:
+            text.tag_remove(i, f"{i}.0", "end")
+    if(digitsP):
+        for i in digitsP:
+            text.tag_remove(i, f"{i}.0", "end")
     TerminalPanel.pack_forget()
     AssemblyPanel.pack_forget()
     otherFrame.pack_forget()
