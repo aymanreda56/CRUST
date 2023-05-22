@@ -1040,6 +1040,16 @@ void pErr(int lineNUMM)
     
     fclose (assfile);
 };
+void sErr(int num)
+{
+    FILE *assfile = fopen("SemanticErrors.txt", "a");
+    char buf [50];
+    itoa(lineNUMM, buf,10);
+
+    fprintf(assfile, "%s ", buf);
+    
+    fclose (assfile);
+};
 
 void popArgs()
 {
@@ -1195,7 +1205,8 @@ int main(int argc, char *argv[])
     int ret = remove("LLVM.txt");
     int ret2 = remove("stackassembly.txt");
     int ret3 = remove("ParsingErrors.txt");
-    if(ret != 0 && ret2 !=0 && ret3 !=0){
+    int ret4 = remove("SemanticErrors.txt")
+    if(ret != 0 && ret2 !=0 && ret3 !=0 && ret4){
         printf("\nCreating Intermediate Code File ...\n");
         printf("Creating Stack Machine Assembly File ...\n");
     }
