@@ -1,21 +1,22 @@
 ID	|Name	|Type	|DataType	|Line	|Scope	isInit	|Value		|Args
 -------------------------------------------------------------------------------------------
 0	|x	|var	|int		|1	|0	|1	|3		|-
-1	|ayman	|enum_arg	|int		|4	|0	|1	|1		|-
-2	|mariem	|enum_arg	|int		|4	|0	|1	|1		|-
-3	|abeer	|enum_arg	|int		|4	|0	|1	|5		|-
-4	|marim	|enum_arg	|int		|4	|0	|1	|10		|-
-5	|aym	|var	|enum		|4	|0	|1	|-
-6	|aymon	|var_enum	|aym		|5	|0	|1	|3		|-
-7	|l	|var	|int		|6	|0	|1	|1		|-
-8	|q	|var	|int		|7	|1	|0	|-		|-
-9	|g	|var	|int		|7	|1	|0	|-		|-
-10	|print	|func	|int		|7	|0	|1	|0		|8,9,
-11	|z	|var	|int		|9	|1	|1	|0		|-
-12	|i	|var	|int		|15	|2	|1	|3		|-
-13	|F	|const	|bool		|17	|2	|1	|false		|-
-14	|k	|var	|int		|23	|3	|1	|3		|-
-15	|t	|var	|int		|28	|4	|1	|3		|-
-16	|m	|var	|int		|34	|5	|1	|1		|-
-17	|n	|var	|int		|39	|6	|1	|8		|-
-18	|y	|var	|bool		|43	|0	|1	|true		|-
+1	|lobs	|var	|string		|4	|0	|1	|"amoon"		|-
+2	|ayman	|enum_arg	|int		|7	|0	|1	|3		|-
+3	|mariem	|enum_arg	|int		|7	|0	|1	|1		|-
+4	|abeer	|enum_arg	|int		|7	|0	|1	|5		|-
+5	|marim	|enum_arg	|int		|7	|0	|1	|10		|-
+6	|aym	|var	|enum		|7	|0	|1	|-
+7	|aymon	|var_enum	|aym		|8	|0	|1	|3		|-
+8	|l	|var	|int		|9	|0	|1	|1		|-
+9	|q	|var	|int		|10	|1	|0	|-		|-
+10	|g	|var	|int		|10	|1	|0	|-		|-
+11	|print	|func	|int		|10	|0	|1	|0		|9,10,
+12	|z	|var	|int		|12	|1	|1	|0		|-
+13	|i	|var	|int		|18	|2	|1	|0		|-
+14	|F	|const	|bool		|20	|2	|1	|false		|-
+15	|k	|var	|int		|26	|3	|1	|2		|-
+16	|t	|var	|int		|31	|4	|1	|0		|-
+17	|m	|var	|int		|37	|5	|1	|1		|-
+18	|n	|var	|int		|42	|6	|1	|8		|-
+19	|y	|var	|bool		|46	|0	|1	|true		|-

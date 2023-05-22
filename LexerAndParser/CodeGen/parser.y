@@ -62,6 +62,7 @@
     int enum_values [100];
     int enum_arg_count=0;
     int is_changed=1; // default is 1,
+    int return_exist=0;
     //-- symbol table functions:  st_functionName()
     int st_insert(char* data_type, char* name, char* type, int is_arg);
     void st_print();
@@ -237,7 +238,7 @@ DECLARATION_TAIL:
 
 RETURN_STT:
                 RETURN                          {int dum = 0;StAssPrint("POP\tPC",1);StAssJmp("JMP", "PC", &dum,0,1);}
-                | RETURN {assign_index =func_index;} EXPRESSION             { StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
+                | RETURN {assign_index =func_index;} EXPRESSION             { return_exist = 1; StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
                 ;
 
 SWITCH_STT:
@@ -436,7 +437,7 @@ EXPRESSION:
                 | DIGIT                         { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring); char dum[10]="$"; StAssPush(strcat(dum,numtostring));}
                 | FLOAT_DIGIT                   { assign_float($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring); char dum[10]="$"; StAssPush(strcat(dum,floattostring));}
                 | BOOL_LITERAL                  { assign_bool($1, assign_index); if($1==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
-                | STRING_LITERAL                { assign_str($1, assign_index); pushVStack($1);char* buf; strcpy(buf, "$");strcat(buf, $1); StAssPush(buf);}
+                | STRING_LITERAL                { assign_str($1, assign_index); pushVStack($1);char buf[50]; strcpy(buf, "$");strcat(buf, $1); StAssPush(buf);}
                 | CONSTANT                      { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);}
                 | SUB EXPRESSION                {StAssPrint("neg", 1);}
                 | EXPRESSION PLUS PLUS          { pushVStack("+"); pushVStack("1"); CodeGenOp("ADD"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("ADD", 1); StAssPrint("STORE", 1);}
@@ -535,7 +536,8 @@ int yywrap()
 int is_exist(char* name){
     for (int i = 0; i < st_index; i++){
         //TODO SCOPE CHECK
-        if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].scope == scope_index){
+        if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].scope == block_number){
+            printf("\n===================== %d %s\n", scope_index, symbolTable[i].name);
             return symbolTable[i].declareLine;
         }
     }
@@ -732,26 +734,29 @@ void assign_int (int d , int i) {
     if (symbolTable[i].dataType == "int" ) {symbolTable[i].intValue= d ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );}
     if(is_changed == 1) {st_log();} // 
+    assign_index = -1;
 }
 void assign_float( float f, int i) {
+    if (i == -1) {return;}
      if ( symbolTable[i].dataType != "float" && symbolTable[i].type == "func" )
     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned float !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
      return ;}
-    if (i == -1) {return;}
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= f ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
    if(is_changed == 1) {st_log();}
+   assign_index = -1;
 }
 void assign_str( char* s , int i) {
+    if (i == -1) {return;}
     if ( symbolTable[i].dataType != "string" && symbolTable[i].type == "func" )
     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned string !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
      return ;} 
-    if (i == -1) {return;}
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "string"){symbolTable[i].strValue= s ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned string value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
     if(is_changed == 1) {st_log();}
+    assign_index = -1;
 }
 void assign_bool( bool b , int i) {
     if (i == -1) {return;}
@@ -762,6 +767,7 @@ void assign_bool( bool b , int i) {
     if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
     if(is_changed == 1) {st_log();}
+    assign_index = -1;
 }
 
 void assign_enum (int i, char* enum_name, char* key) {
@@ -774,15 +780,18 @@ void assign_enum (int i, char* enum_name, char* key) {
                         symbolTable[i].intValue = symbolTable[k].enumValue.values[j];
                         symbolTable[i].isInit= 1 ; // set isInit to 1
                         st_log();
+                        assign_index = -1;
                         return;
                     }
                 }
                 printf("\n !!!!!!!!!!!! Error at line %d: %s not exist as key for %s enum  !!!!!!!!!!!\n", line_number, key ,enum_name );
+                assign_index = -1;
                 return;
             }
         }
     }
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned enum value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+    assign_index = -1;
 }
 // void check_param_type (int i) {
 
@@ -791,7 +800,7 @@ void check_type( int i) {
     // this functio check type matching between 2 identifiers before assign the value
     if ( is_param == 1) 
     { assign_index = arg_count;}
-     if ( i == -1) 
+     if ( i == -1 || assign_index == -1) 
     { return;}
     if (i != -1 && symbolTable[i].dataType != symbolTable[assign_index].dataType)
     {   /// at calling a function
@@ -820,6 +829,8 @@ void scope_start(){
     scope_stack[scope_index] = block_number;
 }
 void scope_end(){
+    if (strcmp(symbolTable[func_index].type, "func") == 0 && return_exist == 0 && strcmp(symbolTable[func_index].dataType, "void") != 0)
+    {printf("\n !!!!!!!!!!!! Error at line %d: Missing return statement in Function %s !!!!!!!!!!!\n", line_number, symbolTable[func_index].name);}
     //----- make all symbols in this scope out of scope
     for (int i = 0; i < st_index; i++){
         if (symbolTable[i].scope == scope_stack[scope_index]){

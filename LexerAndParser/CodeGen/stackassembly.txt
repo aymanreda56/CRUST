@@ -1,3 +1,8 @@
+	PUSH 	 $"amoon"
+	PUSH 	 lobs
+	OVER
+	STORE
+	DROP
 	PUSH 	 x
 	PUSH 	 $1
 	PUSH 	 $2

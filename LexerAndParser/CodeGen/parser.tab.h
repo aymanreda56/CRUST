@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 142 "parser.y"
+#line 143 "parser.y"
 
 #include<stdbool.h>
 
@@ -102,7 +102,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 134 "parser.y"
+#line 135 "parser.y"
  
  int num; /* integer value */ 
  char* str; 

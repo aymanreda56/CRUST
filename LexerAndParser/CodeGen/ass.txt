@@ -1,5 +1,8 @@
 int x;
 
+
+string lobs = "amoon";
+
 x = 1 + 2;
 enum aym {ayman=3, mariem=1, abeer=5, marim=10}
 aym aymon = ayman;

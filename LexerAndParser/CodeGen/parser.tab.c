@@ -132,6 +132,7 @@
     int enum_values [100];
     int enum_arg_count=0;
     int is_changed=1; // default is 1,
+    int return_exist=0;
     //-- symbol table functions:  st_functionName()
     int st_insert(char* data_type, char* name, char* type, int is_arg);
     void st_print();
@@ -200,7 +201,7 @@
 //==================================================================================================================================================
 
 
-#line 204 "parser.tab.c"
+#line 205 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -750,28 +751,28 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   182,   182,   183,   187,   188,   189,   190,   191,   192,
-     193,   194,   195,   196,   197,   198,   199,   200,   201,   202,
-     210,   211,   212,   213,   217,   217,   218,   218,   219,   220,
-     221,   226,   227,   228,   229,   230,   230,   231,   231,   232,
-     232,   239,   240,   240,   244,   245,   250,   251,   252,   256,
-     256,   257,   257,   261,   261,   262,   262,   263,   263,   264,
-     264,   277,   278,   278,   278,   279,   279,   279,   280,   280,
-     280,   281,   281,   281,   286,   286,   296,   297,   298,   301,
-     304,   311,   311,   312,   314,   314,   317,   317,   318,   324,
-     324,   325,   326,   327,   328,   329,   333,   334,   336,   339,
-     340,   344,   344,   347,   351,   352,   353,   354,   354,   355,
-     355,   356,   365,   365,   365,   374,   375,   378,   378,   379,
-     379,   380,   380,   381,   381,   382,   389,   389,   389,   389,
-     389,   390,   394,   394,   395,   395,   402,   406,   407,   408,
-     408,   413,   413,   421,   421,   421,   421,   422,   426,   426,
-     427,   428,   429,   435,   436,   437,   438,   439,   440,   441,
-     442,   443,   444,   444,   446,   446,   447,   447,   450,   450,
-     451,   452,   453,   454,   463,   465,   466,   467,   474,   475,
-     476,   477,   478,   479,   480,   481,   482,   483,   487,   488,
-     489,   490,   491,   492,   493,   494,   495,   496,   497,   498,
-     499,   500,   501,   502,   503,   511,   511,   511,   511,   511,
-     511,   511,   511,   511,   511,   511,   511,   511,   511
+       0,   183,   183,   184,   188,   189,   190,   191,   192,   193,
+     194,   195,   196,   197,   198,   199,   200,   201,   202,   203,
+     211,   212,   213,   214,   218,   218,   219,   219,   220,   221,
+     222,   227,   228,   229,   230,   231,   231,   232,   232,   233,
+     233,   240,   241,   241,   245,   246,   251,   252,   253,   257,
+     257,   258,   258,   262,   262,   263,   263,   264,   264,   265,
+     265,   278,   279,   279,   279,   280,   280,   280,   281,   281,
+     281,   282,   282,   282,   287,   287,   297,   298,   299,   302,
+     305,   312,   312,   313,   315,   315,   318,   318,   319,   325,
+     325,   326,   327,   328,   329,   330,   334,   335,   337,   340,
+     341,   345,   345,   348,   352,   353,   354,   355,   355,   356,
+     356,   357,   366,   366,   366,   375,   376,   379,   379,   380,
+     380,   381,   381,   382,   382,   383,   390,   390,   390,   390,
+     390,   391,   395,   395,   396,   396,   403,   407,   408,   409,
+     409,   414,   414,   422,   422,   422,   422,   423,   427,   427,
+     428,   429,   430,   436,   437,   438,   439,   440,   441,   442,
+     443,   444,   445,   445,   447,   447,   448,   448,   451,   451,
+     452,   453,   454,   455,   464,   466,   467,   468,   475,   476,
+     477,   478,   479,   480,   481,   482,   483,   484,   488,   489,
+     490,   491,   492,   493,   494,   495,   496,   497,   498,   499,
+     500,   501,   502,   503,   504,   512,   512,   512,   512,   512,
+     512,   512,   512,   512,   512,   512,   512,   512,   512
 };
 #endif
 
@@ -1743,907 +1744,907 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* PROGRAM: PROGRAM STATEMENT  */
-#line 182 "parser.y"
+#line 183 "parser.y"
                                                             {printf("\n ----> Parsing Succesful :D <---- \n");}
-#line 1749 "parser.tab.c"
+#line 1750 "parser.tab.c"
     break;
 
   case 5: /* STATEMENT: FUNC_DECLARATION_STT  */
-#line 188 "parser.y"
+#line 189 "parser.y"
                                                             {printf("#[Parsed_Func_Declaration]# ");}
-#line 1755 "parser.tab.c"
+#line 1756 "parser.tab.c"
     break;
 
   case 8: /* STATEMENT: IF_STT  */
-#line 191 "parser.y"
+#line 192 "parser.y"
                                                             {printf("#[Parsed_If_STT]# ");}
-#line 1761 "parser.tab.c"
+#line 1762 "parser.tab.c"
     break;
 
   case 9: /* STATEMENT: WHILE_STT  */
-#line 192 "parser.y"
+#line 193 "parser.y"
                                                             {printf("#[Parsed_While_LOOP]# ");}
-#line 1767 "parser.tab.c"
+#line 1768 "parser.tab.c"
     break;
 
   case 10: /* STATEMENT: FOR_STT  */
-#line 193 "parser.y"
+#line 194 "parser.y"
                                                             {printf("#[Parsed_For_LOOP]# ");}
-#line 1773 "parser.tab.c"
+#line 1774 "parser.tab.c"
     break;
 
   case 11: /* STATEMENT: DO_WHILE_STT  */
-#line 194 "parser.y"
+#line 195 "parser.y"
                                                             {printf("#[Parsed_DO_WHILE_LOOP]# ");}
-#line 1779 "parser.tab.c"
+#line 1780 "parser.tab.c"
     break;
 
   case 12: /* STATEMENT: SWITCH_STT  */
-#line 195 "parser.y"
+#line 196 "parser.y"
                                                             {printf("#[Parsed_SWITCH_STT]# ");}
-#line 1785 "parser.tab.c"
+#line 1786 "parser.tab.c"
     break;
 
   case 13: /* STATEMENT: ENUM_DECLARATION_STT  */
-#line 196 "parser.y"
+#line 197 "parser.y"
                                                             {printf("#[Parsed_Enum_Declaration]# ");}
-#line 1791 "parser.tab.c"
+#line 1792 "parser.tab.c"
     break;
 
   case 14: /* STATEMENT: ENUM_CALL_STT  */
-#line 197 "parser.y"
+#line 198 "parser.y"
                                                             {printf("#[Parsed_Enum_USAGE]# ");}
-#line 1797 "parser.tab.c"
+#line 1798 "parser.tab.c"
     break;
 
   case 17: /* STATEMENT: error SEMICOLON  */
-#line 200 "parser.y"
+#line 201 "parser.y"
                                                             {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);}
-#line 1803 "parser.tab.c"
+#line 1804 "parser.tab.c"
     break;
 
   case 18: /* STATEMENT: error '}'  */
-#line 201 "parser.y"
+#line 202 "parser.y"
                                                             {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);}
-#line 1809 "parser.tab.c"
+#line 1810 "parser.tab.c"
     break;
 
   case 19: /* STATEMENT: error ')'  */
-#line 202 "parser.y"
+#line 203 "parser.y"
                                                             {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);}
-#line 1815 "parser.tab.c"
+#line 1816 "parser.tab.c"
     break;
 
   case 20: /* TYPE: INT  */
-#line 210 "parser.y"
+#line 211 "parser.y"
                             { (yyval.str) = "int";   }
-#line 1821 "parser.tab.c"
+#line 1822 "parser.tab.c"
     break;
 
   case 21: /* TYPE: FLOAT  */
-#line 211 "parser.y"
+#line 212 "parser.y"
                             { (yyval.str) = "float"; }
-#line 1827 "parser.tab.c"
+#line 1828 "parser.tab.c"
     break;
 
   case 22: /* TYPE: BOOL  */
-#line 212 "parser.y"
+#line 213 "parser.y"
                             { (yyval.str) = "bool";  }
-#line 1833 "parser.tab.c"
+#line 1834 "parser.tab.c"
     break;
 
   case 23: /* TYPE: STRING  */
-#line 213 "parser.y"
+#line 214 "parser.y"
                             { (yyval.str) = "string";}
-#line 1839 "parser.tab.c"
+#line 1840 "parser.tab.c"
     break;
 
   case 24: /* $@1: %empty  */
-#line 217 "parser.y"
+#line 218 "parser.y"
                                     {st_insert((yyvsp[-1].str), (yyvsp[0].str),"var",0);   assign_index= st_index-1; strcpy(IdentifierHolder, (yyvsp[0].str));}
-#line 1845 "parser.tab.c"
+#line 1846 "parser.tab.c"
     break;
 
   case 25: /* DECLARATION_STT: TYPE IDENTIFIER $@1 DECLARATION_TAIL  */
-#line 217 "parser.y"
+#line 218 "parser.y"
                                                                                                                                                          {printf("#[Parsed_Declaration]# "); }
-#line 1851 "parser.tab.c"
+#line 1852 "parser.tab.c"
     break;
 
   case 26: /* $@2: %empty  */
-#line 218 "parser.y"
+#line 219 "parser.y"
                                     {st_insert((yyvsp[-1].str), (yyvsp[0].str),"const",0); assign_index= st_index-1; strcpy(IdentifierHolder, (yyvsp[0].str));}
-#line 1857 "parser.tab.c"
+#line 1858 "parser.tab.c"
     break;
 
   case 27: /* DECLARATION_STT: TYPE CONSTANT $@2 DECLARATION_TAIL  */
-#line 218 "parser.y"
+#line 219 "parser.y"
                                                                                                                                                          {printf("#[Parsed_CONST_Declaration]# "); }
-#line 1863 "parser.tab.c"
+#line 1864 "parser.tab.c"
     break;
 
   case 28: /* DECLARATION_STT: error IDENTIFIER SEMICOLON  */
-#line 219 "parser.y"
+#line 220 "parser.y"
                                                                                             {printf("\n\n=====ERROR====\n MISSING variable type at line %d\n\n", yylineno);}
-#line 1869 "parser.tab.c"
+#line 1870 "parser.tab.c"
     break;
 
   case 29: /* DECLARATION_STT: error CONSTANT SEMICOLON  */
-#line 220 "parser.y"
+#line 221 "parser.y"
                                                                                             {printf("\n\n=====ERROR====\n MISSING constant type at line %d\n\n", yylineno);}
-#line 1875 "parser.tab.c"
+#line 1876 "parser.tab.c"
     break;
 
   case 30: /* DECLARATION_STT: TYPE IDENTIFIER IDENTIFIER SEMICOLON  */
-#line 221 "parser.y"
+#line 222 "parser.y"
                                                                                             {printf("\n\n=====ERROR====\n unexpected identifier %s at line %d\n\n",(yyvsp[-1].str), yylineno);}
-#line 1881 "parser.tab.c"
+#line 1882 "parser.tab.c"
     break;
 
   case 31: /* DECLARATION_TAIL: EQ EXPRESSION SEMICOLON  */
-#line 226 "parser.y"
+#line 227 "parser.y"
                                                                                             {StAssPush(strdup(IdentifierHolder)); StAssPrint("OVER", 1); StAssPrint("STORE", 1); StAssPrint("DROP", 1);}
-#line 1887 "parser.tab.c"
+#line 1888 "parser.tab.c"
     break;
 
   case 32: /* DECLARATION_TAIL: error EXPRESSION SEMICOLON  */
-#line 227 "parser.y"
+#line 228 "parser.y"
                                                                                             {printf("\n\n=====ERROR====\n MISSING '=' at line %d\n\n", yylineno);}
-#line 1893 "parser.tab.c"
+#line 1894 "parser.tab.c"
     break;
 
   case 33: /* DECLARATION_TAIL: EQ error SEMICOLON  */
-#line 228 "parser.y"
+#line 229 "parser.y"
                                                                                             {printf("\n\n=====ERROR====\n unexpected '=' without second operand at line %d\n\n", yylineno);}
-#line 1899 "parser.tab.c"
+#line 1900 "parser.tab.c"
     break;
 
   case 35: /* $@3: %empty  */
-#line 230 "parser.y"
+#line 231 "parser.y"
                                                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); }
-#line 1905 "parser.tab.c"
+#line 1906 "parser.tab.c"
     break;
 
   case 37: /* $@4: %empty  */
-#line 231 "parser.y"
+#line 232 "parser.y"
                                                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); }
-#line 1911 "parser.tab.c"
+#line 1912 "parser.tab.c"
     break;
 
   case 39: /* $@5: %empty  */
-#line 232 "parser.y"
+#line 233 "parser.y"
                                                                                       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno); }
-#line 1917 "parser.tab.c"
+#line 1918 "parser.tab.c"
     break;
 
   case 41: /* RETURN_STT: RETURN  */
-#line 239 "parser.y"
+#line 240 "parser.y"
                                                 {int dum = 0;StAssPrint("POP\tPC",1);StAssJmp("JMP", "PC", &dum,0,1);}
-#line 1923 "parser.tab.c"
+#line 1924 "parser.tab.c"
     break;
 
   case 42: /* $@6: %empty  */
-#line 240 "parser.y"
+#line 241 "parser.y"
                          {assign_index =func_index;}
-#line 1929 "parser.tab.c"
+#line 1930 "parser.tab.c"
     break;
 
   case 43: /* RETURN_STT: RETURN $@6 EXPRESSION  */
-#line 240 "parser.y"
-                                                                            { StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
-#line 1935 "parser.tab.c"
+#line 241 "parser.y"
+                                                                            { return_exist = 1; StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
+#line 1936 "parser.tab.c"
     break;
 
   case 49: /* $@7: %empty  */
-#line 256 "parser.y"
+#line 257 "parser.y"
                                                  {printf("\n\n=====ERROR====\n MISSING 'case' at line %d\n\n", yylineno);}
-#line 1941 "parser.tab.c"
+#line 1942 "parser.tab.c"
     break;
 
   case 51: /* $@8: %empty  */
-#line 257 "parser.y"
+#line 258 "parser.y"
                                                  {printf("\n\n=====ERROR====\n MISSING case block at line %d\n\n", yylineno);}
-#line 1947 "parser.tab.c"
+#line 1948 "parser.tab.c"
     break;
 
   case 53: /* $@9: %empty  */
-#line 261 "parser.y"
+#line 262 "parser.y"
                                                 {printf("\n\n=====ERROR====\n MISSING identifier for switch statement at line %d\n\n", yylineno);}
-#line 1953 "parser.tab.c"
+#line 1954 "parser.tab.c"
     break;
 
   case 55: /* $@10: %empty  */
-#line 262 "parser.y"
+#line 263 "parser.y"
                                                 {printf("\n\n=====ERROR====\n unexpected identifier '%s' at switch statement at line %d\n\n",yylval, yylineno); }
-#line 1959 "parser.tab.c"
+#line 1960 "parser.tab.c"
     break;
 
   case 57: /* $@11: %empty  */
-#line 263 "parser.y"
+#line 264 "parser.y"
                                                 {printf("\n\n=====ERROR====\n MISSING colon ':' for switch statement (switchs must have a colon) at line %d\n\n", yylineno);}
-#line 1965 "parser.tab.c"
+#line 1966 "parser.tab.c"
     break;
 
   case 59: /* $@12: %empty  */
-#line 264 "parser.y"
+#line 265 "parser.y"
                                                 {printf("\n\n=====ERROR====\n MISSING '{' for switch statement at line %d\n\n", yylineno);}
-#line 1971 "parser.tab.c"
+#line 1972 "parser.tab.c"
     break;
 
   case 62: /* $@13: %empty  */
-#line 278 "parser.y"
+#line 279 "parser.y"
                                       {char dum[10]; strcpy(dum,(yyvsp[-1].str));strcat(dum,":");StAssPrint(dum, 0);}
-#line 1977 "parser.tab.c"
+#line 1978 "parser.tab.c"
     break;
 
   case 63: /* $@14: %empty  */
-#line 278 "parser.y"
+#line 279 "parser.y"
                                                                                                                     {func_index = st_insert((yyvsp[-5].str), (yyvsp[-4].str),"func",0); popArgs();}
-#line 1983 "parser.tab.c"
+#line 1984 "parser.tab.c"
     break;
 
   case 65: /* $@15: %empty  */
-#line 279 "parser.y"
+#line 280 "parser.y"
                                       {char dum[10]; strcpy(dum,(yyvsp[-1].str));strcat(dum,":");StAssPrint(dum, 0);}
-#line 1989 "parser.tab.c"
+#line 1990 "parser.tab.c"
     break;
 
   case 66: /* $@16: %empty  */
-#line 279 "parser.y"
+#line 280 "parser.y"
                                                                                                                     {func_index=st_insert("void", (yyvsp[-4].str),"func",0); popArgs();}
-#line 1995 "parser.tab.c"
+#line 1996 "parser.tab.c"
     break;
 
   case 68: /* $@17: %empty  */
-#line 280 "parser.y"
+#line 281 "parser.y"
                                       {char dum[10]; strcpy(dum,(yyvsp[-1].str));strcat(dum,":");StAssPrint(dum, 0);}
-#line 2001 "parser.tab.c"
+#line 2002 "parser.tab.c"
     break;
 
   case 69: /* $@18: %empty  */
-#line 280 "parser.y"
+#line 281 "parser.y"
                                                                                                                     {func_index=st_insert((yyvsp[-4].str), (yyvsp[-3].str),"func",0);}
-#line 2007 "parser.tab.c"
+#line 2008 "parser.tab.c"
     break;
 
   case 71: /* $@19: %empty  */
-#line 281 "parser.y"
+#line 282 "parser.y"
                                       {char dum[10]; strcpy(dum,(yyvsp[-1].str));strcat(dum,":");StAssPrint(dum, 0);}
-#line 2013 "parser.tab.c"
+#line 2014 "parser.tab.c"
     break;
 
   case 72: /* $@20: %empty  */
-#line 281 "parser.y"
+#line 282 "parser.y"
                                                                                                                     {func_index=st_insert("void", (yyvsp[-3].str),"func",0);}
-#line 2019 "parser.tab.c"
+#line 2020 "parser.tab.c"
     break;
 
   case 74: /* $@21: %empty  */
-#line 286 "parser.y"
+#line 287 "parser.y"
                                                     {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d for function %s\n\n", yylineno, (yyvsp[0].str));}
-#line 2025 "parser.tab.c"
+#line 2026 "parser.tab.c"
     break;
 
   case 75: /* ERRONOUS_FUNC_DECLARATION_STT: TYPE IDENTIFIER $@21 ARGS ')'  */
-#line 286 "parser.y"
+#line 287 "parser.y"
                                                                                                                                                                                                     {st_insert((yyvsp[-4].str), (yyvsp[-3].str),"func",0);}
-#line 2031 "parser.tab.c"
+#line 2032 "parser.tab.c"
     break;
 
   case 79: /* ERRONOUS_ARGS: ',' ARGS  */
-#line 301 "parser.y"
+#line 302 "parser.y"
                                            {printf("\n\n=====ERROR====\n unexpected ',' in argument list of function declaration at line %d\n\n", yylineno);}
-#line 2037 "parser.tab.c"
+#line 2038 "parser.tab.c"
     break;
 
   case 80: /* ARG_DECL: TYPE IDENTIFIER  */
-#line 304 "parser.y"
+#line 305 "parser.y"
                                                             {st_insert((yyvsp[-1].str), (yyvsp[0].str),"var",1); char* buf=(yyvsp[0].str); argumentList[argPointer]=buf;argPointer++;}
-#line 2043 "parser.tab.c"
+#line 2044 "parser.tab.c"
     break;
 
   case 81: /* $@22: %empty  */
-#line 311 "parser.y"
+#line 312 "parser.y"
                                       { is_enum =1;}
-#line 2049 "parser.tab.c"
+#line 2050 "parser.tab.c"
     break;
 
   case 82: /* ENUM_DECLARATION_STT: ENUM IDENTIFIER '{' $@22 ENUM_HELPER '}'  */
-#line 311 "parser.y"
+#line 312 "parser.y"
                                                                               { st_insert("enum" , (yyvsp[-4].str), "var" , 0); is_enum=0; enumCNT=1;}
-#line 2055 "parser.tab.c"
+#line 2056 "parser.tab.c"
     break;
 
   case 86: /* $@23: %empty  */
-#line 317 "parser.y"
+#line 318 "parser.y"
                               { StAssPush((yyvsp[0].str));char buf[10]; itoa(enumCNT++,buf,10); prepend(buf, "$"); StAssPush(buf);StAssPrint("STORE",1);enum_keys[enum_arg_count] = (yyvsp[0].str); enum_values[enum_arg_count] = enum_arg_count; enum_arg_count++;  st_insert("int" , (yyvsp[0].str), "enum_arg" , 0); assign_int(  enum_arg_count-1,st_index-1); }
-#line 2061 "parser.tab.c"
+#line 2062 "parser.tab.c"
     break;
 
   case 88: /* ENUM_ARGS: IDENTIFIER  */
-#line 318 "parser.y"
+#line 319 "parser.y"
                               { StAssPush((yyvsp[0].str));char buf[10]; itoa(enumCNT++,buf,10); prepend(buf, "$"); StAssPush(buf);StAssPrint("STORE",1);enum_keys[enum_arg_count] = (yyvsp[0].str); enum_values[enum_arg_count] = enum_arg_count; enum_arg_count++; st_insert("int" , (yyvsp[0].str), "enum_arg" , 0); assign_int( enum_arg_count-1,st_index-1);  }
-#line 2067 "parser.tab.c"
+#line 2068 "parser.tab.c"
     break;
 
   case 89: /* $@24: %empty  */
-#line 324 "parser.y"
+#line 325 "parser.y"
                                         { StAssPush((yyvsp[-2].str));char buf[10]; itoa((yyvsp[0].num),buf,10);prepend(buf, "$");StAssPush(buf);StAssPrint("STORE",1); enum_keys[enum_arg_count] = (yyvsp[-2].str); enum_values[enum_arg_count] = (yyvsp[0].num); enum_arg_count++ ; st_insert("int" , (yyvsp[-2].str), "enum_arg" , 0); assign_int(  (yyvsp[0].num),st_index-1); }
-#line 2073 "parser.tab.c"
+#line 2074 "parser.tab.c"
     break;
 
   case 91: /* ENUM_DEFINED_ARGS: IDENTIFIER EQ DIGIT  */
-#line 325 "parser.y"
+#line 326 "parser.y"
                                         { StAssPush((yyvsp[-2].str));char buf[10]; itoa((yyvsp[0].num),buf,10);prepend(buf, "$");StAssPush(buf);StAssPrint("STORE",1); enum_keys[enum_arg_count] = (yyvsp[-2].str); enum_values[enum_arg_count] = (yyvsp[0].num); enum_arg_count++;  st_insert("int" , (yyvsp[-2].str), "enum_arg" , 0); assign_int(  (yyvsp[0].num),st_index-1); }
-#line 2079 "parser.tab.c"
+#line 2080 "parser.tab.c"
     break;
 
   case 92: /* ENUM_DEFINED_ARGS: IDENTIFIER EQ error ','  */
-#line 326 "parser.y"
+#line 327 "parser.y"
                                                             {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
-#line 2085 "parser.tab.c"
+#line 2086 "parser.tab.c"
     break;
 
   case 93: /* ENUM_DEFINED_ARGS: IDENTIFIER EQ FLOAT_DIGIT  */
-#line 327 "parser.y"
+#line 328 "parser.y"
                                                             {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
-#line 2091 "parser.tab.c"
+#line 2092 "parser.tab.c"
     break;
 
   case 94: /* ENUM_DEFINED_ARGS: IDENTIFIER EQ STRING_LITERAL  */
-#line 328 "parser.y"
+#line 329 "parser.y"
                                                             {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
-#line 2097 "parser.tab.c"
+#line 2098 "parser.tab.c"
     break;
 
   case 95: /* ENUM_DEFINED_ARGS: IDENTIFIER EQ BOOL_LITERAL  */
-#line 329 "parser.y"
+#line 330 "parser.y"
                                                             {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
-#line 2103 "parser.tab.c"
+#line 2104 "parser.tab.c"
     break;
 
   case 96: /* ERRONOUS_ENUM_DECLARATION_STT: ENUM error '{' ENUM_HELPER '}'  */
-#line 333 "parser.y"
+#line 334 "parser.y"
                                                             {printf("\n\n=====ERROR====\n missing identifier for ENUM statement at line %d\n\n", yylineno);}
-#line 2109 "parser.tab.c"
+#line 2110 "parser.tab.c"
     break;
 
   case 97: /* ERRONOUS_ENUM_DECLARATION_STT: ENUM IDENTIFIER ENUM_HELPER '}'  */
-#line 334 "parser.y"
+#line 335 "parser.y"
                                                             {printf("\n\n=====ERROR====\n missing opening curly braces for ENUM statement at line %d\n\n", yylineno);}
-#line 2115 "parser.tab.c"
+#line 2116 "parser.tab.c"
     break;
 
   case 98: /* ERRONOUS_ENUM_DECLARATION_STT: ENUM IDENTIFIER '{' error '}'  */
-#line 336 "parser.y"
+#line 337 "parser.y"
                                                             {printf("\n\n=====ERROR====\n missing arguments in the ENUM statement at line %d\n\n", yylineno);}
-#line 2121 "parser.tab.c"
+#line 2122 "parser.tab.c"
     break;
 
   case 99: /* ENUM_CALL_STT: IDENTIFIER IDENTIFIER EQ IDENTIFIER SEMICOLON  */
-#line 339 "parser.y"
+#line 340 "parser.y"
                                                                { StAssPush((yyvsp[-3].str));StAssPush((yyvsp[-1].str));StAssPrint("STORE",1); st_insert((yyvsp[-4].str) , (yyvsp[-3].str), "var_enum" , 0); assign_enum(st_index-1, (yyvsp[-4].str),(yyvsp[-1].str)); int i= lookup((yyvsp[-4].str)); symbolTable[i].isUsed=1; }
-#line 2127 "parser.tab.c"
+#line 2128 "parser.tab.c"
     break;
 
   case 100: /* ENUM_CALL_STT: IDENTIFIER IDENTIFIER SEMICOLON  */
-#line 340 "parser.y"
+#line 341 "parser.y"
                                                    { st_insert((yyvsp[-2].str) , (yyvsp[-1].str), "var_enum" , 0); int i= lookup((yyvsp[-2].str)); symbolTable[i].isUsed=1;}
-#line 2133 "parser.tab.c"
+#line 2134 "parser.tab.c"
     break;
 
   case 101: /* $@25: %empty  */
-#line 344 "parser.y"
+#line 345 "parser.y"
                    {printIF();}
-#line 2139 "parser.tab.c"
+#line 2140 "parser.tab.c"
     break;
 
   case 102: /* IF_STT_HELPER: IF $@25 EXPRESSION  */
-#line 344 "parser.y"
+#line 345 "parser.y"
                                            {StAssJmp("JNZ", "LBL",&SMLabel_Else, 0,0);}
-#line 2145 "parser.tab.c"
+#line 2146 "parser.tab.c"
     break;
 
   case 103: /* IF_STT_HELPER1: ':' BLOCK  */
-#line 347 "parser.y"
+#line 348 "parser.y"
                                                             {controlTerminator(0);  StAssJmp("JMP", "END",&SMLabel_End, 0,0); StAssPrintLBL(1, 1);}
-#line 2151 "parser.tab.c"
+#line 2152 "parser.tab.c"
     break;
 
   case 104: /* IF_STT: IF_STT_HELPER IF_STT_HELPER1  */
-#line 351 "parser.y"
+#line 352 "parser.y"
                                                               {StAssJmp("JMP", "END",&SMLabel_End, 1,0); StAssPrintLBL(0, 1);}
-#line 2157 "parser.tab.c"
+#line 2158 "parser.tab.c"
     break;
 
   case 105: /* IF_STT: IF_STT_HELPER IF_STT_HELPER1 ELSE BLOCK  */
-#line 352 "parser.y"
+#line 353 "parser.y"
                                                               {StAssJmp("JMP", "END",&SMLabel_End, 1,0); StAssPrintLBL(0, 1);}
-#line 2163 "parser.tab.c"
+#line 2164 "parser.tab.c"
     break;
 
   case 106: /* IF_STT: IF_STT_HELPER IF_STT_HELPER1 ELSE error '}'  */
-#line 353 "parser.y"
+#line 354 "parser.y"
                                                               {printf("\n\n=====ERROR====\n Missing '{' for the ELSE statement at line %d\n\n", yylineno);}
-#line 2169 "parser.tab.c"
+#line 2170 "parser.tab.c"
     break;
 
   case 107: /* $@26: %empty  */
-#line 354 "parser.y"
+#line 355 "parser.y"
                                                               {printf("\n\n=====ERROR====\n Missing ':' for the IF statement at line %d\n\n", yylineno);}
-#line 2175 "parser.tab.c"
+#line 2176 "parser.tab.c"
     break;
 
   case 108: /* IF_STT: IF_STT_HELPER $@26 BLOCK  */
-#line 354 "parser.y"
+#line 355 "parser.y"
                                                                                                                                                                       {char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
-#line 2181 "parser.tab.c"
+#line 2182 "parser.tab.c"
     break;
 
   case 109: /* $@27: %empty  */
-#line 355 "parser.y"
+#line 356 "parser.y"
                                                               {printf("\n\n=====ERROR====\n Missing expression for the IF statement at line %d\n\n", yylineno);}
-#line 2187 "parser.tab.c"
+#line 2188 "parser.tab.c"
     break;
 
   case 110: /* IF_STT: IF ':' $@27 BLOCK  */
-#line 355 "parser.y"
+#line 356 "parser.y"
                                                                                                                                                                       {char*dummy; strcpy(dummy, makeEndLabel()); printLLVM(dummy); printLLVM(":\n");}
-#line 2193 "parser.tab.c"
+#line 2194 "parser.tab.c"
     break;
 
   case 111: /* IF_STT: IF_STT_HELPER ':' error '}'  */
-#line 356 "parser.y"
+#line 357 "parser.y"
                                                               {printf("\n\n=====ERROR====\n Missing '{' for the IF statement at line %d\n\n", yylineno);}
-#line 2199 "parser.tab.c"
+#line 2200 "parser.tab.c"
     break;
 
   case 112: /* $@28: %empty  */
-#line 365 "parser.y"
+#line 366 "parser.y"
                       {printWHILE(); StAssPrintLBL(1, 0);}
-#line 2205 "parser.tab.c"
+#line 2206 "parser.tab.c"
     break;
 
   case 113: /* $@29: %empty  */
-#line 365 "parser.y"
+#line 366 "parser.y"
                                                                       {StAssJmp("JNZ", "END",&SMLabel_End, 0,0);}
-#line 2211 "parser.tab.c"
+#line 2212 "parser.tab.c"
     break;
 
   case 114: /* WHILE_STT: WHILE $@28 EXPRESSION $@29 ':' BLOCK  */
-#line 365 "parser.y"
+#line 366 "parser.y"
                                                                                                                             {StAssJmp("JMP", "LBL",&SMLabel_Else, 1,0); StAssPrintLBL(0, 1);}
-#line 2217 "parser.tab.c"
+#line 2218 "parser.tab.c"
     break;
 
   case 117: /* $@30: %empty  */
-#line 378 "parser.y"
+#line 379 "parser.y"
                                                     {printf("\n\n=====ERROR====\n Missing DO-Block for the DO-WHILE loop at line %d\n\n", yylineno);}
-#line 2223 "parser.tab.c"
+#line 2224 "parser.tab.c"
     break;
 
   case 119: /* $@31: %empty  */
-#line 379 "parser.y"
+#line 380 "parser.y"
                                                     {printf("\n\n=====ERROR====\n Missing opening parenthesis '(' for the DO-WHILE loop at line %d\n\n", yylineno);}
-#line 2229 "parser.tab.c"
+#line 2230 "parser.tab.c"
     break;
 
   case 121: /* $@32: %empty  */
-#line 380 "parser.y"
+#line 381 "parser.y"
                                                     {printf("\n\n=====ERROR====\n Missing WHILE DO-WHILE loop at line %d\n\n", yylineno);}
-#line 2235 "parser.tab.c"
+#line 2236 "parser.tab.c"
     break;
 
   case 123: /* $@33: %empty  */
-#line 381 "parser.y"
+#line 382 "parser.y"
                                                     {printf("\n\n=====ERROR====\n Missing opening curly braces '{' for the DO-Block for DO-WHILE loop at line %d\n\n", yylineno);}
-#line 2241 "parser.tab.c"
+#line 2242 "parser.tab.c"
     break;
 
   case 125: /* ERRONOUS_DO_WHILE: DO BLOCK WHILE '{' EXPRESSION '}'  */
-#line 382 "parser.y"
+#line 383 "parser.y"
                                                     {printf("\n\n=====ERROR====\n DO-WHILE loop accepts braces () not curly braces {} at line %d\n\n", yylineno);}
-#line 2247 "parser.tab.c"
+#line 2248 "parser.tab.c"
     break;
 
   case 126: /* $@34: %empty  */
-#line 389 "parser.y"
+#line 390 "parser.y"
                         {in_loop = 1;}
-#line 2253 "parser.tab.c"
+#line 2254 "parser.tab.c"
     break;
 
   case 127: /* $@35: %empty  */
-#line 389 "parser.y"
+#line 390 "parser.y"
                                                  {StAssForHeader();}
-#line 2259 "parser.tab.c"
+#line 2260 "parser.tab.c"
     break;
 
   case 128: /* $@36: %empty  */
-#line 389 "parser.y"
+#line 390 "parser.y"
                                                                                {StAssForMiddle();}
-#line 2265 "parser.tab.c"
+#line 2266 "parser.tab.c"
     break;
 
   case 129: /* $@37: %empty  */
-#line 389 "parser.y"
+#line 390 "parser.y"
                                                                                                                 {StAssPrintLBL(1,1); in_loop = 0;}
-#line 2271 "parser.tab.c"
+#line 2272 "parser.tab.c"
     break;
 
   case 130: /* FOR_STT: FOR '(' $@34 STATEMENT $@35 STATEMENT $@36 STATEMENT ')' $@37 BLOCK  */
-#line 389 "parser.y"
+#line 390 "parser.y"
                                                                                                                                                           {StAssJmp("JMP", "Label", &ForHeaderLabel,1,0); StAssPrintLBL(0,1);}
-#line 2277 "parser.tab.c"
+#line 2278 "parser.tab.c"
     break;
 
   case 132: /* $@38: %empty  */
-#line 394 "parser.y"
+#line 395 "parser.y"
                                                                        {printf("\n\n=====ERROR====\n Missing opening braces '(' in the FOR loop at line %d\n\n", yylineno);}
-#line 2283 "parser.tab.c"
+#line 2284 "parser.tab.c"
     break;
 
   case 134: /* $@39: %empty  */
-#line 395 "parser.y"
+#line 396 "parser.y"
                                                                        {printf("\n\n=====ERROR====\n unexpected semicolon in the FOR loop at line %d\n\n", yylineno);}
-#line 2289 "parser.tab.c"
+#line 2290 "parser.tab.c"
     break;
 
   case 136: /* helperAssignmentRule: IDENTIFIER EQ  */
-#line 402 "parser.y"
+#line 403 "parser.y"
                                                                  {pushVStack((yyvsp[-1].str)); StAssPush((yyvsp[-1].str)); assign_index = lookup((yyvsp[-1].str));}
-#line 2295 "parser.tab.c"
+#line 2296 "parser.tab.c"
     break;
 
   case 137: /* assignmentSTT: helperAssignmentRule SEMICOLON  */
-#line 406 "parser.y"
+#line 407 "parser.y"
                                                                  {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);}
-#line 2301 "parser.tab.c"
+#line 2302 "parser.tab.c"
     break;
 
   case 138: /* assignmentSTT: helperAssignmentRule EXPRESSION SEMICOLON  */
-#line 407 "parser.y"
+#line 408 "parser.y"
                                                                  {StAssPrint("STORE", 1); CodeGenAss();printf("#[Parsed_Assignment]# ");}
-#line 2307 "parser.tab.c"
+#line 2308 "parser.tab.c"
     break;
 
   case 139: /* $@40: %empty  */
-#line 408 "parser.y"
+#line 409 "parser.y"
                                                                  {pushVStack((yyvsp[-1].str)); assign_index = lookup((yyvsp[-1].str)); StAssPush((yyvsp[-1].str));}
-#line 2313 "parser.tab.c"
+#line 2314 "parser.tab.c"
     break;
 
   case 140: /* assignmentSTT: IDENTIFIER error $@40 EXPRESSION SEMICOLON  */
-#line 408 "parser.y"
+#line 409 "parser.y"
                                                                                                                                                                                                  {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);}
-#line 2319 "parser.tab.c"
+#line 2320 "parser.tab.c"
     break;
 
   case 141: /* $@41: %empty  */
-#line 413 "parser.y"
+#line 414 "parser.y"
                     {scope_start();}
-#line 2325 "parser.tab.c"
+#line 2326 "parser.tab.c"
     break;
 
   case 142: /* BLOCK: '{' $@41 PROGRAM '}'  */
-#line 413 "parser.y"
+#line 414 "parser.y"
                                                                               {scope_end(); printf("#[Parsed_Block]# ");}
-#line 2331 "parser.tab.c"
+#line 2332 "parser.tab.c"
     break;
 
   case 143: /* $@42: %empty  */
-#line 421 "parser.y"
+#line 422 "parser.y"
                            {called_func_index = lookup((yyvsp[0].str)); check_type(called_func_index); StAssPush("PC");}
-#line 2337 "parser.tab.c"
+#line 2338 "parser.tab.c"
     break;
 
   case 144: /* $@43: %empty  */
-#line 421 "parser.y"
+#line 422 "parser.y"
                                                                                                                  { is_param =1;}
-#line 2343 "parser.tab.c"
+#line 2344 "parser.tab.c"
     break;
 
   case 145: /* $@44: %empty  */
-#line 421 "parser.y"
+#line 422 "parser.y"
                                                                                                                                             { is_param =0; arg_count_check(called_func_index); arg_count=0; int dum=0; StAssJmp("JMP", (yyvsp[-4].str),&dum, 0,0);}
-#line 2349 "parser.tab.c"
+#line 2350 "parser.tab.c"
     break;
 
   case 146: /* FUNC_CALL: IDENTIFIER $@42 '(' $@43 USED_ARGS $@44 ')'  */
-#line 421 "parser.y"
+#line 422 "parser.y"
                                                                                                                                                                                                                                                              { printf("#[Parsed_Func_Call]# ");}
-#line 2355 "parser.tab.c"
+#line 2356 "parser.tab.c"
     break;
 
   case 147: /* FUNC_CALL: IDENTIFIER error ')'  */
-#line 422 "parser.y"
+#line 423 "parser.y"
                                                         {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);}
-#line 2361 "parser.tab.c"
+#line 2362 "parser.tab.c"
     break;
 
   case 148: /* $@45: %empty  */
-#line 426 "parser.y"
+#line 427 "parser.y"
                            { arg_count++; }
-#line 2367 "parser.tab.c"
+#line 2368 "parser.tab.c"
     break;
 
   case 150: /* USED_ARGS: error ',' USED_ARGS  */
-#line 427 "parser.y"
+#line 428 "parser.y"
                                                             {printf("\n\n=====ERROR====\n Missing first argument in function's argument list or erronous ',' at line %d\n\n", yylineno);}
-#line 2373 "parser.tab.c"
+#line 2374 "parser.tab.c"
     break;
 
   case 151: /* USED_ARGS: EXPRESSION  */
-#line 428 "parser.y"
+#line 429 "parser.y"
                              {arg_count++ ;}
-#line 2379 "parser.tab.c"
+#line 2380 "parser.tab.c"
     break;
 
   case 153: /* EXPRESSION: IDENTIFIER  */
-#line 435 "parser.y"
+#line 436 "parser.y"
                                                 { int i = lookup((yyvsp[0].str)); check_type(i); pushVStack((yyvsp[0].str)); StAssPush((yyvsp[0].str));}
-#line 2385 "parser.tab.c"
+#line 2386 "parser.tab.c"
     break;
 
   case 154: /* EXPRESSION: DIGIT  */
-#line 436 "parser.y"
+#line 437 "parser.y"
                                                 { assign_int((yyvsp[0].num), assign_index) ; char numtostring[40]; itoa((yyvsp[0].num), numtostring, 10); pushVStack(numtostring); char dum[10]="$"; StAssPush(strcat(dum,numtostring));}
-#line 2391 "parser.tab.c"
+#line 2392 "parser.tab.c"
     break;
 
   case 155: /* EXPRESSION: FLOAT_DIGIT  */
-#line 437 "parser.y"
+#line 438 "parser.y"
                                                 { assign_float((yyvsp[0].float_val), assign_index); char floattostring[40]; gcvt((yyvsp[0].float_val), 6, floattostring); pushVStack(floattostring); char dum[10]="$"; StAssPush(strcat(dum,floattostring));}
-#line 2397 "parser.tab.c"
+#line 2398 "parser.tab.c"
     break;
 
   case 156: /* EXPRESSION: BOOL_LITERAL  */
-#line 438 "parser.y"
+#line 439 "parser.y"
                                                 { assign_bool((yyvsp[0].bool_val), assign_index); if((yyvsp[0].bool_val)==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
-#line 2403 "parser.tab.c"
+#line 2404 "parser.tab.c"
     break;
 
   case 157: /* EXPRESSION: STRING_LITERAL  */
-#line 439 "parser.y"
-                                                { assign_str((yyvsp[0].str), assign_index); pushVStack((yyvsp[0].str));char* buf; strcpy(buf, "$");strcat(buf, (yyvsp[0].str)); StAssPush(buf);}
-#line 2409 "parser.tab.c"
+#line 440 "parser.y"
+                                                { assign_str((yyvsp[0].str), assign_index); pushVStack((yyvsp[0].str));char buf[50]; strcpy(buf, "$");strcat(buf, (yyvsp[0].str)); StAssPush(buf);}
+#line 2410 "parser.tab.c"
     break;
 
   case 158: /* EXPRESSION: CONSTANT  */
-#line 440 "parser.y"
+#line 441 "parser.y"
                                                 { int i = lookup((yyvsp[0].str)); check_type(i); pushVStack((yyvsp[0].str)); StAssPush((yyvsp[0].str));}
-#line 2415 "parser.tab.c"
+#line 2416 "parser.tab.c"
     break;
 
   case 159: /* EXPRESSION: SUB EXPRESSION  */
-#line 441 "parser.y"
+#line 442 "parser.y"
                                                 {StAssPrint("neg", 1);}
-#line 2421 "parser.tab.c"
+#line 2422 "parser.tab.c"
     break;
 
   case 160: /* EXPRESSION: EXPRESSION PLUS PLUS  */
-#line 442 "parser.y"
+#line 443 "parser.y"
                                                 { pushVStack("+"); pushVStack("1"); CodeGenOp("ADD"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("ADD", 1); StAssPrint("STORE", 1);}
-#line 2427 "parser.tab.c"
+#line 2428 "parser.tab.c"
     break;
 
   case 161: /* EXPRESSION: EXPRESSION SUB SUB  */
-#line 443 "parser.y"
+#line 444 "parser.y"
                                                 { pushVStack("-"); pushVStack("1"); CodeGenOp("SUB"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("SUB", 1); StAssPrint("STORE", 1);}
-#line 2433 "parser.tab.c"
+#line 2434 "parser.tab.c"
     break;
 
   case 162: /* $@46: %empty  */
-#line 444 "parser.y"
+#line 445 "parser.y"
                                                 { pushVStack("+");}
-#line 2439 "parser.tab.c"
+#line 2440 "parser.tab.c"
     break;
 
   case 163: /* EXPRESSION: EXPRESSION PLUS $@46 EXPRESSION  */
-#line 444 "parser.y"
+#line 445 "parser.y"
                                                                                  {CodeGenOp("ADD"); StAssPrint("ADD", 1);}
-#line 2445 "parser.tab.c"
+#line 2446 "parser.tab.c"
     break;
 
   case 164: /* $@47: %empty  */
-#line 446 "parser.y"
+#line 447 "parser.y"
                                                 { pushVStack("*");}
-#line 2451 "parser.tab.c"
+#line 2452 "parser.tab.c"
     break;
 
   case 165: /* EXPRESSION: EXPRESSION MUL $@47 EXPRESSION  */
-#line 446 "parser.y"
+#line 447 "parser.y"
                                                                                  {CodeGenOp("MUL"); StAssPrint("MUL", 1);}
-#line 2457 "parser.tab.c"
+#line 2458 "parser.tab.c"
     break;
 
   case 166: /* $@48: %empty  */
-#line 447 "parser.y"
+#line 448 "parser.y"
                                                 { pushVStack("/");}
-#line 2463 "parser.tab.c"
+#line 2464 "parser.tab.c"
     break;
 
   case 167: /* EXPRESSION: EXPRESSION DIV $@48 EXPRESSION  */
-#line 447 "parser.y"
+#line 448 "parser.y"
                                                                                  {CodeGenOp("DIV"); StAssPrint("DIV", 1);}
-#line 2469 "parser.tab.c"
+#line 2470 "parser.tab.c"
     break;
 
   case 168: /* $@49: %empty  */
-#line 450 "parser.y"
+#line 451 "parser.y"
                                                 {pushVStack("^");}
-#line 2475 "parser.tab.c"
+#line 2476 "parser.tab.c"
     break;
 
   case 169: /* EXPRESSION: EXPRESSION POW $@49 EXPRESSION  */
-#line 450 "parser.y"
+#line 451 "parser.y"
                                                                                {CodeGenOp("POW");}
-#line 2481 "parser.tab.c"
+#line 2482 "parser.tab.c"
     break;
 
   case 173: /* EXPRESSION: ERRONOUS_EXPRESSION  */
-#line 454 "parser.y"
+#line 455 "parser.y"
                                                 {printf("\n\n=====ERROR====\n Expression error at line %d\n\n", yylineno);}
-#line 2487 "parser.tab.c"
+#line 2488 "parser.tab.c"
     break;
 
   case 178: /* COMPARISONSTT: EXPRESSION GT EXPRESSION  */
-#line 474 "parser.y"
+#line 475 "parser.y"
                                                         {pushVStack(">"); CodeGenLogical(); StAssPrint("GT", 1);}
-#line 2493 "parser.tab.c"
+#line 2494 "parser.tab.c"
     break;
 
   case 179: /* COMPARISONSTT: EXPRESSION LT EXPRESSION  */
-#line 475 "parser.y"
+#line 476 "parser.y"
                                                         {pushVStack("<"); CodeGenLogical(); StAssPrint("LT", 1);}
-#line 2499 "parser.tab.c"
+#line 2500 "parser.tab.c"
     break;
 
   case 180: /* COMPARISONSTT: EXPRESSION LT EQ EXPRESSION  */
-#line 476 "parser.y"
+#line 477 "parser.y"
                                                         {pushVStack("<="); CodeGenLogical(); StAssPrint("LE", 1);}
-#line 2505 "parser.tab.c"
+#line 2506 "parser.tab.c"
     break;
 
   case 181: /* COMPARISONSTT: EXPRESSION GT EQ EXPRESSION  */
-#line 477 "parser.y"
+#line 478 "parser.y"
                                                         {pushVStack(">="); CodeGenLogical(); StAssPrint("GE", 1);}
-#line 2511 "parser.tab.c"
+#line 2512 "parser.tab.c"
     break;
 
   case 182: /* COMPARISONSTT: EXPRESSION EQUALITY EXPRESSION  */
-#line 478 "parser.y"
+#line 479 "parser.y"
                                                         {pushVStack("="); CodeGenLogical(); StAssPrint("EQ", 1);}
-#line 2517 "parser.tab.c"
+#line 2518 "parser.tab.c"
     break;
 
   case 183: /* COMPARISONSTT: EXPRESSION NEG_EQUALITY EXPRESSION  */
-#line 479 "parser.y"
+#line 480 "parser.y"
                                                         {pushVStack("!="); CodeGenLogical(); StAssPrint("NE", 1);}
-#line 2523 "parser.tab.c"
+#line 2524 "parser.tab.c"
     break;
 
   case 184: /* COMPARISONSTT: EXPRESSION LOGIC_AND EXPRESSION  */
-#line 480 "parser.y"
+#line 481 "parser.y"
                                                         {pushVStack("and"); CodeGenLogical(); StAssPrint("AND", 1);}
-#line 2529 "parser.tab.c"
+#line 2530 "parser.tab.c"
     break;
 
   case 185: /* COMPARISONSTT: EXPRESSION LOGIC_OR EXPRESSION  */
-#line 481 "parser.y"
+#line 482 "parser.y"
                                                         {pushVStack("or"); CodeGenLogical(); StAssPrint("OR", 1);}
-#line 2535 "parser.tab.c"
+#line 2536 "parser.tab.c"
     break;
 
   case 186: /* COMPARISONSTT: LOGIC_NOT EXPRESSION  */
-#line 482 "parser.y"
+#line 483 "parser.y"
                                                         {StAssPrint("neg", 1);}
-#line 2541 "parser.tab.c"
+#line 2542 "parser.tab.c"
     break;
 
   case 188: /* ERRONOUS_COMPARISONSTT: error GT EXPRESSION  */
-#line 487 "parser.y"
+#line 488 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing left operand before '>' at line %d\n\n", yylineno);}
-#line 2547 "parser.tab.c"
+#line 2548 "parser.tab.c"
     break;
 
   case 189: /* ERRONOUS_COMPARISONSTT: EXPRESSION GT error  */
-#line 488 "parser.y"
+#line 489 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing right operand after '>' at line %d\n\n", yylineno);}
-#line 2553 "parser.tab.c"
+#line 2554 "parser.tab.c"
     break;
 
   case 190: /* ERRONOUS_COMPARISONSTT: error LT EXPRESSION  */
-#line 489 "parser.y"
+#line 490 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing left operand before '<' at line %d\n\n", yylineno);}
-#line 2559 "parser.tab.c"
+#line 2560 "parser.tab.c"
     break;
 
   case 191: /* ERRONOUS_COMPARISONSTT: EXPRESSION LT error  */
-#line 490 "parser.y"
+#line 491 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing right operand after '<' at line %d\n\n", yylineno);}
-#line 2565 "parser.tab.c"
+#line 2566 "parser.tab.c"
     break;
 
   case 192: /* ERRONOUS_COMPARISONSTT: error EQUALITY EXPRESSION  */
-#line 491 "parser.y"
+#line 492 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing left operand before '==' at line %d\n\n", yylineno);}
-#line 2571 "parser.tab.c"
+#line 2572 "parser.tab.c"
     break;
 
   case 193: /* ERRONOUS_COMPARISONSTT: EXPRESSION EQUALITY error  */
-#line 492 "parser.y"
+#line 493 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing right operand after '==' at line %d\n\n", yylineno);}
-#line 2577 "parser.tab.c"
+#line 2578 "parser.tab.c"
     break;
 
   case 194: /* ERRONOUS_COMPARISONSTT: error NEG_EQUALITY EXPRESSION  */
-#line 493 "parser.y"
+#line 494 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing left operand before '!=' at line %d\n\n", yylineno);}
-#line 2583 "parser.tab.c"
+#line 2584 "parser.tab.c"
     break;
 
   case 195: /* ERRONOUS_COMPARISONSTT: EXPRESSION NEG_EQUALITY error  */
-#line 494 "parser.y"
+#line 495 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing right operand after '!=' at line %d\n\n", yylineno);}
-#line 2589 "parser.tab.c"
+#line 2590 "parser.tab.c"
     break;
 
   case 196: /* ERRONOUS_COMPARISONSTT: LOGIC_NOT error  */
-#line 495 "parser.y"
+#line 496 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing right operand after the negating operator '!' at line %d\n\n", yylineno);}
-#line 2595 "parser.tab.c"
+#line 2596 "parser.tab.c"
     break;
 
   case 197: /* ERRONOUS_COMPARISONSTT: error LOGIC_AND EXPRESSION  */
-#line 496 "parser.y"
+#line 497 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing left operand before 'and' operator at line %d\n\n", yylineno);}
-#line 2601 "parser.tab.c"
+#line 2602 "parser.tab.c"
     break;
 
   case 198: /* ERRONOUS_COMPARISONSTT: EXPRESSION LOGIC_AND error  */
-#line 497 "parser.y"
+#line 498 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing right operand after 'and' operator at line %d\n\n", yylineno);}
-#line 2607 "parser.tab.c"
+#line 2608 "parser.tab.c"
     break;
 
   case 199: /* ERRONOUS_COMPARISONSTT: error LOGIC_OR EXPRESSION  */
-#line 498 "parser.y"
+#line 499 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing left operand before 'or' operator at line %d\n\n", yylineno);}
-#line 2613 "parser.tab.c"
+#line 2614 "parser.tab.c"
     break;
 
   case 200: /* ERRONOUS_COMPARISONSTT: EXPRESSION LOGIC_OR error  */
-#line 499 "parser.y"
+#line 500 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing right operand after 'or' operator at line %d\n\n", yylineno);}
-#line 2619 "parser.tab.c"
+#line 2620 "parser.tab.c"
     break;
 
   case 201: /* ERRONOUS_COMPARISONSTT: error LT EQ EXPRESSION  */
-#line 500 "parser.y"
+#line 501 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing left operand before '<=' operator at line %d\n\n", yylineno);}
-#line 2625 "parser.tab.c"
+#line 2626 "parser.tab.c"
     break;
 
   case 202: /* ERRONOUS_COMPARISONSTT: EXPRESSION LT EQ error  */
-#line 501 "parser.y"
+#line 502 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing right operand after '<=' operator at line %d\n\n", yylineno);}
-#line 2631 "parser.tab.c"
+#line 2632 "parser.tab.c"
     break;
 
   case 203: /* ERRONOUS_COMPARISONSTT: error GT EQ EXPRESSION  */
-#line 502 "parser.y"
+#line 503 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing left operand before '>=' operator at line %d\n\n", yylineno);}
-#line 2637 "parser.tab.c"
+#line 2638 "parser.tab.c"
     break;
 
   case 204: /* ERRONOUS_COMPARISONSTT: EXPRESSION GT EQ error  */
-#line 503 "parser.y"
+#line 504 "parser.y"
                                                                     {printf("\n\n=====ERROR====\n Missing right operand after '>=' operator at line %d\n\n", yylineno);}
-#line 2643 "parser.tab.c"
+#line 2644 "parser.tab.c"
     break;
 
 
-#line 2647 "parser.tab.c"
+#line 2648 "parser.tab.c"
 
       default: break;
     }
@@ -2836,7 +2837,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 522 "parser.y"
+#line 523 "parser.y"
 
 
 
@@ -2853,7 +2854,8 @@ int yywrap()
 int is_exist(char* name){
     for (int i = 0; i < st_index; i++){
         //TODO SCOPE CHECK
-        if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].scope == scope_index){
+        if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].scope == block_number){
+            printf("\n===================== %d %s\n", scope_index, symbolTable[i].name);
             return symbolTable[i].declareLine;
         }
     }
@@ -3050,26 +3052,29 @@ void assign_int (int d , int i) {
     if (symbolTable[i].dataType == "int" ) {symbolTable[i].intValue= d ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );}
     if(is_changed == 1) {st_log();} // 
+    assign_index = -1;
 }
 void assign_float( float f, int i) {
+    if (i == -1) {return;}
      if ( symbolTable[i].dataType != "float" && symbolTable[i].type == "func" )
     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned float !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
      return ;}
-    if (i == -1) {return;}
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= f ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
    if(is_changed == 1) {st_log();}
+   assign_index = -1;
 }
 void assign_str( char* s , int i) {
+    if (i == -1) {return;}
     if ( symbolTable[i].dataType != "string" && symbolTable[i].type == "func" )
     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned string !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
      return ;} 
-    if (i == -1) {return;}
     symbolTable[i].isInit= 1 ;
     if (symbolTable[i].dataType == "string"){symbolTable[i].strValue= s ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned string value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
     if(is_changed == 1) {st_log();}
+    assign_index = -1;
 }
 void assign_bool( bool b , int i) {
     if (i == -1) {return;}
@@ -3080,6 +3085,7 @@ void assign_bool( bool b , int i) {
     if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
     if(is_changed == 1) {st_log();}
+    assign_index = -1;
 }
 
 void assign_enum (int i, char* enum_name, char* key) {
@@ -3092,15 +3098,18 @@ void assign_enum (int i, char* enum_name, char* key) {
                         symbolTable[i].intValue = symbolTable[k].enumValue.values[j];
                         symbolTable[i].isInit= 1 ; // set isInit to 1
                         st_log();
+                        assign_index = -1;
                         return;
                     }
                 }
                 printf("\n !!!!!!!!!!!! Error at line %d: %s not exist as key for %s enum  !!!!!!!!!!!\n", line_number, key ,enum_name );
+                assign_index = -1;
                 return;
             }
         }
     }
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned enum value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+    assign_index = -1;
 }
 // void check_param_type (int i) {
 
@@ -3109,7 +3118,7 @@ void check_type( int i) {
     // this functio check type matching between 2 identifiers before assign the value
     if ( is_param == 1) 
     { assign_index = arg_count;}
-     if ( i == -1) 
+     if ( i == -1 || assign_index == -1) 
     { return;}
     if (i != -1 && symbolTable[i].dataType != symbolTable[assign_index].dataType)
     {   /// at calling a function
@@ -3138,6 +3147,8 @@ void scope_start(){
     scope_stack[scope_index] = block_number;
 }
 void scope_end(){
+    if (strcmp(symbolTable[func_index].type, "func") == 0 && return_exist == 0 && strcmp(symbolTable[func_index].dataType, "void") != 0)
+    {printf("\n !!!!!!!!!!!! Error at line %d: Missing return statement in Function %s !!!!!!!!!!!\n", line_number, symbolTable[func_index].name);}
     //----- make all symbols in this scope out of scope
     for (int i = 0; i < st_index; i++){
         if (symbolTable[i].scope == scope_stack[scope_index]){
