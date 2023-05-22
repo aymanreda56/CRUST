@@ -12,7 +12,7 @@ k = 2
 IF x > 3 goto L3
 goto END000
 L3 : 
-z = 0
+t = 0
 END000:
 IF x < 3 goto L4
 goto END001

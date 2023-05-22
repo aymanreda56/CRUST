@@ -89,7 +89,7 @@ END1:
 	PUSH 	 $3
 	GT
 	JNZ 	 LBL2
-	PUSH 	 z
+	PUSH 	 t
 	PUSH 	 $0
 	STORE
 	JMP 	 END2

@@ -12,6 +12,7 @@
     extern FILE *yyout;
     extern int line_number;
     extern int yy_flex_debug;
+    // TODO make data type of enum int and store its enum name  (try it with switc case)
     //TODO  add float and int error DONE
     //TODO if you have 2 x in diffrent scopes and both are in valid scopes take the closet (DONE)
     //TODO unused variables (DONE)
@@ -27,16 +28,23 @@
     //  function return type checking+ feh return wla la2 aslan ,function
     //   argument type checking (count), function argument count checking (count), function argument order checking '''
     //--------------------- Symbol Table -----------------
+    struct enumEntry{
+        char* keys[100];
+        int values [100];
+    };
     struct Entry {
         int id,intValue,scope;
         char* name , value;
         float floatValue;
         bool boolValue;
         char* strValue; 
-        char* type; // var,const, func
+
+        struct enumEntry enumValue;
+        char* type; // var,const, func, enum_arg, var_enum
         char* dataType; // int, float, bool, string (for func: return type)
         // list of arguments stored as IDs of them symbol table
         int argList[100];
+        int argEnum[100]; // store indexes of the enum args in the symbol table
         int argCount;
         int declareLine;
         int isConst, isArg, isUsed, isInit, outOfScope;
@@ -45,12 +53,20 @@
     int st_index=0;
     int in_loop=0;
     int assign_index=-1;
+    int func_index=-1; // to check return type of the function
     int is_param=0;
     int arg_count=0;
     int called_func_index=0;
+    int is_enum=0;
+    char* enum_keys[100];
+    int enum_values [100];
+    int enum_arg_count=0;
+    int is_changed=1; // default is 1,
     //-- symbol table functions:  st_functionName()
-    void st_insert(char* data_type, char* name, char* type, int is_arg);
+    int st_insert(char* data_type, char* name, char* type, int is_arg);
     void st_print();
+    void st_log();
+    void clear_logs();
     int is_exist(char* name);
     int lookup(char* name);
     //--- handle scope
@@ -66,6 +82,7 @@
     void assign_str( char* s , int i);
     void assign_bool( bool b , int i);
     void assign_float( float f , int i);
+    void assign_enum (int i, char* enum_name, char* key);
     void arg_count_check( int i);
 
 
@@ -220,15 +237,8 @@ DECLARATION_TAIL:
 
 RETURN_STT:
                 RETURN                          {int dum = 0;StAssPrint("POP\tPC",1);StAssJmp("JMP", "PC", &dum,0,1);}
-                | RETURN EXPRESSION             {StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
+                | RETURN {assign_index =func_index;} EXPRESSION             { StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
                 ;
-
-
-ENUM_CALL_STT:
-                IDENTIFIER   IDENTIFIER EQ          IDENTIFIER SEMICOLON {StAssPush($2);StAssPush($4);StAssPrint("STORE",1);}
-                | IDENTIFIER IDENTIFIER SEMICOLON
-                ;
-
 
 SWITCH_STT:
                 SWITCH IDENTIFIER ':' '{' CASES '}'
@@ -265,10 +275,10 @@ ERRONOUS_SWITCH_STT:
 
 FUNC_DECLARATION_STT:
                 ERRONOUS_FUNC_DECLARATION_STT                                       BLOCK
-                | TYPE IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);} ARGS ')'   {st_insert($1, $2,"func",0); popArgs();}      BLOCK                                   
-                | VOID IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}ARGS ')'    {st_insert("void", $2,"func",0); popArgs();}  BLOCK 
-                | TYPE IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}')'         {st_insert($1, $2,"func",0);}                 BLOCK                                   
-                | VOID IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}')'         {st_insert("void", $2,"func",0);}             BLOCK 
+                | TYPE IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);} ARGS ')'   {func_index = st_insert($1, $2,"func",0); popArgs();}      BLOCK                                   
+                | VOID IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}ARGS ')'    {func_index=st_insert("void", $2,"func",0); popArgs();}  BLOCK 
+                | TYPE IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}')'         {func_index=st_insert($1, $2,"func",0);}                 BLOCK                                   
+                | VOID IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);}')'         {func_index=st_insert("void", $2,"func",0);}             BLOCK 
                 ;
 
 // AYMOOON  UNCOMMENT THOSE ERROR HANDLERS AND IGNORE THE RED/RED CONFLICTS, they impose zero harm whatsoever.
@@ -297,33 +307,38 @@ ARG_DECL:
 
 
 
-
-
-
 ENUM_DECLARATION_STT:
-                ENUM IDENTIFIER  '{' ENUM_HELPER '}'          { st_insert("enum" , $2, "var" , 0); enumCNT=1;}
+                ENUM IDENTIFIER  '{'  { is_enum =1;} ENUM_HELPER '}'          { st_insert("enum" , $2, "var" , 0); is_enum=0; enumCNT=1;}
                 | ERRONOUS_ENUM_DECLARATION_STT
                 ;
 ENUM_HELPER     : ENUM_ARGS | ENUM_DEFINED_ARGS;
 ENUM_ARGS:
-                IDENTIFIER   {StAssPush($1);char buf[10]; itoa(enumCNT++,buf,10); prepend(buf, "$"); StAssPush(buf);StAssPrint("STORE",1);} ',' ENUM_ARGS
-                | IDENTIFIER {StAssPush($1);char buf[10]; itoa(enumCNT++,buf,10); prepend(buf, "$"); StAssPush(buf);StAssPrint("STORE",1);}
+
+                IDENTIFIER    { StAssPush($1);char buf[10]; itoa(enumCNT++,buf,10); prepend(buf, "$"); StAssPush(buf);StAssPrint("STORE",1);enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = enum_arg_count; enum_arg_count++;  st_insert("int" , $1, "enum_arg" , 0); assign_int(  enum_arg_count-1,st_index-1); } ',' ENUM_ARGS  
+                | IDENTIFIER  { StAssPush($1);char buf[10]; itoa(enumCNT++,buf,10); prepend(buf, "$"); StAssPush(buf);StAssPrint("STORE",1);enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = enum_arg_count; enum_arg_count++; st_insert("int" , $1, "enum_arg" , 0); assign_int( enum_arg_count-1,st_index-1);  }
+
                 ;
+            
 ENUM_DEFINED_ARGS:
-                IDENTIFIER EQ DIGIT         {StAssPush($1);char buf[10]; itoa($3,buf,10);prepend(buf, "$");StAssPush(buf);StAssPrint("STORE",1);} ',' ENUM_DEFINED_ARGS
-                | IDENTIFIER EQ DIGIT       {StAssPush($1);char buf[10]; itoa($3,buf,10);prepend(buf, "$");StAssPush(buf);StAssPrint("STORE",1);}
+
+                IDENTIFIER EQ DIGIT     { StAssPush($1);char buf[10]; itoa($3,buf,10);prepend(buf, "$");StAssPush(buf);StAssPrint("STORE",1); enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = $3; enum_arg_count++ ; st_insert("int" , $1, "enum_arg" , 0); assign_int(  $3,st_index-1); } ',' ENUM_DEFINED_ARGS 
+                | IDENTIFIER EQ DIGIT   { StAssPush($1);char buf[10]; itoa($3,buf,10);prepend(buf, "$");StAssPush(buf);StAssPrint("STORE",1); enum_keys[enum_arg_count] = $1; enum_values[enum_arg_count] = $3; enum_arg_count++;  st_insert("int" , $1, "enum_arg" , 0); assign_int(  $3,st_index-1); }
                 | IDENTIFIER EQ error ','                   {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
                 | IDENTIFIER EQ FLOAT_DIGIT                 {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
                 | IDENTIFIER EQ STRING_LITERAL              {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
                 | IDENTIFIER EQ BOOL_LITERAL                {printf("\n\n=====ERROR====\n WRONG arguments in the ENUM statement at line %d\n\n", yylineno);}
                 ;
+
 ERRONOUS_ENUM_DECLARATION_STT:
                 ENUM error '{' ENUM_HELPER '}'              {printf("\n\n=====ERROR====\n missing identifier for ENUM statement at line %d\n\n", yylineno);}
                 | ENUM IDENTIFIER ENUM_HELPER '}'           {printf("\n\n=====ERROR====\n missing opening curly braces for ENUM statement at line %d\n\n", yylineno);}
                 //TODO unclosed parenthesis
                 | ENUM IDENTIFIER '{' error '}'             {printf("\n\n=====ERROR====\n missing arguments in the ENUM statement at line %d\n\n", yylineno);}
-                ;
 
+ENUM_CALL_STT:
+                IDENTIFIER  IDENTIFIER EQ IDENTIFIER SEMICOLON { StAssPush($2);StAssPush($4);StAssPrint("STORE",1); st_insert($1 , $2, "var_enum" , 0); assign_enum(st_index-1, $1,$4); int i= lookup($1); symbolTable[i].isUsed=1; }
+                | IDENTIFIER IDENTIFIER SEMICOLON  { st_insert($1 , $2, "var_enum" , 0); int i= lookup($1); symbolTable[i].isUsed=1;}
+                ;
 
 IF_STT_HELPER:
                 IF {printIF();} EXPRESSION {StAssJmp("JNZ", "LBL",&SMLabel_Else, 0,0);}
@@ -421,13 +436,13 @@ EXPRESSION:
                 | DIGIT                         { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring); char dum[10]="$"; StAssPush(strcat(dum,numtostring));}
                 | FLOAT_DIGIT                   { assign_float($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring); char dum[10]="$"; StAssPush(strcat(dum,floattostring));}
                 | BOOL_LITERAL                  { assign_bool($1, assign_index); if($1==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
-                | STRING_LITERAL                {  assign_str($1, assign_index); pushVStack($1);StAssPush(strcat("$",strdup($1)));}
-                | CONSTANT                      { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);} 
-                //| SUB EXPRESSION         // TODO El NEGATIVE yaaa AYMAAAAN ya mota5azel
+                | STRING_LITERAL                { assign_str($1, assign_index); pushVStack($1);char* buf; strcpy(buf, "$");strcat(buf, $1); StAssPush(buf);}
+                | CONSTANT                      { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);}
+                | SUB EXPRESSION                {StAssPrint("neg", 1);}
                 | EXPRESSION PLUS PLUS          { pushVStack("+"); pushVStack("1"); CodeGenOp("ADD"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("ADD", 1); StAssPrint("STORE", 1);}
                 | EXPRESSION SUB SUB            { pushVStack("-"); pushVStack("1"); CodeGenOp("SUB"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("SUB", 1); StAssPrint("STORE", 1);}
                 | EXPRESSION PLUS               { pushVStack("+");}  EXPRESSION  {CodeGenOp("ADD"); StAssPrint("ADD", 1);}
-                | EXPRESSION SUB                { pushVStack("-");}  EXPRESSION  {CodeGenOp("SUB"); StAssPrint("SUB", 1);}
+                //| EXPRESSION SUB                { pushVStack("-");}  EXPRESSION  {CodeGenOp("SUB"); StAssPrint("SUB", 1);}
                 | EXPRESSION MUL                { pushVStack("*");}  EXPRESSION  {CodeGenOp("MUL"); StAssPrint("MUL", 1);}
                 | EXPRESSION DIV                { pushVStack("/");}  EXPRESSION  {CodeGenOp("DIV"); StAssPrint("DIV", 1);}
 
@@ -464,7 +479,7 @@ COMPARISONSTT:
                 | EXPRESSION NEG_EQUALITY EXPRESSION    {pushVStack("!="); CodeGenLogical(); StAssPrint("NE", 1);}
                 | EXPRESSION LOGIC_AND EXPRESSION       {pushVStack("and"); CodeGenLogical(); StAssPrint("AND", 1);}
                 | EXPRESSION LOGIC_OR EXPRESSION        {pushVStack("or"); CodeGenLogical(); StAssPrint("OR", 1);}
-                | LOGIC_NOT EXPRESSION
+                | LOGIC_NOT EXPRESSION                  {StAssPrint("neg", 1);}
                 | ERRONOUS_COMPARISONSTT
                 ;
 
@@ -532,10 +547,18 @@ int lookup(char* name) {
     // If the symbol exists, it returns its index in the table.
     // loop on the table from down to up to take the variable from the closest scope as closet one will
     // be with higher index in the table
+
+     if ( is_enum == 1) { return -1;} 
+     if ( symbolTable[assign_index].type == "var_enum")
+     {  
+        assign_enum (assign_index, symbolTable[assign_index].dataType, name);
+        return -1;
+    }     
     for (int i = st_index-1 ; i >= 0; i--){
         if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].outOfScope == 0 ){
+           
             if (symbolTable[i].isInit == 0 && strcmp(symbolTable[i].type, "var") == 0 && symbolTable[i].isArg == 0 ) 
-            {
+            {   
             if ( i != assign_index)// 3shan lw kan el var 3la el LHS s3tha 3ady ex: int x=9; int z; z =x;
             {
                 printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name);}
@@ -548,14 +571,17 @@ int lookup(char* name) {
     return -1;
 }
 //-------------------------------------- INSERT IN SYMBOL TABLE  ----------------------------------I
-void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
+int st_insert(char* data_type, char* name, char* type ,int is_arg ) {
 
     //------ create new entry
     struct Entry newEntry ;
     //----- check if name is already in symbol table
     int L=is_exist(name) ;
     if (L != -1){
-        printf("\n !!!!!!!!!!!! Error at line %d: %s is already declared in this scope at line %d !!!!!!!!!!!\n",line_number, name, L); }
+        printf("\n !!!!!!!!!!!! Error at line %d: %s is already declared in this scope at line %d !!!!!!!!!!!\n",line_number, name, L); 
+        is_changed=0;
+        return -1;
+        }
     //------ set new entry values
     newEntry.name = name;
     newEntry.dataType = data_type;
@@ -582,61 +608,81 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     }
     //------ insert new entry to symbol table
     symbolTable[st_index] = newEntry;
-    st_index++; // increment symbol table index
-}
-//---------------------------------- HANDLE TYPE MISMATCH ERRORS ------------------------------------------------------------------
-
-// for declaration statments take the st_index -1 3shan lesa m3molo insert but for assignment 3ady take assign_index coming from lookup function
-void assign_int (int d , int i) {
-    symbolTable[i].isInit= 1 ;
-    if (symbolTable[i].dataType == "int") {symbolTable[i].intValue= d ;}
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );}
-}
-void assign_float( float f, int i) {
-    symbolTable[i].isInit= 1 ;
-    if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= f ;}
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
-}
-void assign_str( char* s , int i) {
-    symbolTable[i].isInit= 1 ;
-    if (symbolTable[i].dataType == "string"){symbolTable[i].strValue= s ;}
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned string value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
-}
-void assign_bool( bool b , int i) {
-    symbolTable[i].isInit= 1 ;
-    if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
-}
-// void check_param_type (int i) {
-
-// }
-void check_type( int i) {
-    // this functio check type matching between 2 identifiers before assign the value
-    if ( is_param == 1) { 
-        assign_index = arg_count;
-        printf("\nparammmmmmmmmmmmmmm %s\n", symbolTable[i].name);
-        printf("\nparammmmmmmmmmmmmmm %d\n", arg_count);        
+      // 
+    if (strcmp( data_type, "enum") == 0 )
+    {
+        symbolTable[st_index].isInit=1;
+        // // create enum entry 
+        struct enumEntry newEnumEntry ;
+        // initialize enum keys and values
+         for (int i = 0; i < 100; i++)
+        {
+            newEnumEntry.keys[i]  = "";
+            newEnumEntry.values[i]  = 0;
         }
-
-
-    if (i != -1 && symbolTable[i].dataType != symbolTable[assign_index].dataType)
-    {
-        if (strcmp(symbolTable[i].type,"func")== 0){ printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s return %s value  !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
-        else if (is_param == 1)
-        {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Incorrect argument type %s is %s variable but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
-        else {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
+        // fill enum keys and values
+        for (int i = 0; i < enum_arg_count; i++)
+        {
+            newEnumEntry.keys[i] = enum_keys[i];
+            newEnumEntry.values[i] = enum_values[i];
+        }
+        symbolTable[st_index].enumValue = newEnumEntry;
+        enum_arg_count=0;
+        // clear enum keys and values
+        for (int i = 0; i < 100; i++)
+        {
+            enum_keys[i] = "";
+            enum_values[i] = 0;
+        }
     }
-    else
-    {
-        symbolTable[assign_index].isInit=1;
-        // assign value to the variable
-        if ( strcmp(symbolTable[i].dataType,"int") ==0) {symbolTable[assign_index].intValue= symbolTable[i].intValue ;}
-        else if (symbolTable[i].dataType == "float"){symbolTable[assign_index].floatValue= symbolTable[i].floatValue ;}
-        else if ( strcmp(symbolTable[i].dataType, "string")==0){symbolTable[assign_index].strValue= symbolTable[i].strValue ;}
-        else if (symbolTable[i].dataType == "bool"){symbolTable[assign_index].boolValue= symbolTable[i].boolValue ;}
-    }
+    st_index++; // increment symbol table index
+    st_log(); // log symbol table
+    return st_index-1;
 }
 //----------------------------------------------- PRINT SYMBOL TABLE ----------------------------------------------------
+void st_log() {
+    //----- write symbol table to file
+    FILE *log_fp= fopen("symbol_table_logs.log", "a");
+    //----- check if file is opened
+    if(log_fp == NULL) {
+        printf("can't open symbol_table_logs.log file!\n");
+        exit(1);
+    }
+    //----- write symbol table header
+    fprintf(log_fp, "ID, Line, Scope, Name, Type, DataType, isInit, Value, Args\n");
+    //----- write symbol table entries
+    for(int i=0; i< st_index; i++) {
+        struct Entry *entry = &symbolTable[i];
+        fprintf(log_fp, "%d, %d, %d, %s, %s, %s, %d, ", entry->id, entry->declareLine, entry->scope, entry->name,entry->type, entry->dataType,entry->isInit);
+        //---- store value of entry
+        if (entry->isInit == 1) {
+        if (strcmp(entry->dataType,"int")==0 || strcmp(entry->type,"var_enum")==0) {fprintf(log_fp, "%d, ", entry->intValue);}
+        else if (strcmp(entry->dataType,"float")==0) {fprintf(log_fp, "%f, ", entry->floatValue);}
+        else if (strcmp(entry->dataType,"bool")==0) {fprintf(log_fp,"%s, ", entry->boolValue ? "true" : "false");}
+        else if (strcmp(entry->dataType,"string")==0) {fprintf(log_fp, "%s, ", entry->strValue);}
+        }
+        else {fprintf(log_fp, "-, ");}
+        //---- print arguments of functions
+        if (strcmp(entry->type, "func") == 0)
+        {
+            for (int j = 0; j < entry->argCount; j++)
+            {
+            fprintf(log_fp, "%d,", entry->argList[j]);
+            }
+        }
+        else {fprintf(log_fp, "-");}
+       
+        fprintf(log_fp, "\n");
+
+    }
+    fprintf(log_fp, "=============\n");
+    fclose(log_fp);
+}
+void clear_logs()
+{
+   FILE *fp= fopen("symbol_table_logs.log", "w");
+   fclose(fp);
+}
 void st_print() {
     //----- write symbol table to file
     FILE *fp = fopen("symbol_table.txt", "w");
@@ -654,7 +700,7 @@ void st_print() {
         fprintf(fp, "%d\t|%s\t|%s\t|%s\t\t|%d\t|%d\t|%d\t|", entry->id, entry->name,entry->type, entry->dataType, entry->declareLine, entry->scope,entry->isInit);
         //---- store value of entry
         if (entry->isInit == 1) {
-        if (strcmp(entry->dataType,"int")==0) {fprintf(fp, "%d\t\t|", entry->intValue);}
+        if (strcmp(entry->dataType,"int")==0 || strcmp(entry->type,"var_enum")==0) {fprintf(fp, "%d\t\t|", entry->intValue);}
         else if (strcmp(entry->dataType,"float")==0) {fp, fprintf(fp, "%f\t\t|", entry->floatValue);}
         else if (strcmp(entry->dataType,"bool")==0) {fprintf(fp,"%s\t\t|", entry->boolValue ? "true" : "false");}
         else if (strcmp(entry->dataType,"string")==0) {fprintf(fp, "%s\t\t|", entry->strValue);}
@@ -674,7 +720,99 @@ void st_print() {
     }
     fclose(fp);
 }
+//---------------------------------- HANDLE TYPE MISMATCH ERRORS ------------------------------------------------------------------
+
+// for declaration statments take the st_index -1 3shan lesa m3molo insert but for assignment 3ady take assign_index coming from lookup function
+void assign_int (int d , int i) {
+    if (i == -1) {return;}
+    if ( symbolTable[i].dataType != "int" && symbolTable[i].type == "func" )
+    {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned int !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
+     return ;}
+    symbolTable[i].isInit= 1 ;
+    if (symbolTable[i].dataType == "int" ) {symbolTable[i].intValue= d ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );}
+    if(is_changed == 1) {st_log();} // 
+}
+void assign_float( float f, int i) {
+     if ( symbolTable[i].dataType != "float" && symbolTable[i].type == "func" )
+    {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned float !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
+     return ;}
+    if (i == -1) {return;}
+    symbolTable[i].isInit= 1 ;
+    if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= f ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+   if(is_changed == 1) {st_log();}
+}
+void assign_str( char* s , int i) {
+    if ( symbolTable[i].dataType != "string" && symbolTable[i].type == "func" )
+    {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned string !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
+     return ;} 
+    if (i == -1) {return;}
+    symbolTable[i].isInit= 1 ;
+    if (symbolTable[i].dataType == "string"){symbolTable[i].strValue= s ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned string value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+    if(is_changed == 1) {st_log();}
+}
+void assign_bool( bool b , int i) {
+    if (i == -1) {return;}
+    if ( symbolTable[i].dataType != "bool" && symbolTable[i].type == "func" )
+    {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned boolean !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
+     return ;} 
+    symbolTable[i].isInit= 1 ;
+    if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+    if(is_changed == 1) {st_log();}
+}
+
+void assign_enum (int i, char* enum_name, char* key) {
+    if (i == -1) {return;}
+    if (symbolTable[i].type == "var_enum") {
+        for (int k=0; k < st_index; k++) { // loop on symbol table to find the enum declaration
+            if (strcmp(symbolTable[k].name, enum_name) == 0) { // if found the enum declaration
+                for (int j = 0; j < 100; j++) { // loop on enum keys to find the enum value
+                    if (strcmp(symbolTable[k].enumValue.keys[j], key) == 0) {
+                        symbolTable[i].intValue = symbolTable[k].enumValue.values[j];
+                        symbolTable[i].isInit= 1 ; // set isInit to 1
+                        st_log();
+                        return;
+                    }
+                }
+                printf("\n !!!!!!!!!!!! Error at line %d: %s not exist as key for %s enum  !!!!!!!!!!!\n", line_number, key ,enum_name );
+                return;
+            }
+        }
+    }
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned enum value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+}
+// void check_param_type (int i) {
+
+// }
+void check_type( int i) {
+    // this functio check type matching between 2 identifiers before assign the value
+    if ( is_param == 1) 
+    { assign_index = arg_count;}
+     if ( i == -1) 
+    { return;}
+    if (i != -1 && symbolTable[i].dataType != symbolTable[assign_index].dataType)
+    {   /// at calling a function
+        if (strcmp(symbolTable[i].type,"func")== 0){ printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s return %s value  !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
+        else if (strcmp(symbolTable[assign_index].type,"func")== 0){ printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s return %s value  !!!!!!!!!!!\n", line_number,symbolTable[i].name,symbolTable[i].dataType, symbolTable[assign_index].name,symbolTable[assign_index].dataType );}
+        else if (is_param == 1)
+        {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Incorrect argument type %s is %s variable but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
+        else {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );}
+    }
+    else
+    {
+        symbolTable[assign_index].isInit=1;
+        // assign value to the variable
+        if ( strcmp(symbolTable[i].dataType,"int") ==0) {symbolTable[assign_index].intValue= symbolTable[i].intValue ;}
+        else if (symbolTable[i].dataType == "float"){symbolTable[assign_index].floatValue= symbolTable[i].floatValue ;}
+        else if ( strcmp(symbolTable[i].dataType, "string")==0){symbolTable[assign_index].strValue= symbolTable[i].strValue ;}
+        else if (symbolTable[i].dataType == "bool"){symbolTable[assign_index].boolValue= symbolTable[i].boolValue ;}
+    }
+}
 //--------------------------------------------------- HANDLE SCOPE ---------------------------------------------------
+
 void scope_start(){
     //----- increment block number and scope index
     block_number++;
@@ -692,7 +830,7 @@ void scope_end(){
 }
 void unused_print() {
     for(int i=0; i< st_index; i++) {
-        if ( symbolTable[i].isUsed == 0) {
+        if ( symbolTable[i].isUsed == 0 && strcmp( symbolTable[i].type, "enum_arg") != 0) {
         if (strcmp(symbolTable[i].type,"func") == 0){printf("\n !!!!!!!!!!!! Function %s Declared at line %d but never called !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
         else if ( symbolTable[i].isArg == 1){printf("\n !!!!!!!!!!!! Unused Argument %s Declared in Function at line %d !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
         else {printf("\n !!!!!!!!!!!! Unused Identifier %s Declared at line %d !!!!!!!!!!!\n",symbolTable[i].name, symbolTable[i].declareLine); }
@@ -1016,7 +1154,7 @@ void controlTerminator(int isWhile)
 //------------------------------------------- MAIN -------------------------------
 int main(int argc, char *argv[])
 { 
-
+    clear_logs();
     yy_flex_debug = 1;
     int ret = remove("LLVM.txt");
     int ret2 = remove("stackassembly.txt");

@@ -1,10 +1,10 @@
 int x;
 
 x = 1 + 2;
-enum aym {ayman=3, mariem=1, abeer=5, marim=10};
+enum aym {ayman=3, mariem=1, abeer=5, marim=10}
 aym aymon = ayman;
 int l = 1;
-void print(int q, int g)
+int print(int q, int g)
 {
 int z = 0;
 return z;
@@ -25,8 +25,8 @@ k = 2;
 }
 
 if x > 3:
-{ int z;
-z = 0;
+{ int t;
+t = 0;
 }
 
 if x < 3 :
