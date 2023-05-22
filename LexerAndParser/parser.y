@@ -552,11 +552,12 @@ int lookup(char* name) {
      {  
         assign_enum (assign_index, symbolTable[assign_index].dataType, name);
         return -1;
-    }
+    }     
     for (int i = st_index-1 ; i >= 0; i--){
         if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].outOfScope == 0 ){
+           
             if (symbolTable[i].isInit == 0 && strcmp(symbolTable[i].type, "var") == 0 && symbolTable[i].isArg == 0 ) 
-            {
+            {   
             if ( i != assign_index)// 3shan lw kan el var 3la el LHS s3tha 3ady ex: int x=9; int z; z =x;
             {
                 printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name);}
@@ -576,7 +577,9 @@ void st_insert(char* data_type, char* name, char* type ,int is_arg ) {
     //----- check if name is already in symbol table
     int L=is_exist(name) ;
     if (L != -1){
-        printf("\n !!!!!!!!!!!! Error at line %d: %s is already declared in this scope at line %d !!!!!!!!!!!\n",line_number, name, L); }
+        printf("\n !!!!!!!!!!!! Error at line %d: %s is already declared in this scope at line %d !!!!!!!!!!!\n",line_number, name, L); 
+        return;
+        }
     //------ set new entry values
     newEntry.name = name;
     newEntry.dataType = data_type;
