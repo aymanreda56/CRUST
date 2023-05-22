@@ -249,10 +249,13 @@ SWITCH_STT:
                 | ERRONOUS_SWITCH_STT
                 //todo, handle unclose parenthesis for switch stt
                 ;
-
+DEFAULTCASE:
+                DEFAULT ':' BLOCK {StAssJmp("JMP", "END",&SMLabel_End, 0,0); }
 CASES:
                 CASE {StAssPush(switcher);} EXPRESSION {StAssPrint("EQ", 1); StAssJmp("JNZ", "LBL",&SMLabel_Else, 0,0);} ':' BLOCK {StAssJmp("JMP", "END",&SMLabel_End, 0,0); StAssPrintLBL(1, 1);} CASES
-                | DEFAULT ':' BLOCK {StAssJmp("JMP", "END",&SMLabel_End, 0,0); }
+                | DEFAULTCASE {printf("\n\n=====ERROR====\n DEFAULT CASE must be written at the end of the switch statement, error at line %d\n\n", yylineno); pErr(yylineno);} CASE EXPRESSION BLOCK             
+                | DEFAULTCASE DEFAULTCASE                       {printf("\n\n=====ERROR====\n only 1 DEFAULT CASE is allowed in the switch statement error, at line %d\n\n", yylineno); pErr(yylineno);}
+                | DEFAULTCASE
                 //| ERRONOUS_CASES
                 |
                 ;
