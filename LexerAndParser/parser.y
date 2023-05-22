@@ -69,7 +69,7 @@
     void st_log();
     void clear_logs();
     int is_exist(char* name);
-    int lookup(char* name);
+    int lookup(char* name, int is_assignment);
     //--- handle scope
     int scope_index=0;
     int block_number=0;
@@ -343,8 +343,8 @@ ERRONOUS_ENUM_DECLARATION_STT:
                 ;
 
 ENUM_CALL_STT:
-                IDENTIFIER  IDENTIFIER EQ IDENTIFIER SEMICOLON { StAssPush($2);StAssPush($4);StAssPrint("STORE",1); st_insert($1 , $2, "var_enum" , 0); assign_enum(st_index-1, $1,$4); int i= lookup($1); symbolTable[i].isUsed=1; }
-                | IDENTIFIER IDENTIFIER SEMICOLON  { st_insert($1 , $2, "var_enum" , 0); int i= lookup($1); symbolTable[i].isUsed=1;}
+                IDENTIFIER  IDENTIFIER EQ IDENTIFIER SEMICOLON { StAssPush($2);StAssPush($4);StAssPrint("STORE",1); st_insert($1 , $2, "var_enum" , 0); assign_enum(st_index-1, $1,$4); int i= lookup($1, 0); symbolTable[i].isUsed=1; }
+                | IDENTIFIER IDENTIFIER SEMICOLON  { st_insert($1 , $2, "var_enum" , 0); int i= lookup($1,0); symbolTable[i].isUsed=1;}
                 ;
 
 IF_STT_HELPER:
@@ -406,13 +406,13 @@ ERRONOUS_FOR_LOOP:
 //TODO hl m7taga a7ot call lel lookup t7t? i think yes bs kda kda da error so no need to store assign index 
 //AYMON : SOLVED the conflicts
 helperAssignmentRule:
-                IDENTIFIER  EQ                                   {pushVStack($1); StAssPush($1); assign_index = lookup($1);}
+                IDENTIFIER  EQ                                   {pushVStack($1); StAssPush($1); assign_index = lookup($1,1);}
                 ;
 
 assignmentSTT:
                 helperAssignmentRule SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);pErr(yylineno);}
                 | helperAssignmentRule EXPRESSION SEMICOLON      {StAssPrint("STORE", 1); CodeGenAss();printf("#[Parsed_Assignment]# ");}
-                | IDENTIFIER  error                              {pushVStack($1); assign_index = lookup($1); StAssPush($1);}                                            EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);pErr(yylineno);}
+                | IDENTIFIER  error                              {pushVStack($1); assign_index = lookup($1,1); StAssPush($1);} EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);pErr(yylineno);}
                 ;
 
 
@@ -425,7 +425,7 @@ BLOCK:
 
 
 FUNC_CALL:
-                IDENTIFIER {called_func_index = lookup($1); check_type(called_func_index); StAssPush("PC");} '(' { is_param =1;}  USED_ARGS { is_param =0; arg_count_check(called_func_index); arg_count=0; int dum=0; StAssJmp("JMP", $1,&dum, 0,0);}   ')' { printf("#[Parsed_Func_Call]# ");}
+                IDENTIFIER {called_func_index = lookup($1,0); check_type(called_func_index); StAssPush("PC");} '(' { is_param =1;}  USED_ARGS { is_param =0; arg_count_check(called_func_index); arg_count=0; int dum=0; StAssJmp("JMP", $1,&dum, 0,0);}   ')' { printf("#[Parsed_Func_Call]# ");}
                 | IDENTIFIER error ')'                  {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
                 //| IDENTIFIER '(' USED_ARGS error        {printf("\n=====ERROR====\n unclosed function parenthesis 'case' at line %d\n", yylineno);}//Error handler
                 ;
@@ -439,12 +439,12 @@ USED_ARGS:
 
 EXPRESSION:
                 
-                IDENTIFIER                      { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);}
+                IDENTIFIER                      { int i = lookup($1,0); check_type(i); pushVStack($1); StAssPush($1);}
                 | DIGIT                         { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring); char dum[10]="$"; StAssPush(strcat(dum,numtostring));}
                 | FLOAT_DIGIT                   { assign_int($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring); char dum[10]="$"; StAssPush(strcat(dum,floattostring));}
                 | BOOL_LITERAL                  { assign_int($1, assign_index); if($1==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
                 | STRING_LITERAL                { assign_str($1, assign_index); pushVStack($1);char buf[50]; strcpy(buf, "$");strcat(buf, $1); StAssPush(buf);}
-                | CONSTANT                      { int i = lookup($1); check_type(i); pushVStack($1); StAssPush($1);}
+                | CONSTANT                      { int i = lookup($1,0); check_type(i); pushVStack($1); StAssPush($1);}
                 | SUB EXPRESSION                {StAssPrint("neg", 1);}
                 | EXPRESSION PLUS PLUS          { pushVStack("+"); pushVStack("1"); CodeGenOp("ADD"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("ADD", 1); StAssPrint("STORE", 1);}
                 | EXPRESSION SUB SUB            { pushVStack("-"); pushVStack("1"); CodeGenOp("SUB"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("SUB", 1); StAssPrint("STORE", 1);}
@@ -549,7 +549,7 @@ int is_exist(char* name){
     }
     return -1;
 }
-int lookup(char* name) {
+int lookup(char* name, int is_assignment) {
     // 
     // This method returns -1 if the symbol does not exist in the symbol table. 
     // If the symbol exists, it returns its index in the table.
@@ -567,10 +567,8 @@ int lookup(char* name) {
            
             if (symbolTable[i].isInit == 0 && strcmp(symbolTable[i].type, "var") == 0 && symbolTable[i].isArg == 0 ) 
             {   
-            printf("\nGGGGGGGGGGGGGGGGGGGGGGGGGGGGGg %s %d\n, ", symbolTable[i].name, symbolTable[i].isInit);
-            printf("\nGGGGGGGGGGGGGGGGGGGGGGGGGGGGGg %d %d\n, ", i, assign_index);
-
-            if ( i != assign_index)// 3shan lw kan el var 3la el LHS s3tha 3ady ex: int x=9; int z; z =x;
+            // if ( i != assign_index)// 3shan lw kan el var 3la el LHS s3tha 3ady ex: int x=9; int z; z =x;
+            if (is_assignment == 0)
             {
                 printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name);}
             }
