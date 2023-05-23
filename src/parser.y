@@ -881,6 +881,9 @@ void scope_start(){
 void scope_end(){
     if (func_index != -1 && strcmp(symbolTable[func_index].type, "func") == 0 && return_exist == 0 && strcmp(symbolTable[func_index].dataType, "void") != 0)
     {printf("\n !!!!!!!!!!!! Error at line %d: Missing return statement in Function %s !!!!!!!!!!!\n", line_number, symbolTable[func_index].name); sErr(line_number);}
+     if (func_index != -1 && strcmp(symbolTable[func_index].type, "func") == 0 && return_exist == 1 && strcmp(symbolTable[func_index].dataType, "void") == 0)
+    {printf("\n !!!!!!!!!!!! Error at line %d: %s Void Function can't have return statement !!!!!!!!!!!\n", line_number, symbolTable[func_index].name); sErr(line_number);}
+
     assign_index=-1;
     func_index =-1;
     return_exist=0;
