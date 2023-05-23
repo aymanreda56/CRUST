@@ -4,7 +4,7 @@
     #include <string.h>
     #include <stdbool.h>
     #include "parser.tab.h"
-
+    #include <errno.h>
     
     void yyerror(char* );
     int yylex();
@@ -136,6 +136,13 @@
     void prependFile(char* filename, char* text);
     void printDataSegment();
     //int* linenoPTR = &yylineno;
+
+    int alwaysFalseFlag = 0;
+    int AStack = -1;
+    void alwaysFalse(int operation);
+    void warnAlwaysFalse();
+    void pushAStack(char* var);
+    char* popAStack();
 //==================================================================================================================================================
 
 %}
@@ -367,7 +374,7 @@ ENUM_CALL_STT:
                 ;
 
 IF_STT_HELPER:
-                IF {printIF();} EXPRESSION {StAssJmp("JNZ", "LBL",&SMLabel_Else, 0,0);}
+                IF {printIF();} EXPRESSION {StAssJmp("JNZ", "LBL",&SMLabel_Else, 0,0); warnAlwaysFalse();}
                 ;
 IF_STT_HELPER1:
                 ':' BLOCK                                   {controlTerminator(0);  StAssJmp("JMP", "END",&SMLabel_End, 0,0); StAssPrintLBL(1, 1);}
@@ -390,7 +397,7 @@ IF_STT:
 
 // AYMON : ana masa7t el Error handling bta3 elWhile Loop 3shan fadelly taka we aksar elLaptop da fo2 dma8 elli katabo Bayzoooon >:(((
 WHILE_STT:
-                WHILE {printWHILE(); StAssPrintLBL(1, 0);} EXPRESSION {StAssJmp("JNZ", "END",&SMLabel_End, 0,0);} WHILEMISS_COLON BLOCK {StAssJmp("JMP", "LBL",&SMLabel_Else, 1,0); StAssPrintLBL(0, 1);}
+                WHILE {printWHILE(); StAssPrintLBL(1, 0);} EXPRESSION {StAssJmp("JNZ", "END",&SMLabel_End, 0,0);warnAlwaysFalse();} WHILEMISS_COLON BLOCK {StAssJmp("JMP", "LBL",&SMLabel_Else, 1,0); StAssPrintLBL(0, 1);}
                 //| WHILE {printWHILE();} error ':'                    {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}  BLOCK {controlTerminator(1);}
                 //| WHILE {printWHILE();} EXPRESSION                   {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}         BLOCK {controlTerminator(1);}
                 //| WHILE {printWHILE();} EXPRESSION ':' error '}'     {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}
@@ -403,7 +410,7 @@ WHILEMISS_COLON:
 
 
 DO_WHILE_STT:
-                DO BLOCK WHILE '(' EXPRESSION ')'
+                DO BLOCK WHILE '(' EXPRESSION {warnAlwaysFalse();}')'
                 | ERRONOUS_DO_WHILE
                 ;
 ERRONOUS_DO_WHILE:
@@ -418,7 +425,7 @@ ERRONOUS_DO_WHILE:
 
 
 FOR_STT:
-                FOR '(' {in_loop = 1;} STATEMENT {StAssForHeader();} STATEMENT {StAssForMiddle();} STATEMENT ')'{StAssPrintLBL(1,1); in_loop = 0;} BLOCK  {StAssJmp("JMP", "Label", &ForHeaderLabel,1,0); StAssPrintLBL(0,1);}
+                FOR '(' {in_loop = 1;} STATEMENT {StAssForHeader();} STATEMENT {StAssForMiddle(); warnAlwaysFalse();} STATEMENT ')'{StAssPrintLBL(1,1); in_loop = 0;} BLOCK  {StAssJmp("JMP", "Label", &ForHeaderLabel,1,0); StAssPrintLBL(0,1);}
                 | ERRONOUS_FOR_LOOP
                 ;
 ERRONOUS_FOR_LOOP:
@@ -467,12 +474,12 @@ USED_ARGS:
 
 EXPRESSION:
                 
-                IDENTIFIER                      { int i = lookup($1,0); check_type(i); pushVStack($1); StAssPush($1);}
-                | DIGIT                         { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring); char dum[10]="$"; StAssPush(strcat(dum,numtostring));}
+                IDENTIFIER                      { int i = lookup($1,0); check_type(i); pushVStack($1); pushAStack($1); StAssPush($1);}
+                | DIGIT                         { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring); pushAStack(numtostring); char dum[10]="$"; StAssPush(strcat(dum,numtostring));}
                 | FLOAT_DIGIT                   { assign_int($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring); pushVStack(floattostring); char dum[10]="$"; StAssPush(strcat(dum,floattostring));}
                 | BOOL_LITERAL                  { assign_int($1, assign_index); if($1==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
                 | STRING_LITERAL                { assign_str($1, assign_index); pushVStack($1);char buf[50]; strcpy(buf, "$");strcat(buf, $1); StAssPush(buf);}
-                | CONSTANT                      { int i = lookup($1,0); check_type(i); pushVStack($1); StAssPush($1);}
+                | CONSTANT                      { int i = lookup($1,0); check_type(i); pushVStack($1); pushAStack($1); StAssPush($1);}
                 | SUB EXPRESSION                {StAssPrint("neg", 1);}
                 | EXPRESSION INC                { pushVStack("+"); pushVStack("1"); CodeGenOp("ADD"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("ADD", 1); StAssPrint("STORE", 1);}
                 | EXPRESSION DEC                { pushVStack("-"); pushVStack("1"); CodeGenOp("SUB"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("SUB", 1); StAssPrint("STORE", 1);}
@@ -508,12 +515,12 @@ ERRONOUS_EXPRESSION:
 
 
 COMPARISONSTT:
-                EXPRESSION GT EXPRESSION                {pushVStack(">"); CodeGenLogical(); StAssPrint("GT", 1);}
-                | EXPRESSION LT EXPRESSION              {pushVStack("<"); CodeGenLogical(); StAssPrint("LT", 1);}
-                | EXPRESSION LT EQ EXPRESSION           {pushVStack("<="); CodeGenLogical(); StAssPrint("LE", 1);}
-                | EXPRESSION GT EQ EXPRESSION           {pushVStack(">="); CodeGenLogical(); StAssPrint("GE", 1);}
-                | EXPRESSION EQUALITY EXPRESSION        {pushVStack("="); CodeGenLogical(); StAssPrint("EQ", 1);}
-                | EXPRESSION NEG_EQUALITY EXPRESSION    {pushVStack("!="); CodeGenLogical(); StAssPrint("NE", 1);}
+                EXPRESSION GT EXPRESSION                {pushVStack(">"); CodeGenLogical(); StAssPrint("GT", 1); alwaysFalse(1);}
+                | EXPRESSION LT EXPRESSION              {pushVStack("<"); CodeGenLogical(); StAssPrint("LT", 1); alwaysFalse(2);}
+                | EXPRESSION LT EQ EXPRESSION           {pushVStack("<="); CodeGenLogical(); StAssPrint("LE", 1); alwaysFalse(3);}
+                | EXPRESSION GT EQ EXPRESSION           {pushVStack(">="); CodeGenLogical(); StAssPrint("GE", 1); alwaysFalse(4);}
+                | EXPRESSION EQUALITY EXPRESSION        {pushVStack("="); CodeGenLogical(); StAssPrint("EQ", 1); alwaysFalse(5);}
+                | EXPRESSION NEG_EQUALITY EXPRESSION    {pushVStack("!="); CodeGenLogical(); StAssPrint("NE", 1); alwaysFalse(6);}
                 | EXPRESSION LOGIC_AND EXPRESSION       {pushVStack("and"); CodeGenLogical(); StAssPrint("AND", 1);}
                 | EXPRESSION LOGIC_OR EXPRESSION        {pushVStack("or"); CodeGenLogical(); StAssPrint("OR", 1);}
                 | LOGIC_NOT EXPRESSION                  {StAssPrint("neg", 1);}
@@ -953,6 +960,25 @@ char* popVStack ()
 };
 
 
+void pushAStack(char* var)
+{   
+    AStack++;
+    VirtualStack[AStack] = strdup(var);
+    /*printf("\nPUSHED %s\n", var);
+    for (int i = VirtualSP ; i >=0; i--)
+    {
+        printf("\nDEBUG: %s", VirtualStack[i]);
+    }*/
+};
+
+char* popAStack ()
+{
+    char* returner =  VirtualStack[AStack];
+    AStack--;
+    //printf("\nPOPED %s\n", returner);
+    return returner;
+};
+
 char* newTemp()
 {
     char* tempVar;
@@ -1290,7 +1316,116 @@ void controlTerminator(int isWhile)
 //==============================================================================================================================================================
 
 
+//_____________________________________________________ CHECK ALWAYS FALSE_____________________________________________________
 
+
+void alwaysFalse(int operation)
+{
+    char* second = popAStack();
+    char* first = popAStack();
+    int initialized = 1;
+
+    char* endptrSec;
+    long int resultSecond = strtol(second, &endptrSec, 10);
+    if (errno == EINVAL) {
+        //printf("The string %s cannot be converted to an integer.\n", second);
+        //meaning the second operand is an identifier
+        //todo go get its value from symbol table and store it in resultSecond
+        resultSecond = symbolTable[ lookup(second,0)].intValue;
+        initialized = symbolTable[ lookup(second,0)].isInit;
+    } else {
+        //printf("The converted integer is %d.\n", resultSecond);
+        //second operand is an immediate value,
+        //its value is stored in result
+    }
+
+
+    if(initialized == 0)
+    {
+        alwaysFalseFlag = 0;
+        return;
+    }
+
+
+
+    char* endptrFirst;
+    long int resultFirst = strtol(first, &endptrFirst, 10);
+    if (errno == EINVAL) {
+        //printf("The string %s cannot be converted to an integer.\n", first);
+        //meaning the first operand is an identifier
+        //todo go get its value from symbol table and store it in resultFirst
+        resultFirst = symbolTable[ lookup(first,0)].intValue;
+        initialized = symbolTable[ lookup(second,0)].isInit;
+    } else {
+        //printf("The converted integer is %d.\n", resultFirst);
+        //first operand is an immediate value,
+        //its value is stored in result
+    }
+
+
+    if(initialized == 0)
+    {
+        alwaysFalseFlag = 0;
+        printf("COMPARING %d with %d", resultFirst, resultSecond);
+        return;
+    }
+
+    //printf("COMPARING %d with %d", resultFirst, resultSecond);
+
+
+    switch (operation)
+    {
+        case 1:                                 //GT        first > second
+        if(resultFirst <=  resultSecond) {alwaysFalseFlag = 1; return;} else{alwaysFalseFlag = 0;}
+        break;
+
+        case 2:                                 //LT        first < second
+        if(resultFirst >=  resultSecond) {alwaysFalseFlag = 1; return;} else{alwaysFalseFlag = 0;}
+        break;
+
+        case 3:                                 //LT EQ     first <= second
+        if(resultFirst >  resultSecond) {alwaysFalseFlag = 1; return;} else{alwaysFalseFlag = 0;}
+        break;
+
+        case 4:                                 //GT EQ     first >= second
+        if(resultFirst <  resultSecond) {alwaysFalseFlag = 1; return;} else{alwaysFalseFlag = 0;}
+        break;
+
+        case 5:                                 //EQUALITY  first == second
+        if(resultFirst !=  resultSecond) {alwaysFalseFlag = 1; return;} else{alwaysFalseFlag = 0;}
+        break;
+
+        case 6:                                 //NOT_EQUALITY first != second
+        if(resultFirst ==  resultSecond) {alwaysFalseFlag = 1; return;} else{alwaysFalseFlag = 0;}
+        break;
+    }
+};
+
+void warnAlwaysFalse()
+{
+    if (alwaysFalseFlag == 1)
+    {
+        printf("\n\n!!!!!!!!!!!!!!!!!!!! WARNING-DEADCODE : If statement in line %d is always False.!!!!!!!!!!!!!!!!!\n\n", yylineno);
+        sErr(yylineno);
+    }
+};
+
+
+//=============================================================================================================================
+/* 
+int main(void) {
+    char *str = "12345";
+    char *endptr;
+    long int result = strtol(str, &endptr, 10);
+
+    if (errno == EINVAL) {
+        printf("The string cannot be converted to an integer.\n");
+    } else {
+        printf("The converted integer is %ld.\n", result);
+    }
+
+    return 0;
+} */
 
 
 //------------------------------------------- MAIN -------------------------------
