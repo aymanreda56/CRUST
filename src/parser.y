@@ -83,8 +83,8 @@
     void unused_print() ;
     void assign_int( int d , int i);
     void assign_str( char* s , int i);
-    // void assign_bool( bool b , int i);
-    // void assign_float( float f , int i);
+    void assign_bool( bool b , int i);
+    void assign_float( float f , int i);
     void assign_enum (int i, char* enum_name, char* key);
     void arg_count_check( int i);
 
@@ -477,7 +477,7 @@ EXPRESSION:
                 IDENTIFIER                      { int i = lookup($1,0); check_type(i); pushVStack($1); pushAStack($1); StAssPush($1);}
                 | DIGIT                         { assign_int($1, assign_index) ; char numtostring[40]; itoa($1, numtostring, 10); pushVStack(numtostring); pushAStack(numtostring); char dum[10]="$"; StAssPush(strcat(dum,numtostring));}
                 | FLOAT_DIGIT                   { assign_float($1, assign_index); char floattostring[40]; gcvt($1, 6, floattostring);  char dum[10]="$"; StAssPush(strcat(dum,floattostring));}
-                | BOOL_LITERAL                  { assign_int($1, assign_index); if($1==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
+                | BOOL_LITERAL                  { assign_bool($1, assign_index); if($1==true){pushVStack("true");StAssPush("$true");}else{pushVStack("false");StAssPush("$false");} }
                 | STRING_LITERAL                { assign_str($1, assign_index); pushVStack($1);char buf[50]; strcpy(buf, "$");strcat(buf, $1); StAssPush(buf);}
                 | CONSTANT                      { int i = lookup($1,0); check_type(i); pushVStack($1); pushAStack($1); StAssPush($1);}
                 | SUB EXPRESSION                {StAssPrint("neg", 1);}
@@ -786,30 +786,48 @@ void assign_int (int d , int i) {
         {
             symbolTable[i].floatValue= (float)d ;
         }
-        if ( symbolTable[i].dataType == "bool")
+        else if ( symbolTable[i].dataType == "bool")
         {
-            symbolTable[i].floatValue= (bool)d ;
+            symbolTable[i].boolValue= (bool)d ;
         }
-        else {  symbolTable[i].intValue= d ;}
+        else if ( symbolTable[i].dataType == "int") {  symbolTable[i].intValue= d ;}
         }
-    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned wrong value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
     sErr(line_number);}
     if(is_changed == 1) {st_log();} // 
     assign_index = -1;
 }
 void assign_float( float f, int i) {
     if (i == -1) {return;}
-     if ( symbolTable[i].dataType != "float" && symbolTable[i].type == "func" )
+     if ( symbolTable[i].dataType == "string" && symbolTable[i].type == "func" )
     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned float !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
     sErr(line_number);
     return ;}
     symbolTable[i].isInit= 1 ;
+    if (symbolTable[i].dataType != "string" && symbolTable[i].outOfScope == 0 ) {
     if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= f ;}
-    if (symbolTable[i].dataType == "int"){symbolTable[i].intValue= (int)f ;}
-    if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= (bool)f ;}
+    else if (symbolTable[i].dataType == "int"){symbolTable[i].intValue= (int)f ;}
+    else if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= (bool)f ;}
+    }
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned float value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType ); sErr(line_number);}
    if(is_changed == 1) {st_log();}
    assign_index = -1;
+}
+void assign_bool( bool b , int i) {
+    if (i == -1) {return;}
+    if ( symbolTable[i].dataType == "string" && symbolTable[i].type == "func" )
+    {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned boolean !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
+      sErr(line_number);
+     return ;} 
+    symbolTable[i].isInit= 1 ;
+    if (symbolTable[i].dataType != "string" && symbolTable[i].outOfScope == 0 ) {
+    if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
+    else if (symbolTable[i].dataType == "int"){symbolTable[i].intValue= (int)b ;}
+    else if (symbolTable[i].dataType == "float"){symbolTable[i].floatValue= (float)b ;}
+    }
+    else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
+    if(is_changed == 1) {st_log();}
+    assign_index = -1;
 }
 void assign_str( char* s , int i) {
     if (i == -1) {return;}
@@ -824,18 +842,6 @@ void assign_str( char* s , int i) {
     if(is_changed == 1) {st_log();}
     assign_index = -1;
 }
-// void assign_bool( bool b , int i) {
-//     if (i == -1) {return;}
-//     if ( symbolTable[i].dataType != "bool" && symbolTable[i].type == "func" )
-//     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned boolean !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
-//      return ;} 
-//     symbolTable[i].isInit= 1 ;
-//     if (symbolTable[i].dataType == "bool"){symbolTable[i].boolValue= b ;}
-//     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned bool value !!!!!!!!!!!\n", line_number, symbolTable[i].name,symbolTable[i].dataType );}
-//     if(is_changed == 1) {st_log();}
-//     assign_index = -1;
-// }
-
 void assign_enum (int i, char* enum_name, char* key) {
     if (i == -1) {return;}
     if (symbolTable[i].type == "var_enum") {
