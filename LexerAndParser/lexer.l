@@ -52,7 +52,7 @@
 [0-9]+\.[0-9]+                  {printf("FLOAT_DIGIT:%s | ", yytext);  nword++; nchar+=yyleng;  yylval.float_val= atof(yytext);   return FLOAT_DIGIT;}
 
 [ \t]+                           //ignore
-\n                              {nchar++;line_number++;}
+\n                              {nchar++;line_number++;                                                                         return NEWLINE;}
 .                               {printf("UNK: %s | ", yytext);     nchar++;    return *yytext;}
 
 
