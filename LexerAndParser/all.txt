@@ -1,0 +1,40 @@
+int a = 2;
+int B = 3;
+
+int c = a + B;
+float d = 4.5 * 6.5;
+
+bool bo = true;
+string s = "Marim";
+
+if a > B : {
+    c = c % 2;
+} else {
+    c = c / 2;
+}
+
+if a < 2: {
+    bo = false;
+}
+
+while a > 0: {
+    a = a - 1;
+}
+
+for (int i = 0; i < 3; i = i + 1;) {
+    a = a + i;
+}
+
+do {
+    a = a + 2;
+} while (a < 2)
+
+switch a: {
+    case 2: {
+        B = a + 2;
+    } case 4: {
+        B = a + 2;
+    } default: {
+        B = a + 2;
+    }
+}
