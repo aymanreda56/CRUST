@@ -872,7 +872,6 @@ void assign_enum (int i, char* enum_name, char* key) {
 // }
 void check_type( int i) {
     // this functio check type matching between 2 identifiers before assign the value
-
     if ( is_param == 1) //to check argument type 
     { 
         if ( arg_count <symbolTable[called_func_index].argCount )
@@ -894,10 +893,21 @@ void check_type( int i) {
         symbolTable[assign_index].isInit=1;
         // assign value to the variable
         if ( strcmp(symbolTable[i].dataType,"int") ==0 || strcmp(symbolTable[i].type,"var_enum") ==0  ) {
-            symbolTable[assign_index].intValue= symbolTable[i].intValue ;}
-        else if (symbolTable[i].dataType == "float"){symbolTable[assign_index].floatValue= symbolTable[i].floatValue ;}
-        else if ( strcmp(symbolTable[i].dataType, "string")==0){symbolTable[assign_index].strValue= symbolTable[i].strValue ;}
-        else if (symbolTable[i].dataType == "bool"){symbolTable[assign_index].boolValue= symbolTable[i].boolValue ;}
+            // symbolTable[assign_index].intValue= symbolTable[i].intValue ; 
+            assign_int(symbolTable[i].intValue, assign_index);
+            }
+        else if (symbolTable[i].dataType == "float"){
+            // symbolTable[assign_index].floatValue= symbolTable[i].floatValue ;
+            assign_float(symbolTable[i].floatValue, assign_index);
+            }
+        else if ( strcmp(symbolTable[i].dataType, "string")==0){
+            // symbolTable[assign_index].strValue= symbolTable[i].strValue ;
+            assign_str(symbolTable[i].strValue, assign_index);
+            }
+        else if (symbolTable[i].dataType == "bool"){
+            // symbolTable[assign_index].boolValue= symbolTable[i].boolValue ;
+            assign_bool(symbolTable[i].boolValue, assign_index);
+            }
         st_log();
     }
     assign_index=-1;

@@ -1,0 +1,29 @@
+int i=7;
+float f= 6.5;
+bool b0 =false;
+bool b1 =true;
+string s ="M";
+
+int x =i;
+int y=f;
+int z= b1;
+int w = b0;
+int k=s; 
+
+float a=f;
+float b= i;
+float c= b1;
+float d= b0;
+
+bool q= b1;
+bool r =b0;
+bool s =i;
+bool t =f;
+
+string s1 ="hello";
+
+
+
+
+
+
