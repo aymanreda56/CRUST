@@ -580,13 +580,15 @@ int lookup(char* name, int is_assignment) {
             // if ( i != assign_index)// 3shan lw kan el var 3la el LHS s3tha 3ady ex: int x=9; int z; z =x;
             if (is_assignment == 0)
             {
-                printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name); sErr(line_number);}
+                printf("\n !!!!!!!!!!!! Error at line %d: %s used before initialized !!!!!!!!!!!\n", line_number, name); sErr(line_number);
             }
-            symbolTable[i].isUsed=1;
+            }
+             if (is_assignment == 0) {symbolTable[i].isUsed=1;}
             return i;
         }
     }
     printf("\n !!!!!!!!!!!! Error at line %d: %s undeclared identifier in this scope !!!!!!!!!!!\n", line_number, name);
+    // assign_index=-1;TODO
     sErr(line_number);
     return -1;
 }
@@ -745,14 +747,14 @@ void st_print() {
 
 // for declaration statments take the st_index -1 3shan lesa m3molo insert but for assignment 3ady take assign_index coming from lookup function
 void assign_int (int d , int i) {
-    printf("\n\n %d %d %s \n\n", d, i , symbolTable[i].name);
+    // printf("\n\n hhhhhhhhhhhhhhhhhhhhhhhhhhh %d %d %s \n\n", d, i , symbolTable[i].name);
     if (i == -1) {return;}
     if ( symbolTable[i].dataType == "string" && symbolTable[i].type == "func" )
     {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Function %s return type is %s but assigned int !!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
     sErr(line_number);
      return; }
     symbolTable[i].isInit= 1 ;
-    if (symbolTable[i].dataType != "string" ) {symbolTable[i].intValue= d ;}
+    if (symbolTable[i].dataType != "string" && symbolTable[i].outOfScope == 0 ) {symbolTable[i].intValue= d ;}
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned wrong value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
     sErr(line_number);}
     if(is_changed == 1) {st_log();} // 
