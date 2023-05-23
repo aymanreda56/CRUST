@@ -224,8 +224,8 @@ TYPE:
                 ;
 
 DECLARATION_STT:                                                            
-                TYPE    IDENTIFIER  {st_insert($1, $2,"var",0);   assign_index= st_index-1; strcpy(IdentifierHolder, $2);}   DECLARATION_TAIL            {printf("#[Parsed_Declaration]# "); }
-                | TYPE  CONSTANT    {st_insert($1, $2,"const",0); assign_index= st_index-1; strcpy(IdentifierHolder, $2);}   DECLARATION_TAIL            {printf("#[Parsed_CONST_Declaration]# "); }
+                TYPE    IDENTIFIER  {st_insert($1, $2,"var",0);   assign_index= st_index-1; strcpy(IdentifierHolder, $2);}   DECLARATION_TAIL            { assign_index =-1; printf("#[Parsed_Declaration]# "); }
+                | TYPE  CONSTANT    {st_insert($1, $2,"const",0); assign_index= st_index-1; strcpy(IdentifierHolder, $2);}   DECLARATION_TAIL            {assign_index =-1;  printf("#[Parsed_CONST_Declaration]# "); }
                 | error IDENTIFIER    SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING variable type at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
                 | error CONSTANT      SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING constant type at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
                 | TYPE  IDENTIFIER    IDENTIFIER SEMICOLON                                  {printf("\n\n=====ERROR====\n unexpected identifier %s at line %d\n\n",$3, yylineno);pErr(yylineno);}
@@ -422,8 +422,8 @@ helperAssignmentRule:
                 ;
 
 assignmentSTT:
-                helperAssignmentRule SEMICOLON                   {printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);pErr(yylineno);}
-                | helperAssignmentRule EXPRESSION SEMICOLON      {StAssPrint("STORE", 1); CodeGenAss();printf("#[Parsed_Assignment]# ");}
+                helperAssignmentRule SEMICOLON                   {assign_index=-1; printf("\n\n=====ERROR====\n expected expression in assignment statement at line %d\n\n", yylineno);pErr(yylineno);}
+                | helperAssignmentRule EXPRESSION SEMICOLON      {assign_index =-1; StAssPrint("STORE", 1); CodeGenAss();printf("#[Parsed_Assignment]# ");}
                 | IDENTIFIER  error                              {pushVStack($1); assign_index = lookup($1,1); StAssPush($1);} EXPRESSION SEMICOLON     {printf("\n\n=====ERROR====\n expected '=' in assignment statement at line %d\n\n", yylineno);pErr(yylineno);}
                 ;
 
@@ -589,7 +589,7 @@ int lookup(char* name, int is_assignment) {
         }
     }
     printf("\n !!!!!!!!!!!! Error at line %d: %s undeclared identifier in this scope !!!!!!!!!!!\n", line_number, name);
-    // assign_index=-1;TODO
+    //  assign_index=-1;//TODO
     sErr(line_number);
     return -1;
 }
