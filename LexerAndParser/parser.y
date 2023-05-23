@@ -432,6 +432,7 @@ ERRONOUS_FOR_LOOP:
 //AYMON : SOLVED the conflicts
 helperAssignmentRule:
                 IDENTIFIER  EQ                                   {pushVStack($1); StAssPush($1); assign_index = lookup($1,1);}
+                | CONSTANT EQ                                    {printf("\n\n=====ERROR====\n CONSTANTS must not be reassigned %d\n\n", yylineno);pErr(yylineno);}
                 ;
 
 assignmentSTT:
