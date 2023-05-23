@@ -14,21 +14,6 @@
     extern FILE *yyout;
     extern int line_number;
     extern int yy_flex_debug;
-    // TODO make data type of enum int and store its enum name  (try it with switc case)
-    //TODO  add float and int error DONE
-    //TODO if you have 2 x in diffrent scopes and both are in valid scopes take the closet (DONE)
-    //TODO unused variables (DONE)
-    //TODO type mismatch lel < > w kda
-    //TODO division by zero
-    //TODO check err.txt err2.txt err3.txt
-    ///TODOS
-    // ''' 1- symbol table: 
-    // store enum value , check el type bta3o w kda 
-    // 2- error handling:
-    //   type checking (DONE) ,const value change, undeclared variables (DONE), used before assign (DONE)
-    //, scope checking (DONE), function call checking (DONE),
-    //  function return type checking+ feh return wla la2 aslan ,function
-    //   argument type checking (count), function argument count checking (count), function argument order checking '''
     //--------------------- Symbol Table -----------------
     struct enumEntry{
         char* keys[100];
@@ -51,7 +36,7 @@
         int declareLine;
         int isConst, isArg, isUsed, isInit, outOfScope;
     };
-    struct Entry symbolTable[500]; //TODO: need to be dynamic?
+    struct Entry symbolTable[500]; //
     int st_index=0;
     int in_loop=0;
     int assign_index=-1;
@@ -164,7 +149,6 @@
 %token SWITCH CASE
 %token LOGIC_AND LOGIC_OR LOGIC_NOT
 %token DIGIT IDENTIFIER FLOAT_DIGIT
-%left '}'
 %left LOGIC_AND LOGIC_OR
 %left EQUALITY NEG_EQUALITY
 %right LOGIC_NOT
@@ -176,7 +160,9 @@
 %right EQ
 %right GT
 %right LT
-%right '{'
+%left '{'
+%left '}'
+
 
 %type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM PLUS
 %type <float_val> FLOAT_DIGIT
@@ -300,6 +286,9 @@ ERRONOUS_SWITCH_STT:
 
 
 
+
+
+
 FUNC_DECLARATION_STT:
                 ERRONOUS_FUNC_DECLARATION_STT                                       BLOCK
                 | TYPE IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);} ARGS ')'   {func_index = st_insert($1, $2,"func",0); popArgs();}      BLOCK                                   
@@ -314,8 +303,8 @@ ERRONOUS_FUNC_DECLARATION_STT:
                 //| TYPE IDENTIFIER '(' ARGS  '{'     {printf("\n\n=====ERROR====\n unclosed function parenthesis at line %d for function %s\n\n", yylineno, $2); yyclearin;pErr(yylineno);                          st_insert($1, $2,"func",0);} 
                 //| VOID IDENTIFIER                   {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d for function %s\n\n", yylineno, $2);pErr(yylineno);}                    ARGS ')'       {st_insert($1, $2,"func",0);} 
                 //| VOID IDENTIFIER '(' ARGS  '{'     {printf("\n\n=====ERROR====\n unclosed function parenthesis at line %d for function %s\n\n", yylineno, $2); yyclearin; pErr(yylineno);                         st_insert($1, $2,"func",0);} 
-                | TYPE IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;pErr(yylineno);}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
-                | VOID IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;pErr(yylineno);}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
+                //| TYPE IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;pErr(yylineno);}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
+                //| VOID IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;pErr(yylineno);}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
                 //| TYPE IDENTIFIER '(' ARGS error    {printf("\n\n=====ERROR====\n unexpected token '%s' in argument list of function declaration at line %d\n\n", yylval, yylineno);pErr(yylineno);}')'            {st_insert($1, $2,"func",0);}      
                 ;
 
@@ -389,15 +378,14 @@ IF_STT:
 
 
 
-WHILE_HELP:
-                WHILE {printWHILE(); StAssPrintLBL(1, 0);} EXPRESSION{StAssJmp("JNZ", "END",&SMLabel_End, 0,0);warnAlwaysFalse();}
-                | WHILE {printWHILE(); StAssPrintLBL(1, 0); printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}
-                ;
+
 
 // AYMON : ana masa7t el Error handling bta3 elWhile Loop 3shan fadelly taka we aksar elLaptop da fo2 dma8 elli katabo Bayzoooon >:(((
 WHILE_STT:
-                WHILE_HELP  WHILEMISS_COLON BLOCK {StAssJmp("JMP", "LBL",&SMLabel_Else, 1,0); StAssPrintLBL(0, 1);}
-                | WHILE_HELP ':' error '}'     {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}
+                WHILE {printWHILE(); StAssPrintLBL(1, 0);} EXPRESSION {StAssJmp("JNZ", "END",&SMLabel_End, 0,0);warnAlwaysFalse();} WHILEMISS_COLON BLOCK {StAssJmp("JMP", "LBL",&SMLabel_Else, 1,0); StAssPrintLBL(0, 1);}
+                //| WHILE {printWHILE();} error ':'                    {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}  BLOCK {controlTerminator(1);}
+                //| WHILE {printWHILE();} EXPRESSION                   {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}         BLOCK {controlTerminator(1);}
+                //| WHILE {printWHILE();} EXPRESSION ':' error '}'     {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}
                 //TODO handle unclosed curly braces 
                 ;
 WHILEMISS_COLON:
@@ -405,18 +393,17 @@ WHILEMISS_COLON:
                 | {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}
                 ;
 
-DO_HELP:
-                DO {StAssPrintLBL(1,0);} BLOCK
+
 DO_WHILE_STT:
-                DO_HELP WHILE '(' EXPRESSION {warnAlwaysFalse(); StAssJMP("JZ", "LBL", &SMLabel_Else, 1,0);}')'
+                DO BLOCK WHILE '(' EXPRESSION {warnAlwaysFalse();}')'
                 | ERRONOUS_DO_WHILE
                 ;
 ERRONOUS_DO_WHILE:
                 DO   error                          {printf("\n\n=====ERROR====\n Missing DO-Block for the DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}                              WHILE '(' EXPRESSION ')'
-                | DO_HELP WHILE error              {printf("\n\n=====ERROR====\n Missing opening parenthesis '(' for the DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}               EXPRESSION ')'
-                | DO_HELP error                    {printf("\n\n=====ERROR====\n Missing WHILE DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}                                         '(' EXPRESSION ')'
+                | DO BLOCK WHILE error              {printf("\n\n=====ERROR====\n Missing opening parenthesis '(' for the DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}               EXPRESSION ')'
+                | DO BLOCK error                    {printf("\n\n=====ERROR====\n Missing WHILE DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}                                         '(' EXPRESSION ')'
                 | DO error                          {printf("\n\n=====ERROR====\n Missing opening curly braces '{' for the DO-Block for DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);} '}' WHILE '(' EXPRESSION ')'
-                | DO_HELP WHILE '{' EXPRESSION '}' {printf("\n\n=====ERROR====\n DO-WHILE loop accepts braces () not curly braces {} at line %d\n\n", yylineno);pErr(yylineno);}
+                | DO BLOCK WHILE '{' EXPRESSION '}' {printf("\n\n=====ERROR====\n DO-WHILE loop accepts braces () not curly braces {} at line %d\n\n", yylineno);pErr(yylineno);}
                 //| DO BLOCK {printf("\n\n=====ERROR====\n Missing While loop for the DO-Block for DO-WHILE loop at line %d\n\n", yylineno);}
                 //TODO handle missing while statement, user only wrote the Do statement (we might agree that it is acceptable)
                 ;
@@ -447,13 +434,9 @@ assignmentSTT:
                 ;
 
 
-BLOCK_HELP:
-                '{' {scope_start();} PROGRAM
-                ;
 BLOCK:
-                BLOCK_HELP '}'                              {scope_end(); printf("#[Parsed_Block]# ");}
-                //| BLOCK_HELP error
-                //| '{' PROGRAM                                          {printf("\n=====ERROR====\n Missing closing parenthesis '{' at line %d\n", yylineno);}//Error handler
+                '{' {scope_start();} PROGRAM '}'                              {scope_end(); printf("#[Parsed_Block]# ");}
+                //| '{' PROGRAM error                                         {printf("\n=====ERROR====\n Missing closing parenthesis '{' at line %d\n", yylineno);}//Error handler
                 //TODO handle opened curly braces but not closed
                 ;
 
@@ -580,7 +563,6 @@ int yywrap()
 //--------------------------------------------------- SYMBOL TABLE---------------------------------------------
 int is_exist(char* name){
     for (int i = 0; i < st_index; i++){
-        //TODO SCOPE CHECK
         if (strcmp(symbolTable[i].name, name) == 0 && symbolTable[i].scope == block_number && symbolTable[i].outOfScope == 0){
             return symbolTable[i].declareLine;
         }
@@ -783,7 +765,7 @@ void assign_int (int d , int i) {
      return; 
      }
     symbolTable[i].isInit= 1 ;
-    if (symbolTable[i].dataType != "string" && symbolTable[i].outOfScope == 0 ) {
+    if (symbolTable[i].dataType != "string" && symbolTable[i].outOfScope == 0 && is_param == 0 ) {
         if ( symbolTable[i].dataType == "float")
         {
             symbolTable[i].floatValue= (float)d ;
@@ -793,8 +775,9 @@ void assign_int (int d , int i) {
             symbolTable[i].boolValue= (bool)d ;
         }
         else if ( symbolTable[i].dataType == "int") {  symbolTable[i].intValue= d ;}
-        }
+
     else { printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s %s variable assigned int value!!!!!!!!!!!\n", line_number, symbolTable[i].name, symbolTable[i].dataType );
+    }
     sErr(line_number);}
     if(is_changed == 1) {st_log();} // 
     assign_index = -1;
