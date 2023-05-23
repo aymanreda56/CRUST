@@ -196,6 +196,7 @@ STATEMENT:
                 DECLARATION_STT
                 | FUNC_DECLARATION_STT                      {printf("#[Parsed_Func_Declaration]# ");}
                 | assignmentSTT
+                | RETURN_STT SEMICOLON_MISS
                 | EXPRESSION SEMICOLON
                 | IF_STT                                    {printf("#[Parsed_If_STT]# ");}
                 | WHILE_STT                                 {printf("#[Parsed_While_LOOP]# ");}
@@ -205,11 +206,16 @@ STATEMENT:
                 | ENUM_DECLARATION_STT                      {printf("#[Parsed_Enum_Declaration]# ");}
                 | ENUM_CALL_STT                             {printf("#[Parsed_Enum_USAGE]# ");}
                 | BLOCK
-                | BREAK SEMICOLON                           {StAssJmp("JMP", "END", &SMLabel_End, 0, 0);}
-                | RETURN_STT SEMICOLON
+                | BREAK SEMICOLON_MISS                      {StAssJmp("JMP", "END", &SMLabel_End, 0, 0);}
                 | error SEMICOLON                           {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);pErr(yylineno);}//Error handler using ; as a delimiter
                 | error '}'                                 {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);pErr(yylineno);}//Error handler using ; as a delimiter
                 | error ')'                                 {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);pErr(yylineno);}//Error handler using ; as a delimiter
+                ;
+
+SEMICOLON_MISS:
+                SEMICOLON
+                //| error{printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);pErr(yylineno);}
+                //| error{printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);pErr(yylineno);} ')'
                 ;
 
 /*
@@ -226,9 +232,9 @@ TYPE:
 DECLARATION_STT:                                                            
                 TYPE    IDENTIFIER  {st_insert($1, $2,"var",0);   assign_index= st_index-1; strcpy(IdentifierHolder, $2);}   DECLARATION_TAIL            {printf("#[Parsed_Declaration]# "); }
                 | TYPE  CONSTANT    {st_insert($1, $2,"const",0); assign_index= st_index-1; strcpy(IdentifierHolder, $2);}   DECLARATION_TAIL            {printf("#[Parsed_CONST_Declaration]# "); }
-                | error IDENTIFIER    SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING variable type at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
-                | error CONSTANT      SEMICOLON                                             {printf("\n\n=====ERROR====\n MISSING constant type at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
-                | TYPE  IDENTIFIER    IDENTIFIER SEMICOLON                                  {printf("\n\n=====ERROR====\n unexpected identifier %s at line %d\n\n",$3, yylineno);pErr(yylineno);}
+                | error IDENTIFIER    SEMICOLON_MISS                                             {printf("\n\n=====ERROR====\n MISSING variable type at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
+                | error CONSTANT      SEMICOLON_MISS                                             {printf("\n\n=====ERROR====\n MISSING constant type at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
+                | TYPE  IDENTIFIER    IDENTIFIER SEMICOLON_MISS                                  {printf("\n\n=====ERROR====\n unexpected identifier %s at line %d\n\n",$3, yylineno);pErr(yylineno);}
                 ;
 
 
@@ -381,11 +387,15 @@ IF_STT:
 
 // AYMON : ana masa7t el Error handling bta3 elWhile Loop 3shan fadelly taka we aksar elLaptop da fo2 dma8 elli katabo Bayzoooon >:(((
 WHILE_STT:
-                WHILE {printWHILE(); StAssPrintLBL(1, 0);} EXPRESSION {StAssJmp("JNZ", "END",&SMLabel_End, 0,0);} ':' BLOCK {StAssJmp("JMP", "LBL",&SMLabel_Else, 1,0); StAssPrintLBL(0, 1);}
+                WHILE {printWHILE(); StAssPrintLBL(1, 0);} EXPRESSION {StAssJmp("JNZ", "END",&SMLabel_End, 0,0);} WHILEMISS_COLON BLOCK {StAssJmp("JMP", "LBL",&SMLabel_Else, 1,0); StAssPrintLBL(0, 1);}
                 //| WHILE {printWHILE();} error ':'                    {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}  BLOCK {controlTerminator(1);}
                 //| WHILE {printWHILE();} EXPRESSION                   {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}         BLOCK {controlTerminator(1);}
                 //| WHILE {printWHILE();} EXPRESSION ':' error '}'     {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}
                 //TODO handle unclosed curly braces 
+                ;
+WHILEMISS_COLON:
+                ':'
+                | {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}
                 ;
 
 
@@ -441,6 +451,7 @@ FUNC_CALL:
                 | IDENTIFIER error ')'                  {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
                 //| IDENTIFIER '(' USED_ARGS error        {printf("\n=====ERROR====\n unclosed function parenthesis 'case' at line %d\n", yylineno);}//Error handler
                 ;
+
 USED_ARGS:      
                 EXPRESSION { arg_count++; }  ',' USED_ARGS 
                 | error ',' USED_ARGS                       {printf("\n\n=====ERROR====\n Missing first argument in function's argument list or erronous ',' at line %d\n\n", yylineno);pErr(yylineno);}//Error handler
