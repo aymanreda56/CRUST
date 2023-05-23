@@ -842,10 +842,12 @@ void check_type( int i) {
     {
         symbolTable[assign_index].isInit=1;
         // assign value to the variable
-        if ( strcmp(symbolTable[i].dataType,"int") ==0) {symbolTable[assign_index].intValue= symbolTable[i].intValue ;}
+        if ( strcmp(symbolTable[i].dataType,"int") ==0 || strcmp(symbolTable[i].type,"var_enum") ==0  ) {
+            symbolTable[assign_index].intValue= symbolTable[i].intValue ;}
         else if (symbolTable[i].dataType == "float"){symbolTable[assign_index].floatValue= symbolTable[i].floatValue ;}
         else if ( strcmp(symbolTable[i].dataType, "string")==0){symbolTable[assign_index].strValue= symbolTable[i].strValue ;}
         else if (symbolTable[i].dataType == "bool"){symbolTable[assign_index].boolValue= symbolTable[i].boolValue ;}
+        st_log();
     }
 }
 //--------------------------------------------------- HANDLE SCOPE ---------------------------------------------------
