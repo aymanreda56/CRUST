@@ -152,7 +152,7 @@
 #include<stdbool.h>
 }
 
-%token INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM RETURN DEFAULT
+%token INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM RETURN DEFAULT BREAK
 %token EQUALITY NEG_EQUALITY
 %token SWITCH CASE
 %token LOGIC_AND LOGIC_OR LOGIC_NOT
@@ -205,6 +205,7 @@ STATEMENT:
                 | ENUM_DECLARATION_STT                      {printf("#[Parsed_Enum_Declaration]# ");}
                 | ENUM_CALL_STT                             {printf("#[Parsed_Enum_USAGE]# ");}
                 | BLOCK
+                | BREAK SEMICOLON                           {StAssJmp("JMP", "END", &SMLabel_End, 0, 0);}
                 | RETURN_STT SEMICOLON
                 | error SEMICOLON                           {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);pErr(yylineno);}//Error handler using ; as a delimiter
                 | error '}'                                 {printf("\n\n=====ERROR====\n ERRONOUS STATEMENT at line %d\n\n", yylineno);pErr(yylineno);}//Error handler using ; as a delimiter

@@ -11,6 +11,7 @@
 "int"                           {printf("INT:%s | ", yytext);            nword++; nchar+=yyleng;                                return INT;}
 "return"                        {printf("RETURN:%s | ", yytext);         nword++; nchar+=yyleng;                                return RETURN;}
 "void"                          {printf("VOID:%s | ", yytext);           nword++; nchar+=yyleng;                                return VOID;}
+"break"                         {printf("BREAK:%s | ", yytext);          nword++; nchar+=yyleng;                                return BREAK;}
 "float"                         {printf("FLOAT:%s | ", yytext);          nword++; nchar+=yyleng;                                return FLOAT;}
 "double"                        {printf("FLOAT:%s | ", yytext);          nword++; nchar+=yyleng;                                return FLOAT;}
 "bool"                          {printf("BOOL:%s | ", yytext);           nword++; nchar+=yyleng;                                return BOOL;}
