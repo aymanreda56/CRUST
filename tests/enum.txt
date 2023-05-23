@@ -1,0 +1,32 @@
+enum Color{
+    red=10,
+    green=5,
+    blue=12
+}
+
+{
+    Color c1;
+    Color c2=red;
+    int x = c2;
+    enum days {sat,sun, mon, tues};
+    days Vacation =tues;
+    int y ;
+    switch Vacation:
+    {
+        case sat:
+        {
+            y=sat;
+        }
+         case sat:
+        {
+            y=sun;
+        }
+        default:
+        {
+            y=mon;
+        }
+    }
+}
+
+days holiday;
+

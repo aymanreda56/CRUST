@@ -1,0 +1,23 @@
+int add ( int x, int y)
+{
+    int z=0;
+    
+    return x;
+}
+string hello(int y, int x)
+{
+    string text ="hello";
+    
+}
+void useless(string txt)
+{
+    int bla=1;
+    return txt;
+}
+
+int a=3;
+int b=7;
+int c ;
+string g="j";
+c= add (g,g,g);
+c= hello(a);
