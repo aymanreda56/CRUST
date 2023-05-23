@@ -408,7 +408,7 @@ WHILEMISS_COLON:
 DO_HELP:
                 DO {StAssPrintLBL(1,0);} BLOCK
 DO_WHILE_STT:
-                DO_HELP WHILE '(' EXPRESSION {warnAlwaysFalse(); StAssJMP("JZ", "LBL", &SMLabel_Else, 1,0)}')'
+                DO_HELP WHILE '(' EXPRESSION {warnAlwaysFalse(); StAssJMP("JZ", "LBL", &SMLabel_Else, 1,0);}')'
                 | ERRONOUS_DO_WHILE
                 ;
 ERRONOUS_DO_WHILE:
