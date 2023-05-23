@@ -261,9 +261,11 @@ def save_file(clicked=False):
 root = ct.CTk()
 root.title("Simple Code Editor")
 root.geometry("1200x600")
+root.bind('<Control-Shift-s>', save_as_file)
 root.bind('<Control-Key-s>', save_file)
 root.bind('<Control-Key-n>', new_file)
 root.bind('<Control-Key-o>', open_file)
+
 
 main_frame = ct.CTkFrame(root)
 
@@ -303,7 +305,7 @@ otherFrame = ct.CTkScrollableFrame(root, width=600)
 
 otherFrame2 = ct.CTkScrollableFrame(root, width=300)
 TerminalPanel = ct.CTkLabel(otherFrame, text=TerminalOutput)#,yscrollcommand=Terminalscrollbar.set)#ct.CTkLabel(root, text=TerminalOutput, anchor=ct.W, justify='left')#,yscrollcommand=Terminalscrollbar.set)
-AssemblyPanel = ct.CTkLabel(otherFrame2, text=Assembly,font=("Input", 15), bg_color="#333333", justify='left')#ct.CTkLabel(root, text=Assembly, anchor=ct.W, font=("Input", 15), bg_color="#333333", justify='left')
+AssemblyPanel = ct.CTkLabel(otherFrame2, text=Assembly,font=("Input", 20), bg_color="#333333", justify='left')#ct.CTkLabel(root, text=Assembly, anchor=ct.W, font=("Input", 15), bg_color="#333333", justify='left')
 
 
 #Terminalscrollbar = ct.CTkScrollbar(TerminalPanel, command=TerminalPanel.yview)
