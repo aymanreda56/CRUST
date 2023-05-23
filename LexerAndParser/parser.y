@@ -824,8 +824,8 @@ void assign_enum (int i, char* enum_name, char* key) {
 // }
 void check_type( int i) {
     // this functio check type matching between 2 identifiers before assign the value
-    if ( is_param == 1) 
-    { assign_index = arg_count;}
+    // if ( is_param == 1) TODO
+    // { assign_index = arg_count;}
      if ( i == -1 || assign_index == -1) 
     { return;}
     if (symbolTable[i].dataType != symbolTable[assign_index].dataType && (symbolTable[assign_index].dataType == "string" ||  symbolTable[i].dataType == "string"))
@@ -836,7 +836,7 @@ void check_type( int i) {
         {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: Incorrect argument type %s is %s variable but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType ); sErr(line_number);}
         else {printf("\n !!!!!!!!!!!! Type Mismatch Error at line %d: %s is %s variable  but %s %s !!!!!!!!!!!\n", line_number,symbolTable[assign_index].name,symbolTable[assign_index].dataType, symbolTable[i].name,symbolTable[i].dataType );sErr(line_number);}
     }
-    else
+    else if (strcmp(symbolTable[assign_index].type,"func") != 0)
     {
         symbolTable[assign_index].isInit=1;
         // assign value to the variable
@@ -857,6 +857,8 @@ void scope_start(){
 void scope_end(){
     if (func_index != -1 && strcmp(symbolTable[func_index].type, "func") == 0 && return_exist == 0 && strcmp(symbolTable[func_index].dataType, "void") != 0)
     {printf("\n !!!!!!!!!!!! Error at line %d: Missing return statement in Function %s !!!!!!!!!!!\n", line_number, symbolTable[func_index].name); sErr(line_number);}
+    assign_index=-1;
+    func_index =-1;
     //----- make all symbols in this scope out of scope
     for (int i = 0; i < st_index; i++){
         if (symbolTable[i].scope == scope_stack[scope_index]){
