@@ -152,7 +152,7 @@
 #include<stdbool.h>
 }
 
-%token INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM RETURN DEFAULT BREAK NEWLINE MODULO DEC INC
+%token INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM RETURN DEFAULT BREAK MODULO DEC INC
 %token EQUALITY NEG_EQUALITY
 %token SWITCH CASE
 %token LOGIC_AND LOGIC_OR LOGIC_NOT
@@ -213,8 +213,8 @@ STATEMENT:
                 ;
 
 SEMICOLON_MISS:
-                SEMICOLON NEWLINE
-                | NEWLINE       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);pErr(yylineno);}
+                SEMICOLON
+                //| NEWLINE       {printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);pErr(yylineno);}
                 //| error{printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);pErr(yylineno);}
                 //| error{printf("\n\n=====ERROR====\n Missing semicolon ';' at line %d\n\n", yylineno);pErr(yylineno);} ')'
                 ;
