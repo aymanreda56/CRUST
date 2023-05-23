@@ -87,16 +87,19 @@ extern int yydebug;
     DEFAULT = 282,                 /* DEFAULT  */
     BREAK = 283,                   /* BREAK  */
     NEWLINE = 284,                 /* NEWLINE  */
-    EQUALITY = 285,                /* EQUALITY  */
-    NEG_EQUALITY = 286,            /* NEG_EQUALITY  */
-    SWITCH = 287,                  /* SWITCH  */
-    CASE = 288,                    /* CASE  */
-    LOGIC_AND = 289,               /* LOGIC_AND  */
-    LOGIC_OR = 290,                /* LOGIC_OR  */
-    LOGIC_NOT = 291,               /* LOGIC_NOT  */
-    DIGIT = 292,                   /* DIGIT  */
-    IDENTIFIER = 293,              /* IDENTIFIER  */
-    FLOAT_DIGIT = 294              /* FLOAT_DIGIT  */
+    MODULO = 285,                  /* MODULO  */
+    DEC = 286,                     /* DEC  */
+    INC = 287,                     /* INC  */
+    EQUALITY = 288,                /* EQUALITY  */
+    NEG_EQUALITY = 289,            /* NEG_EQUALITY  */
+    SWITCH = 290,                  /* SWITCH  */
+    CASE = 291,                    /* CASE  */
+    LOGIC_AND = 292,               /* LOGIC_AND  */
+    LOGIC_OR = 293,                /* LOGIC_OR  */
+    LOGIC_NOT = 294,               /* LOGIC_NOT  */
+    DIGIT = 295,                   /* DIGIT  */
+    IDENTIFIER = 296,              /* IDENTIFIER  */
+    FLOAT_DIGIT = 297              /* FLOAT_DIGIT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -112,7 +115,7 @@ union YYSTYPE
  float float_val;
  bool bool_val;
 
-#line 116 "parser.tab.h"
+#line 119 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

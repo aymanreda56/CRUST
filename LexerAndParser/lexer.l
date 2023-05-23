@@ -32,6 +32,8 @@
 "!"                             {printf("LOGIC_NOT:%s | ", yytext);      nword++; nchar+=yyleng;                                return LOGIC_NOT;}
 
 "=="                            {printf("EQUALITY:%s | ", yytext);       nword++; nchar+=yyleng;                                return EQUALITY;}
+"--"                            {printf("DEC:%s | ", yytext);       nword++; nchar+=yyleng;                                     return DEC;}
+"++"                            {printf("DEC:%s | ", yytext);       nword++; nchar+=yyleng;                                     return INC;}
 "!="                            {printf("NEG_EQUALITY:%s | ", yytext);   nword++; nchar+=yyleng;                                return NEG_EQUALITY;}
 
 ">"                             {printf("GT:%s | ", yytext);             nword++; nchar+=yyleng;                                return GT;}
@@ -39,6 +41,7 @@
 "="                             {printf("EQ:%s | ", yytext);             nword++; nchar+=yyleng;                                return EQ;}         
 ";"                             {printf("SEMICOLON:%s | ", yytext);      nword++; nchar+=yyleng;                                return SEMICOLON;}
 "+"                             {printf("PLUS:%s | ", yytext);           nword++; nchar+=yyleng;  yylval.str = strdup(yytext);                              return PLUS;}
+"%"                             {printf("MODULO:%s | ", yytext);         nword++; nchar+=yyleng;  yylval.str = strdup(yytext);  return MODULO;}
 "-"                             {printf("SUB:%s | ", yytext);            nword++; nchar+=yyleng;                                return SUB;}
 "*"                             {printf("MUL:%s | ", yytext);            nword++; nchar+=yyleng;                                return MUL;}
 "/"                             {printf("DIV:%s | ", yytext);            nword++; nchar+=yyleng;                                return DIV;}
@@ -52,7 +55,7 @@
 [0-9]+\.[0-9]+                  {printf("FLOAT_DIGIT:%s | ", yytext);  nword++; nchar+=yyleng;  yylval.float_val= atof(yytext);   return FLOAT_DIGIT;}
 
 [ \t]+                           //ignore
-\n                              {nchar++;line_number++;                                                                         return NEWLINE;}
+\n                              {nchar++;line_number++;}
 .                               {printf("UNK: %s | ", yytext);     nchar++;    return *yytext;}
 
 

@@ -152,7 +152,7 @@
 #include<stdbool.h>
 }
 
-%token INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM RETURN DEFAULT BREAK NEWLINE
+%token INT FLOAT BOOL STRING VOID IF FOR WHILE BOOL_LITERAL DIV GT LT EQ SEMICOLON PLUS SUB MUL STRING_LITERAL CONSTANT POW ELSE DO ENUM RETURN DEFAULT BREAK NEWLINE MODULO DEC INC
 %token EQUALITY NEG_EQUALITY
 %token SWITCH CASE
 %token LOGIC_AND LOGIC_OR LOGIC_NOT
@@ -161,7 +161,7 @@
 %left EQUALITY NEG_EQUALITY
 %right LOGIC_NOT
 %right POW
-%left PLUS
+%left PLUS INC DEC MODULO
 %left SUB
 %left MUL
 %left DIV
@@ -254,7 +254,7 @@ DECLARATION_TAIL:
 
 RETURN_STT:
                 RETURN                  {int dum = 0;StAssPrint("POP\tPC",1);StAssJmp("JMP", "PC", &dum,0,1);}
-                | RETURN {assign_index =func_index;} EXPRESSION  SEMICOLON           { return_exist = 1; StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
+                | RETURN {assign_index =func_index;} EXPRESSION           { return_exist = 1; StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
                 ;
 helperSWITCH:   SWITCH IDENTIFIER ':' '{' {strcpy(switcher, $2);}
                 ;
@@ -386,6 +386,8 @@ IF_STT:
 
 
 
+
+
 // AYMON : ana masa7t el Error handling bta3 elWhile Loop 3shan fadelly taka we aksar elLaptop da fo2 dma8 elli katabo Bayzoooon >:(((
 WHILE_STT:
                 WHILE {printWHILE(); StAssPrintLBL(1, 0);} EXPRESSION {StAssJmp("JNZ", "END",&SMLabel_End, 0,0);} WHILEMISS_COLON BLOCK {StAssJmp("JMP", "LBL",&SMLabel_Else, 1,0); StAssPrintLBL(0, 1);}
@@ -430,6 +432,7 @@ ERRONOUS_FOR_LOOP:
 //AYMON : SOLVED the conflicts
 helperAssignmentRule:
                 IDENTIFIER  EQ                                   {pushVStack($1); StAssPush($1); assign_index = lookup($1,1);}
+                | CONSTANT EQ                                    {printf("\n\n=====ERROR====\n CONSTANTS must not be reassigned %d\n\n", yylineno);pErr(yylineno);}
                 ;
 
 assignmentSTT:
@@ -471,10 +474,12 @@ EXPRESSION:
                 | STRING_LITERAL                { assign_str($1, assign_index); pushVStack($1);char buf[50]; strcpy(buf, "$");strcat(buf, $1); StAssPush(buf);}
                 | CONSTANT                      { int i = lookup($1,0); check_type(i); pushVStack($1); StAssPush($1);}
                 | SUB EXPRESSION                {StAssPrint("neg", 1);}
-                | EXPRESSION PLUS PLUS          { pushVStack("+"); pushVStack("1"); CodeGenOp("ADD"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("ADD", 1); StAssPrint("STORE", 1);}
-                | EXPRESSION SUB SUB            { pushVStack("-"); pushVStack("1"); CodeGenOp("SUB"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("SUB", 1); StAssPrint("STORE", 1);}
+                | EXPRESSION INC                { pushVStack("+"); pushVStack("1"); CodeGenOp("ADD"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("ADD", 1); StAssPrint("STORE", 1);}
+                | EXPRESSION DEC                { pushVStack("-"); pushVStack("1"); CodeGenOp("SUB"); StAssPrint("DUP",1); StAssPush("$1"); StAssPrint("SUB", 1); StAssPrint("STORE", 1);}
                 | EXPRESSION PLUS               { pushVStack("+");}  EXPRESSION  {CodeGenOp("ADD"); StAssPrint("ADD", 1);}
-                //| EXPRESSION SUB                { pushVStack("-");}  EXPRESSION  {CodeGenOp("SUB"); StAssPrint("SUB", 1);}
+                | EXPRESSION MODULO             { pushVStack("m");}  EXPRESSION  {CodeGenOp("MOD"); StAssPrint("MOD", 1);}
+                | EXPRESSION SUB                { pushVStack("-");}  EXPRESSION  {CodeGenOp("SUB"); StAssPrint("SUB", 1);}
+                
                 | EXPRESSION MUL                { pushVStack("*");}  EXPRESSION  {CodeGenOp("MUL"); StAssPrint("MUL", 1);}
                 | EXPRESSION DIV                { pushVStack("/");}  EXPRESSION  {CodeGenOp("DIV"); StAssPrint("DIV", 1);}
 
