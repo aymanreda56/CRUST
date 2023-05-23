@@ -254,7 +254,7 @@ DECLARATION_TAIL:
 
 RETURN_STT:
                 RETURN                  {int dum = 0;StAssPrint("POP\tPC",1);StAssJmp("JMP", "PC", &dum,0,1);}
-                | RETURN {assign_index =func_index;} EXPRESSION  SEMICOLON           { return_exist = 1; StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
+                | RETURN {assign_index =func_index;} EXPRESSION           { return_exist = 1; StAssPrint("OVER",1);int dum = 0;StAssPrint("POP\tPC",1);StAssPrint("DNEXT", 1);StAssJmp("JMP", "PC", &dum,0,1);}
                 ;
 helperSWITCH:   SWITCH IDENTIFIER ':' '{' {strcpy(switcher, $2);}
                 ;
