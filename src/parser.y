@@ -164,6 +164,7 @@
 %token SWITCH CASE
 %token LOGIC_AND LOGIC_OR LOGIC_NOT
 %token DIGIT IDENTIFIER FLOAT_DIGIT
+%left '}'
 %left LOGIC_AND LOGIC_OR
 %left EQUALITY NEG_EQUALITY
 %right LOGIC_NOT
@@ -175,9 +176,7 @@
 %right EQ
 %right GT
 %right LT
-%left '{'
-%left '}'
-
+%right '{'
 
 %type <str> INT FLOAT BOOL STRING VOID CONSTANT IDENTIFIER TYPE STRING_LITERAL ENUM PLUS
 %type <float_val> FLOAT_DIGIT
@@ -301,9 +300,6 @@ ERRONOUS_SWITCH_STT:
 
 
 
-
-
-
 FUNC_DECLARATION_STT:
                 ERRONOUS_FUNC_DECLARATION_STT                                       BLOCK
                 | TYPE IDENTIFIER '(' {char dum[10]; strcpy(dum,$2);strcat(dum,":");StAssPrint(dum, 0);} ARGS ')'   {func_index = st_insert($1, $2,"func",0); popArgs();}      BLOCK                                   
@@ -318,8 +314,8 @@ ERRONOUS_FUNC_DECLARATION_STT:
                 //| TYPE IDENTIFIER '(' ARGS  '{'     {printf("\n\n=====ERROR====\n unclosed function parenthesis at line %d for function %s\n\n", yylineno, $2); yyclearin;pErr(yylineno);                          st_insert($1, $2,"func",0);} 
                 //| VOID IDENTIFIER                   {printf("\n\n=====ERROR====\n unhandled function parenthesis at line %d for function %s\n\n", yylineno, $2);pErr(yylineno);}                    ARGS ')'       {st_insert($1, $2,"func",0);} 
                 //| VOID IDENTIFIER '(' ARGS  '{'     {printf("\n\n=====ERROR====\n unclosed function parenthesis at line %d for function %s\n\n", yylineno, $2); yyclearin; pErr(yylineno);                         st_insert($1, $2,"func",0);} 
-                //| TYPE IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;pErr(yylineno);}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
-                //| VOID IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;pErr(yylineno);}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
+                | TYPE IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;pErr(yylineno);}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
+                | VOID IDENTIFIER IDENTIFIER        {printf("\n\n=====ERROR====\n unexpected identifier '%s' at function declaration at line %d\n\n",yylval, yylineno); yyclearin;pErr(yylineno);}  '(' ARGS ')'   {st_insert($1, $2,"func",0);}      
                 //| TYPE IDENTIFIER '(' ARGS error    {printf("\n\n=====ERROR====\n unexpected token '%s' in argument list of function declaration at line %d\n\n", yylval, yylineno);pErr(yylineno);}')'            {st_insert($1, $2,"func",0);}      
                 ;
 
@@ -393,14 +389,15 @@ IF_STT:
 
 
 
-
+WHILE_HELP:
+                WHILE {printWHILE(); StAssPrintLBL(1, 0);} EXPRESSION{StAssJmp("JNZ", "END",&SMLabel_End, 0,0);warnAlwaysFalse();}
+                | WHILE {printWHILE(); StAssPrintLBL(1, 0); printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}
+                ;
 
 // AYMON : ana masa7t el Error handling bta3 elWhile Loop 3shan fadelly taka we aksar elLaptop da fo2 dma8 elli katabo Bayzoooon >:(((
 WHILE_STT:
-                WHILE {printWHILE(); StAssPrintLBL(1, 0);} EXPRESSION {StAssJmp("JNZ", "END",&SMLabel_End, 0,0);warnAlwaysFalse();} WHILEMISS_COLON BLOCK {StAssJmp("JMP", "LBL",&SMLabel_Else, 1,0); StAssPrintLBL(0, 1);}
-                //| WHILE {printWHILE();} error ':'                    {printf("\n\n=====ERROR====\n Missing expression for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}  BLOCK {controlTerminator(1);}
-                //| WHILE {printWHILE();} EXPRESSION                   {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}         BLOCK {controlTerminator(1);}
-                //| WHILE {printWHILE();} EXPRESSION ':' error '}'     {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}
+                WHILE_HELP  WHILEMISS_COLON BLOCK {StAssJmp("JMP", "LBL",&SMLabel_Else, 1,0); StAssPrintLBL(0, 1);}
+                | WHILE_HELP ':' error '}'     {printf("\n\n=====ERROR====\n Missing '{' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}
                 //TODO handle unclosed curly braces 
                 ;
 WHILEMISS_COLON:
@@ -408,17 +405,18 @@ WHILEMISS_COLON:
                 | {printf("\n\n=====ERROR====\n Missing ':' for the WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}
                 ;
 
-
+DO_HELP:
+                DO {StAssPrintLBL(1,0);} BLOCK
 DO_WHILE_STT:
-                DO BLOCK WHILE '(' EXPRESSION {warnAlwaysFalse();}')'
+                DO_HELP WHILE '(' EXPRESSION {warnAlwaysFalse(); StAssJMP("JZ", "LBL", &SMLabel_Else, 1,0)}')'
                 | ERRONOUS_DO_WHILE
                 ;
 ERRONOUS_DO_WHILE:
                 DO   error                          {printf("\n\n=====ERROR====\n Missing DO-Block for the DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}                              WHILE '(' EXPRESSION ')'
-                | DO BLOCK WHILE error              {printf("\n\n=====ERROR====\n Missing opening parenthesis '(' for the DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}               EXPRESSION ')'
-                | DO BLOCK error                    {printf("\n\n=====ERROR====\n Missing WHILE DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}                                         '(' EXPRESSION ')'
+                | DO_HELP WHILE error              {printf("\n\n=====ERROR====\n Missing opening parenthesis '(' for the DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}               EXPRESSION ')'
+                | DO_HELP error                    {printf("\n\n=====ERROR====\n Missing WHILE DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);}                                         '(' EXPRESSION ')'
                 | DO error                          {printf("\n\n=====ERROR====\n Missing opening curly braces '{' for the DO-Block for DO-WHILE loop at line %d\n\n", yylineno);pErr(yylineno);} '}' WHILE '(' EXPRESSION ')'
-                | DO BLOCK WHILE '{' EXPRESSION '}' {printf("\n\n=====ERROR====\n DO-WHILE loop accepts braces () not curly braces {} at line %d\n\n", yylineno);pErr(yylineno);}
+                | DO_HELP WHILE '{' EXPRESSION '}' {printf("\n\n=====ERROR====\n DO-WHILE loop accepts braces () not curly braces {} at line %d\n\n", yylineno);pErr(yylineno);}
                 //| DO BLOCK {printf("\n\n=====ERROR====\n Missing While loop for the DO-Block for DO-WHILE loop at line %d\n\n", yylineno);}
                 //TODO handle missing while statement, user only wrote the Do statement (we might agree that it is acceptable)
                 ;
@@ -449,9 +447,13 @@ assignmentSTT:
                 ;
 
 
+BLOCK_HELP:
+                '{' {scope_start();} PROGRAM
+                ;
 BLOCK:
-                '{' {scope_start();} PROGRAM '}'                              {scope_end(); printf("#[Parsed_Block]# ");}
-                //| '{' PROGRAM error                                         {printf("\n=====ERROR====\n Missing closing parenthesis '{' at line %d\n", yylineno);}//Error handler
+                BLOCK_HELP '}'                              {scope_end(); printf("#[Parsed_Block]# ");}
+                //| BLOCK_HELP error
+                //| '{' PROGRAM                                          {printf("\n=====ERROR====\n Missing closing parenthesis '{' at line %d\n", yylineno);}//Error handler
                 //TODO handle opened curly braces but not closed
                 ;
 
