@@ -845,8 +845,13 @@ void assign_enum (int i, char* enum_name, char* key) {
 // }
 void check_type( int i) {
     // this functio check type matching between 2 identifiers before assign the value
+
     if ( is_param == 1) //to check argument type 
-    { assign_index = arg_count;}
+    { 
+        if ( arg_count <symbolTable[called_func_index].argCount )
+        {assign_index = symbolTable[called_func_index].argList[arg_count];}
+        else {assign_index=-1;}
+    }
      if ( i == -1 || assign_index == -1) 
     { return;}
     if (symbolTable[i].dataType != symbolTable[assign_index].dataType && (symbolTable[assign_index].dataType == "string" ||  symbolTable[i].dataType == "string"))
