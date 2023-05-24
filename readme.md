@@ -1,5 +1,7 @@
 # :spades: Crust :spades:
 
+/////////////////////Currently generating a good logo //////////////////////
+
 ## a lightweight C-like programming language and compiler, with a user friendly GUI
 
 
@@ -22,18 +24,16 @@ also you can find the BNF diagram for our language here. //todo, add BNF diagram
 <h2> Watch our <a href="https://youtu.be/KR75qdKQD28"target="_blank">demo</a> !</h2>
 
 
-[![Watch the video](https://img.youtube.com/vi/T-D1KVIuvjA/maxresdefault.jpg)](https://youtu.be/T-D1KVIuvjA)
 
-<iframe width="560" height="315" src="https://youtu.be/KR75qdKQD28" frameborder="0" allowfullscreen></iframe>
-</iframe>
 
-<a href="https://youtu.be/KR75qdKQD28"
-target="_blank">
-<img src="https://github.com/aymanreda56/CL_Project/blob/main/assets/img/pasted%20image%200.png" alt="Crust demo using Cauce" width=240 height=180 border="10" style="display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 50%;"/>
-</a>
+https://github.com/aymanreda56/CL_Project/assets/58632281/6eb28bbd-8e76-40b4-a42e-9b1588303063
+
+
+
+
+![pasted image 0](https://github.com/aymanreda56/CL_Project/assets/58632281/7a899a3e-bde9-4e1a-b8a1-619864c043f2)
+
+
 
 #### Hot-Keys
 * `CTRL + N`              New file
@@ -80,19 +80,20 @@ then just clone the repo and use it as mentioned above :)
 
 
 
-## Future plans
+## Future plans :rocket:
 * Cudo | Crust's friendly debugger
 * Better UI Features
 * Linking multiple code files, Imports and externs
 * An actual VM instead of using an external assembler to execute our stack-machine code
 
 
-## Credits
+## Credits 👨‍💻 👩‍💻 👩‍💻 👩‍💻
 This repo was made by our sweat and tears, a duty to mention them for credits:
-@Marim1611
-@mariemzayn18
-@abeerhbadr
-@aymanreda56
+</br>
+@Marim1611 </br>
+@mariemzayn18 </br>
+@abeerhbadr </br>
+@aymanreda56 </br>
 
 ⣿⣿⣿⣿⣿⣿⠿⢋⣥⣴⣶⣶⣶⣬⣙⠻⠟⣋⣭⣭⣭⣭⡙⠻⣿⣿⣿⣿⣿
 ⣿⣿⣿⣿⡿⢋⣴⣿⣿⠿⢟⣛⣛⣛⠿⢷⡹⣿⣿⣿⣿⣿⣿⣆⠹⣿⣿⣿⣿
