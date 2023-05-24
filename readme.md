@@ -51,7 +51,7 @@ https://github.com/aymanreda56/CL_Project/assets/58632281/6eb28bbd-8e76-40b4-a42
 
 
 ## How to Use 🔍
-### - using Cauce ❓
+### - Using Cauce ❓
 1. Open CMD in the GUI directory, type ```python ctk.py```
 2. Write your Code inside
 3. Hit Compile!
