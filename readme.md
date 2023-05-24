@@ -4,14 +4,15 @@
 ## a lightweight C-like programming language and compiler, with a user friendly GUI
 
 <p align="center" width="100%">
-    <img src="https://github.com/aymanreda56/CL_Project/assets/58632281/676bca67-c107-462c-a8f5-31598cf0506d" width="450" height="450"> 
+    <img src="https://github.com/aymanreda56/CL_Project/blob/main/assets/img/3704947507_blue%20triangle%20logo,%20baby%20blue%20color,%20vectorized%20lo_xl-beta-v2-2-2.png?raw=true" width="450" height="450"> 
 </p>
 
 This project was implemented as our Compilers' course project.
 It essentially implements the full compiler pipeline : Front-End  |  IR  | Back-End
 
-
-![image](https://github.com/aymanreda56/CL_Project/assets/76243256/32b884d3-61ef-4778-ac2c-8c007f548a7d)
+<p align="center" width="100%">
+    <img src="https://www.guru99.com/images/1/020819_1119_PhasesofCom1.png" width="700" height="200"> 
+</p>
 
 
 * "We used C to make C", this project was entirely written in C. Such speed, less space. 
@@ -34,13 +35,17 @@ https://docs.google.com/document/d/1AywCNfDTK4mzxmF-IoVwgKzLli8sE6zEiFXHfqb00Ug/
 
 
 
-
-https://github.com/aymanreda56/CL_Project/assets/58632281/6eb28bbd-8e76-40b4-a42e-9b1588303063
-
+https://github.com/aymanreda56/CL_Project/assets/58632281/85bdec56-78f4-4c70-b7b6-8e3194e7df04
 
 
 
-![pasted image 0](https://github.com/aymanreda56/CL_Project/assets/58632281/7a899a3e-bde9-4e1a-b8a1-619864c043f2)
+
+
+
+
+
+
+![pasted image 0](https://github.com/aymanreda56/CL_Project/blob/main/assets/img/pasted%20image%200.png?raw=true)
 
 
 ## Hot-Keys ✨
@@ -127,6 +132,7 @@ then just clone the repo and use it as mentioned above :)
   </tr>
  </table>
 </br>
+
                                                 ⣿⣿⣿⣿⣿⣿⠿⢋⣥⣴⣶⣶⣶⣬⣙⠻⠟⣋⣭⣭⣭⣭⡙⠻⣿⣿⣿⣿⣿
                                                 ⣿⣿⣿⣿⡿⢋⣴⣿⣿⠿⢟⣛⣛⣛⠿⢷⡹⣿⣿⣿⣿⣿⣿⣆⠹⣿⣿⣿⣿
                                                 ⣿⣿⣿⡿⢁⣾⣿⣿⣴⣿⣿⣿⣿⠿⠿⠷⠥⠱⣶⣶⣶⣶⡶⠮⠤⣌⡙⢿⣿
