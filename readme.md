@@ -1,12 +1,14 @@
 # :spades: Crust :spades:
 
-/////////////////////Currently generating a good logo //////////////////////
+
 
 ## a lightweight C-like programming language and compiler, with a user friendly GUI
 
 
 This project was implemented as our Compilers' course project.
 It essentially implements the full compiler pipeline : Front-End  |  IR  | Back-End
+![image](https://github.com/aymanreda56/CL_Project/assets/58632281/ab1e8fa8-01c8-4ee7-b847-8862ed66ed72)
+
 * "We used C to make C", this project was entirely written in C. Such speed, less space. 
 * Uses Flex and Bison's implementation for Lex and Yacc.
 * Friendly Syntax
