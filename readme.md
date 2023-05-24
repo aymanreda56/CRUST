@@ -22,7 +22,7 @@ also you can find the BNF diagram for our language here. //todo, add BNF diagram
 ## Watch our demo !
 <a href="https://youtu.be/KR75qdKQD28"
 target="_blank">
-<img src="" alt="Crust demo using Cauce" width=240 height=180 border="10"/>
+<img src="https://github.com/aymanreda56/CL_Project/blob/main/assets/img/pasted%20image%200.png" alt="Crust demo using Cauce" width=240 height=180 border="10"/>
 </a>
 
 #### Hot-Keys
