@@ -20,9 +20,15 @@ you can find our Language rules here. //todo, add a link to our proposal which c
 also you can find the BNF diagram for our language here. //todo, add BNF diagrams (so that graph theory students can see our repo).
 
 <h2> Watch our <a href="https://youtu.be/KR75qdKQD28"target="_blank">demo</a> !</h2>
+<iframe width="560" height="315" src="https://youtu.be/KR75qdKQD28" frameborder="0" allowfullscreen></iframe>
+</iframe>
+
 <a href="https://youtu.be/KR75qdKQD28"
 target="_blank">
-<img src="https://github.com/aymanreda56/CL_Project/blob/main/assets/img/pasted%20image%200.png" alt="Crust demo using Cauce" width=240 height=180 border="10"/>
+<img src="https://github.com/aymanreda56/CL_Project/blob/main/assets/img/pasted%20image%200.png" alt="Crust demo using Cauce" width=240 height=180 border="10" style="display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;"/>
 </a>
 
 #### Hot-Keys
