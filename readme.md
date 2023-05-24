@@ -90,7 +90,8 @@ then just clone the repo and use it as mentioned above :)
 
 
 ## Credits 👨‍💻 👩‍💻 👩‍💻 👩‍💻
-This repo was made by our sweat and tears, a duty to mention them for credits:
+“Appreciation has the amazing habit of bringing more reasons to be grateful for.”
+</br>Special thanks to:
 </br>
 @Marim1611 </br>
 @mariemzayn18 </br>
