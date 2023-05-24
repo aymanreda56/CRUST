@@ -26,7 +26,8 @@ It essentially implements the full compiler pipeline : Front-End  |  IR  | Back-
 * Supports advanced programming schemes like Recursions, Nest-oriented programming, structs, Polymorphism, etc.
 * Debugger [Future plans]
 
-# //TODO, add a link to our proposal which contains our syntax rules
+# Document Link 📄
+
 # //TODO, add BNF diagrams (so that graph theory students can see our repo).
 you can find our Language rules here. 
 also you can find the BNF diagram for our language here. 
@@ -45,21 +46,21 @@ https://github.com/aymanreda56/CL_Project/assets/58632281/6eb28bbd-8e76-40b4-a42
 
 
 
-#### Hot-Keys
+## Hot-Keys ✨
 * `CTRL + N`              New file
 * `CTRL + O`              Open file      
 * `CTRL + S`              Save file
 * `CTRL + Shift + S`      Save file as
 
 
-## How to Use
-### using Cauce
+## How to Use 🔍
+### - using Cauce ❓
 1. Open CMD in the GUI directory, type ```python ctk.py```
 2. Write your Code inside
 3. Hit Compile!
 
 
-### Headless
+### - Headless 💫
 1. ```flex lexer.l```
 2. ```bison -d parser.y```
 3. ```cc *.c -o out.exe```
@@ -67,14 +68,14 @@ https://github.com/aymanreda56/CL_Project/assets/58632281/6eb28bbd-8e76-40b4-a42
 5. ```.\out.exe myCode.txt```
 
 
-### Outputs
+### - Outputs ⚡
 * `stackassembly.txt` our assembly stack machine program
 * `symboltable.txt` the final symbol table after complete compilation
 * `symboltablelogs.txt` log file containing the symbol table step by step (very useful for debugging)
 * `ParsingErrors.txt` containing all indeces of lines with Syntax errors
 * `SemanticErrors.txt` contains all indeces of lines if any semantic warning gets raised
 
-## Prerequisites
+## Prerequisites ⚙️
 * GCC or G++ or CC
 * GNU's Flex or Lex
 * GNU's Bison or Yacc
@@ -82,7 +83,7 @@ https://github.com/aymanreda56/CL_Project/assets/58632281/6eb28bbd-8e76-40b4-a42
 * TKinter and Custom TKinter    ```pip install tkinter customtkinter```
 
 
-## Build it yourself!
+## Build it yourself! 💡
 you can find our guide on how to install lex and bison on windows and linux from here:
 https://docs.google.com/document/d/1MAyArnxpMbBoU88uCNGYJ-3RBwjH-wLrotDa0c85Uew/edit?usp=sharing
 
@@ -90,7 +91,7 @@ then just clone the repo and use it as mentioned above :)
 
 
 
-## Future plans :rocket:
+## Future plans :rocket: 
 * Cudo | Crust's friendly debugger
 * Better UI Features
 * Linking multiple code files, Imports and externs
@@ -100,23 +101,48 @@ then just clone the repo and use it as mentioned above :)
 ## Credits 👨‍💻 👩‍💻 👩‍💻 👩‍💻
 > "Appreciation has the amazing habit of bringing more reasons to be grateful for."
 ### Special thanks to:
+<table align="center">
+  <tr>
+     <td align="center">
+    <a href="https://github.com/aymanreda56" target="_black">
+    <img src="https://avatars.githubusercontent.com/u/58632281?v=4" width="100px;" alt="Ammar Mohamed"/>
+    <br />
+    <sub><b>Ayman Reda</b></sub></a>
+    </td>
+    <td align="center">
+    <a href="https://github.com/Marim1611" target="_black">
+    <img src="https://avatars.githubusercontent.com/u/76243256?s=120&v=4" width="100px;" alt="Marim Naser"/>
+    <br />
+    <sub><b>Marim Naser</b></sub></a>
+    </td>
+    <td align="center">
+    <a href="https://github.com/mariemzayn18" target="_black">
+    <img src="https://avatars.githubusercontent.com/u/76264155?s=120&v=4" width="100px;" alt="Mariem Muhammed"/>
+    <br />
+    <sub><b> Mariem Muhammed</b></sub></a>
+    </td>
+     <td align="center">
+    <a href="https://github.com/abeerhbadr" target="_black">
+    <img src="https://avatars.githubusercontent.com/u/56753821?v=4" width="100px;" alt="Abeer Hussein"/>
+    <br />
+    <sub><b>Abeer Hussein</b></sub></a>
+    </td>
+  </tr>
+ </table>
 </br>
-@Marim1611 </br>
-@mariemzayn18 </br>
-@abeerhbadr </br>
-@aymanreda56 </br>
+                                                ⣿⣿⣿⣿⣿⣿⠿⢋⣥⣴⣶⣶⣶⣬⣙⠻⠟⣋⣭⣭⣭⣭⡙⠻⣿⣿⣿⣿⣿
+                                                ⣿⣿⣿⣿⡿⢋⣴⣿⣿⠿⢟⣛⣛⣛⠿⢷⡹⣿⣿⣿⣿⣿⣿⣆⠹⣿⣿⣿⣿
+                                                ⣿⣿⣿⡿⢁⣾⣿⣿⣴⣿⣿⣿⣿⠿⠿⠷⠥⠱⣶⣶⣶⣶⡶⠮⠤⣌⡙⢿⣿
+                                                ⣿⡿⢛⡁⣾⣿⣿⣿⡿⢟⡫⢕⣪⡭⠥⢭⣭⣉⡂⣉⡒⣤⡭⡉⠩⣥⣰⠂⠹
+                                                ⡟⢠⣿⣱⣿⣿⣿⣏⣛⢲⣾⣿⠃⠄⠐⠈⣿⣿⣿⣿⣿⣿⠄⠁⠃⢸⣿⣿⡧
+                                                ⢠⣿⣿⣿⣿⣿⣿⣿⣿⣇⣊⠙⠳⠤⠤⠾⣟⠛⠍⣹⣛⣛⣢⣀⣠⣛⡯⢉⣰
+                                                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡶⠶⢒⣠⣼⣿⣿⣛⠻⠛⢛⣛⠉⣴⣿⣿
+                                                ⣿⣿⣿⣿⣿⣿⣿⡿⢛⡛⢿⣿⣿⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡈⢿⣿
+                                                ⣿⣿⣿⣿⣿⣿⣿⠸⣿⡻⢷⣍⣛⠻⠿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢇⡘⣿
+                                                ⣿⣿⣿⣿⣿⣿⣿⣷⣝⠻⠶⣬⣍⣛⣛⠓⠶⠶⠶⠤⠬⠭⠤⠶⠶⠞⠛⣡⣿
+                                                ⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣬⣭⣍⣙⣛⣛⣛⠛⠛⠛⠿⠿⠿⠛⣠⣿⣿
+                                                ⣦⣈⠉⢛⠻⠿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⣁⣴⣾⣿⣿⣿⣿
+                                                ⣿⣿⣿⣶⣮⣭⣁⣒⣒⣒⠂⠠⠬⠭⠭⠭⢀⣀⣠⣄⡘⠿⣿⣿⣿⣿⣿⣿⣿
+                                                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡈⢿⣿⣿⣿⣿⣿
 
-⣿⣿⣿⣿⣿⣿⠿⢋⣥⣴⣶⣶⣶⣬⣙⠻⠟⣋⣭⣭⣭⣭⡙⠻⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⡿⢋⣴⣿⣿⠿⢟⣛⣛⣛⠿⢷⡹⣿⣿⣿⣿⣿⣿⣆⠹⣿⣿⣿⣿
-⣿⣿⣿⡿⢁⣾⣿⣿⣴⣿⣿⣿⣿⠿⠿⠷⠥⠱⣶⣶⣶⣶⡶⠮⠤⣌⡙⢿⣿
-⣿⡿⢛⡁⣾⣿⣿⣿⡿⢟⡫⢕⣪⡭⠥⢭⣭⣉⡂⣉⡒⣤⡭⡉⠩⣥⣰⠂⠹
-⡟⢠⣿⣱⣿⣿⣿⣏⣛⢲⣾⣿⠃⠄⠐⠈⣿⣿⣿⣿⣿⣿⠄⠁⠃⢸⣿⣿⡧
-⢠⣿⣿⣿⣿⣿⣿⣿⣿⣇⣊⠙⠳⠤⠤⠾⣟⠛⠍⣹⣛⣛⣢⣀⣠⣛⡯⢉⣰
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡶⠶⢒⣠⣼⣿⣿⣛⠻⠛⢛⣛⠉⣴⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⡿⢛⡛⢿⣿⣿⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡈⢿⣿
-⣿⣿⣿⣿⣿⣿⣿⠸⣿⡻⢷⣍⣛⠻⠿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢇⡘⣿
-⣿⣿⣿⣿⣿⣿⣿⣷⣝⠻⠶⣬⣍⣛⣛⠓⠶⠶⠶⠤⠬⠭⠤⠶⠶⠞⠛⣡⣿
-⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣬⣭⣍⣙⣛⣛⣛⠛⠛⠛⠿⠿⠿⠛⣠⣿⣿
-⣦⣈⠉⢛⠻⠿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⣁⣴⣾⣿⣿⣿⣿
-⣿⣿⣿⣶⣮⣭⣁⣒⣒⣒⠂⠠⠬⠭⠭⠭⢀⣀⣠⣄⡘⠿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡈⢿⣿⣿⣿⣿⣿
+
