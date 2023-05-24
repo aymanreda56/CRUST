@@ -26,9 +26,10 @@ It essentially implements the full compiler pipeline : Front-End  |  IR  | Back-
 * Supports advanced programming schemes like Recursions, Nest-oriented programming, structs, Polymorphism, etc.
 * Debugger [Future plans]
 
-
-you can find our Language rules here. //todo, add a link to our proposal which contains our syntax rules
-also you can find the BNF diagram for our language here. //todo, add BNF diagrams (so that graph theory students can see our repo).
+# //TODO, add a link to our proposal which contains our syntax rules
+# //TODO, add BNF diagrams (so that graph theory students can see our repo).
+you can find our Language rules here. 
+also you can find the BNF diagram for our language here. 
 
 <h2> Watch our <a href="https://youtu.be/KR75qdKQD28"target="_blank">demo</a> !</h2>
 
