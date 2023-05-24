@@ -11,9 +11,7 @@ This project was implemented as our Compilers' course project.
 It essentially implements the full compiler pipeline : Front-End  |  IR  | Back-End
 
 
-<p align="center" width="100%">
-    <img src="https://github.com/aymanreda56/CL_Project/assets/58632281/ab1e8fa8-01c8-4ee7-b847-8862ed66ed72" width="450" height="150"> 
-</p>
+![image](https://github.com/aymanreda56/CL_Project/assets/76243256/32b884d3-61ef-4778-ac2c-8c007f548a7d)
 
 
 * "We used C to make C", this project was entirely written in C. Such speed, less space. 
@@ -26,13 +24,13 @@ It essentially implements the full compiler pipeline : Front-End  |  IR  | Back-
 * Supports advanced programming schemes like Recursions, Nest-oriented programming, structs, Polymorphism, etc.
 * Debugger [Future plans]
 
-# Document Link 📄
+# Syntax 📄
+you can find our Language rules here:
+https://docs.google.com/document/d/1AywCNfDTK4mzxmF-IoVwgKzLli8sE6zEiFXHfqb00Ug/edit?usp=sharing
 
-# //TODO, add BNF diagrams (so that graph theory students can see our repo).
-you can find our Language rules here. 
-also you can find the BNF diagram for our language here. 
 
-<h2> Watch our <a href="https://youtu.be/KR75qdKQD28"target="_blank">demo</a> !</h2>
+
+<h2> Watch our <a href="https://youtu.be/KR75qdKQD28"target="_blank">demo</a> ! 💫</h2>
 
 
 
@@ -43,7 +41,6 @@ https://github.com/aymanreda56/CL_Project/assets/58632281/6eb28bbd-8e76-40b4-a42
 
 
 ![pasted image 0](https://github.com/aymanreda56/CL_Project/assets/58632281/7a899a3e-bde9-4e1a-b8a1-619864c043f2)
-
 
 
 ## Hot-Keys ✨
@@ -100,7 +97,7 @@ then just clone the repo and use it as mentioned above :)
 
 ## Credits 👨‍💻 👩‍💻 👩‍💻 👩‍💻
 > "Appreciation has the amazing habit of bringing more reasons to be grateful for."
-### Special thanks to:
+
 <table align="center">
   <tr>
      <td align="center">
