@@ -19,8 +19,7 @@ It essentially implements the full compiler pipeline : Front-End  |  IR  | Back-
 you can find our Language rules here. //todo, add a link to our proposal which contains our syntax rules
 also you can find the BNF diagram for our language here. //todo, add BNF diagrams (so that graph theory students can see our repo).
 
-## Watch our <a href="https://youtu.be/KR75qdKQD28"
-target="_blank">demo</a> !
+## Watch our <a href="https://youtu.be/KR75qdKQD28"target="_blank">demo</a> !
 <a href="https://youtu.be/KR75qdKQD28"
 target="_blank">
 <img src="https://github.com/aymanreda56/CL_Project/blob/main/assets/img/pasted%20image%200.png" alt="Crust demo using Cauce" width=240 height=180 border="10"/>
