@@ -20,6 +20,10 @@ you can find our Language rules here. //todo, add a link to our proposal which c
 also you can find the BNF diagram for our language here. //todo, add BNF diagrams (so that graph theory students can see our repo).
 
 <h2> Watch our <a href="https://youtu.be/KR75qdKQD28"target="_blank">demo</a> !</h2>
+
+
+[![Watch the video](https://img.youtube.com/vi/T-D1KVIuvjA/maxresdefault.jpg)](https://youtu.be/T-D1KVIuvjA)
+
 <iframe width="560" height="315" src="https://youtu.be/KR75qdKQD28" frameborder="0" allowfullscreen></iframe>
 </iframe>
 
