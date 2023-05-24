@@ -1,4 +1,4 @@
-# Crust
+# :spades: Crust :spades:
 
 ## a lightweight C-like programming language and compiler, with a user friendly GUI
 
