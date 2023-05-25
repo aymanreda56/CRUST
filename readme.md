@@ -39,13 +39,18 @@ https://github.com/aymanreda56/CL_Project/assets/58632281/85bdec56-78f4-4c70-b7b
 
 
 
-
-
-
-
-
-
 ![pasted image 0](https://github.com/aymanreda56/CL_Project/blob/main/assets/img/pasted%20image%200.png?raw=true)
+
+
+# Symbol Table 📅
+- Final symbol table of a program.
+
+![image](https://github.com/aymanreda56/CRUST/assets/76243256/31f6bf51-e458-4f83-bab1-62e0ecb644c2)
+
+- Symbol table logs after each change in the code.
+- In the image below logs after the following statement: string t = "CRUST" ; 
+
+![image](https://github.com/aymanreda56/CRUST/assets/76243256/e2ea6590-63d7-48b0-9b08-a1111db36c7e)
 
 
 ## Hot-Keys ✨
